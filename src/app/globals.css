@@ -1,0 +1,102 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+@variant dark (&:where(.dark, .dark *));
+
+
+@layer base {
+  :root {
+    /* Spec color system: #0F1A2E bg, #2E75B6 primary, #00D4AA accent, #1E293B secondary */
+    --background: 216 48% 12%;      /* #0F1A2E */
+    --foreground: 210 40% 96%;      /* #F0F4F8 */
+    --card: 217 43% 15%;            /* #131E2F — slightly lighter than bg */
+    --card-foreground: 210 40% 96%;
+    --popover: 217 43% 15%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 211 60% 45%;         /* #2E75B6 */
+    --primary-foreground: 210 40% 96%;
+    --secondary: 215 35% 18%;       /* #1E293B */
+    --secondary-foreground: 210 30% 80%;
+    --muted: 215 35% 18%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 168 100% 42%;         /* #00D4AA */
+    --accent-foreground: 216 48% 12%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 96%;
+    --border: 215 35% 22%;
+    --input: 215 35% 22%;
+    --ring: 211 60% 45%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-dm-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+}
+
+/* FORGE-specific utilities */
+@layer utilities {
+  .gate-glow {
+    box-shadow: 0 0 20px rgba(46, 117, 182, 0.2);
+  }
+  .accent-glow {
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.15);
+  }
+  .hard-block-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    color: hsl(var(--destructive));
+  }
+  .ledger-mono {
+    font-family: var(--font-jetbrains-mono), "Fira Code", monospace;
+    font-size: 0.75rem;
+  }
+  .font-mono {
+    font-family: var(--font-jetbrains-mono), "Fira Code", monospace;
+  }
+}
+
+/* Conic gradient score ring */
+@layer utilities {
+  .score-ring {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Kanban column drag states */
+@layer utilities {
+  .kanban-col {
+    min-height: 200px;
+    transition: background-color 0.15s;
+  }
+  .kanban-col-hover {
+    background-color: hsl(var(--secondary));
+  }
+}
+
+/* Radar chart label fix */
+.recharts-polar-angle-axis-tick text {
+  fill: hsl(var(--muted-foreground));
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+}

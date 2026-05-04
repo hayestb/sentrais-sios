@@ -1,0 +1,26 @@
+import type { AgentName } from "@/lib/workflow/types";
+
+export const AGENT_CATALOG = [
+  { name: "governance" as AgentName, label: "Governance Agent", domain: "Strategy & Governance", email: "governance@sentrais.com", tier: 1 },
+  { name: "discovery" as AgentName, label: "Discovery Agent", domain: "Phase 1: Discover", email: "advisory@sentrais.com", tier: 1 },
+  { name: "intake" as AgentName, label: "Intake Agent", domain: "Phase 1: Discover", email: "advisory@sentrais.com", tier: 1 },
+  { name: "assessment" as AgentName, label: "Assessment Agent", domain: "Phase 2: Diagnose", email: "advisory@sentrais.com", tier: 1 },
+  { name: "architecture" as AgentName, label: "Architecture Agent", domain: "Phase 3: Design", email: "architecture@sentrais.com", tier: 1 },
+  { name: "design" as AgentName, label: "Design Agent", domain: "Phase 3: Design", email: "advisory@sentrais.com", tier: 1 },
+  { name: "delivery" as AgentName, label: "Delivery Agent", domain: "Phase 4: Deploy", email: "delivery@sentrais.com", tier: 1 },
+  { name: "qa" as AgentName, label: "QA Agent (Hard Block)", domain: "Phase 4: Deploy", email: "qa-block@sentrais.com", tier: 1 },
+  { name: "financial" as AgentName, label: "Financial Agent", domain: "Financial Operations", email: "billing@sentrais.com", tier: 1 },
+  { name: "transition" as AgentName, label: "Transition Agent", domain: "Phase 5: Debrief", email: "delivery@sentrais.com", tier: 1 },
+  { name: "learning" as AgentName, label: "Learning Agent (SIPE)", domain: "Intelligence Engine", email: "advisory@sentrais.com", tier: 1 },
+  { name: "communications" as AgentName, label: "Communications Agent", domain: "Stakeholder Comms", email: "communications@sentrais.com", tier: 1 },
+  { name: "portfolio" as AgentName, label: "Portfolio Agent", domain: "Executive Reporting", email: "advisory@sentrais.com", tier: 1 },
+  { name: "client_success" as AgentName, label: "Client Success Agent", domain: "Client Health", email: "success@sentrais.com", tier: 2 },
+  { name: "legal" as AgentName, label: "Legal Agent", domain: "Legal & Compliance", email: "legal@sentrais.com", tier: 2 },
+  { name: "risk" as AgentName, label: "Risk Agent", domain: "Risk Management", email: "governance@sentrais.com", tier: 2 },
+  { name: "compliance" as AgentName, label: "Compliance Agent", domain: "Regulatory", email: "legal@sentrais.com", tier: 2 },
+  { name: "knowledge" as AgentName, label: "Knowledge Agent", domain: "IP Management", email: "ip-ledger@sentrais.com", tier: 2 },
+  { name: "escalation" as AgentName, label: "Escalation Agent", domain: "Escalation Routing", email: "governance@sentrais.com", tier: 2 },
+  { name: "reporting" as AgentName, label: "Reporting Agent", domain: "Analytics", email: "communications@sentrais.com", tier: 2 },
+  { name: "integration" as AgentName, label: "Integration Agent", domain: "System Integration", email: "architecture@sentrais.com", tier: 2 },
+  { name: "sipe" as AgentName, label: "SIPE Engine Agent", domain: "Intelligence", email: "advisory@sentrais.com", tier: 2 },
+] as const;
