@@ -1,13 +1,21 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft, ChevronRight, Calendar, GitBranch, Zap,
-  DollarSign, Package, AlertCircle, RefreshCw,
+  DollarSign, Package, AlertCircle, RefreshCw, CheckCircle2, XCircle,
 } from "lucide-react";
+
+interface ConnectionStatus {
+  connected: boolean;
+  syncEnabled?: boolean;
+  lastSyncedAt?: string | null;
+  expired?: boolean;
+}
 
 interface CalEvent {
   id: string;
@@ -42,13 +50,29 @@ export default function CalendarPage() {
   const [selected, setSelected] = useState<Date>(new Date());
   const [syncingGoogle, setSyncingGoogle] = useState(false);
   const [syncingOutlook, setSyncingOutlook] = useState(false);
+  const [syncResult, setSyncResult] = useState<{ provider: string; synced: number } | null>(null);
+  const [connections, setConnections] = useState<{ google: ConnectionStatus; outlook: ConnectionStatus }>({
+    google: { connected: false }, outlook: { connected: false },
+  });
+  const searchParams = useSearchParams();
+
+  const loadConnections = useCallback(() => {
+    fetch("/api/calendar/connections").then((r) => r.json()).then((d) => setConnections(d));
+  }, []);
 
   useEffect(() => {
     fetch("/api/calendar/events").then((r) => r.json()).then((d) => {
       setEvents(d.events ?? []);
       setLoading(false);
     });
-  }, []);
+    loadConnections();
+  }, [loadConnections]);
+
+  // Show toast-like feedback after OAuth redirect
+  useEffect(() => {
+    const connected = searchParams.get("connected");
+    if (connected) loadConnections();
+  }, [searchParams, loadConnections]);
 
   const prevMonth = () => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
   const nextMonth = () => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
@@ -76,16 +100,30 @@ export default function CalendarPage() {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 10);
 
-  const syncToGoogle = async () => {
-    setSyncingGoogle(true);
-    await fetch("/api/calendar/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: "google" }) });
-    setSyncingGoogle(false);
-  };
+  const handleCalendarAction = async (provider: "google" | "outlook") => {
+    const conn = connections[provider];
+    const setSyncing = provider === "google" ? setSyncingGoogle : setSyncingOutlook;
 
-  const syncToOutlook = async () => {
-    setSyncingOutlook(true);
-    await fetch("/api/calendar/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: "outlook" }) });
-    setSyncingOutlook(false);
+    if (!conn.connected) {
+      window.location.href = `/api/calendar/${provider}/connect`;
+      return;
+    }
+
+    setSyncing(true);
+    setSyncResult(null);
+    const res = await fetch("/api/calendar/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ provider }),
+    });
+    const data = await res.json() as { synced?: number; connectUrl?: string; error?: string };
+    if (data.connectUrl) {
+      window.location.href = data.connectUrl;
+    } else if (typeof data.synced === "number") {
+      setSyncResult({ provider, synced: data.synced });
+      loadConnections();
+    }
+    setSyncing(false);
   };
 
   return (
@@ -113,15 +151,37 @@ export default function CalendarPage() {
                 Today
               </Button>
             </div>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={syncToGoogle} disabled={syncingGoogle} className="h-7 text-xs gap-1.5">
-                {syncingGoogle ? <RefreshCw size={10} className="animate-spin" /> : <Calendar size={10} />}
-                Google Calendar
+            <div className="flex items-center gap-2">
+              {syncResult && (
+                <span className="text-[10px] text-green-400 flex items-center gap-1">
+                  <CheckCircle2 size={10} /> {syncResult.synced} events → {syncResult.provider}
+                </span>
+              )}
+              <Button
+                size="sm"
+                variant={connections.google.connected ? "default" : "outline"}
+                onClick={() => handleCalendarAction("google")}
+                disabled={syncingGoogle}
+                className="h-7 text-xs gap-1.5"
+              >
+                {syncingGoogle ? <RefreshCw size={10} className="animate-spin" /> : connections.google.connected ? <CheckCircle2 size={10} /> : <Calendar size={10} />}
+                Google {connections.google.connected ? "Sync" : "Connect"}
               </Button>
-              <Button size="sm" variant="outline" onClick={syncToOutlook} disabled={syncingOutlook} className="h-7 text-xs gap-1.5">
-                {syncingOutlook ? <RefreshCw size={10} className="animate-spin" /> : <Zap size={10} />}
-                Outlook
+              <Button
+                size="sm"
+                variant={connections.outlook.connected ? "default" : "outline"}
+                onClick={() => handleCalendarAction("outlook")}
+                disabled={syncingOutlook}
+                className="h-7 text-xs gap-1.5"
+              >
+                {syncingOutlook ? <RefreshCw size={10} className="animate-spin" /> : connections.outlook.connected ? <CheckCircle2 size={10} /> : <Zap size={10} />}
+                Outlook {connections.outlook.connected ? "Sync" : "Connect"}
               </Button>
+              {(connections.google.expired || connections.outlook.expired) && (
+                <span className="text-[10px] text-amber-400 flex items-center gap-1">
+                  <XCircle size={10} /> Token expired — reconnect
+                </span>
+              )}
             </div>
           </div>
 
