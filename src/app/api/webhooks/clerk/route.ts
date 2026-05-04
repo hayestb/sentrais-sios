@@ -18,37 +18,38 @@ interface ClerkUserPayload {
 }
 
 export async function POST(req: NextRequest) {
-  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
-  if (!webhookSecret) {
-    return NextResponse.json({ error: "Missing CLERK_WEBHOOK_SECRET" }, { status: 500 });
-  }
-
-  const headerPayload = await headers();
-  const svixId = headerPayload.get("svix-id");
-  const svixTimestamp = headerPayload.get("svix-timestamp");
-  const svixSignature = headerPayload.get("svix-signature");
-
-  if (!svixId || !svixTimestamp || !svixSignature) {
-    return NextResponse.json({ error: "Missing svix headers" }, { status: 400 });
-  }
-
-  const body = await req.text();
-  const wh = new Webhook(webhookSecret);
-
-  let evt: { type: string; data: ClerkUserPayload };
   try {
-    evt = wh.verify(body, {
-      "svix-id": svixId,
-      "svix-timestamp": svixTimestamp,
-      "svix-signature": svixSignature,
-    }) as typeof evt;
-  } catch {
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-  }
+    const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      return NextResponse.json({ error: "Missing CLERK_WEBHOOK_SECRET" }, { status: 500 });
+    }
 
-  const { type, data } = evt;
+    const headerPayload = await headers();
+    const svixId = headerPayload.get("svix-id");
+    const svixTimestamp = headerPayload.get("svix-timestamp");
+    const svixSignature = headerPayload.get("svix-signature");
 
-  try {
+    if (!svixId || !svixTimestamp || !svixSignature) {
+      return NextResponse.json({ error: "Missing svix headers" }, { status: 400 });
+    }
+
+    const body = await req.text();
+    const wh = new Webhook(webhookSecret);
+
+    let evt: { type: string; data: ClerkUserPayload };
+    try {
+      evt = wh.verify(body, {
+        "svix-id": svixId,
+        "svix-timestamp": svixTimestamp,
+        "svix-signature": svixSignature,
+      }) as typeof evt;
+    } catch (verifyErr) {
+      const msg = verifyErr instanceof Error ? verifyErr.message : String(verifyErr);
+      return NextResponse.json({ error: "Invalid signature", detail: msg }, { status: 400 });
+    }
+
+    const { type, data } = evt;
+
     if (type === "user.created" || type === "user.updated") {
       const email = data.email_addresses[0]?.email_address ?? "";
       const fullName = [data.first_name, data.last_name].filter(Boolean).join(" ") || email;
@@ -86,11 +87,11 @@ export async function POST(req: NextRequest) {
         payload: {},
       });
     }
+
+    return NextResponse.json({ received: true });
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("[webhook] DB error:", message);
+    const message = err instanceof Error ? `${err.message}\n${err.stack}` : String(err);
+    console.error("[webhook] unhandled error:", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  return NextResponse.json({ received: true });
 }
