@@ -48,42 +48,48 @@ export async function POST(req: NextRequest) {
 
   const { type, data } = evt;
 
-  if (type === "user.created" || type === "user.updated") {
-    const email = data.email_addresses[0]?.email_address ?? "";
-    const fullName = [data.first_name, data.last_name].filter(Boolean).join(" ") || email;
-    const role = (data.public_metadata?.role as UserRole) ?? "analyst";
-    const avatarUrl = data.image_url ?? null;
+  try {
+    if (type === "user.created" || type === "user.updated") {
+      const email = data.email_addresses[0]?.email_address ?? "";
+      const fullName = [data.first_name, data.last_name].filter(Boolean).join(" ") || email;
+      const role = (data.public_metadata?.role as UserRole) ?? "analyst";
+      const avatarUrl = data.image_url ?? null;
 
-    await db
-      .insert(profiles)
-      .values({ clerkId: data.id, email, fullName, role, avatarUrl })
-      .onConflictDoUpdate({
-        target: profiles.clerkId,
-        set: { email, fullName, role, avatarUrl, updatedAt: new Date() },
+      await db
+        .insert(profiles)
+        .values({ clerkId: data.id, email, fullName, role, avatarUrl })
+        .onConflictDoUpdate({
+          target: profiles.clerkId,
+          set: { email, fullName, role, avatarUrl, updatedAt: new Date() },
+        });
+
+      await db.insert(auditLog).values({
+        actorClerkId: data.id,
+        action: type,
+        targetType: "profile",
+        targetId: data.id,
+        payload: { email, role },
       });
+    }
 
-    await db.insert(auditLog).values({
-      actorClerkId: data.id,
-      action: type,
-      targetType: "profile",
-      targetId: data.id,
-      payload: { email, role },
-    });
-  }
+    if (type === "user.deleted") {
+      await db
+        .update(profiles)
+        .set({ active: false, updatedAt: new Date() })
+        .where(eq(profiles.clerkId, data.id));
 
-  if (type === "user.deleted") {
-    await db
-      .update(profiles)
-      .set({ active: false, updatedAt: new Date() })
-      .where(eq(profiles.clerkId, data.id));
-
-    await db.insert(auditLog).values({
-      actorClerkId: data.id,
-      action: "user.deleted",
-      targetType: "profile",
-      targetId: data.id,
-      payload: {},
-    });
+      await db.insert(auditLog).values({
+        actorClerkId: data.id,
+        action: "user.deleted",
+        targetType: "profile",
+        targetId: data.id,
+        payload: {},
+      });
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[webhook] DB error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });
