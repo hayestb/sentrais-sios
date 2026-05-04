@@ -1,12 +1,25 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db/client";
 import { engagements, gateRecords, agentTasks } from "@/lib/db/schema";
 import { count } from "drizzle-orm";
 import {
   BarChart3, GitBranch, Brain, Shield, Users, ArrowRight, Zap, Activity,
 } from "lucide-react";
+import { roleHome } from "@/lib/auth/roles";
+import type { UserRole } from "@/lib/auth/roles";
 
 export const dynamic = "force-dynamic";
+
+// Redirect authenticated users directly to their dashboard
+async function checkAuth() {
+  const { userId, sessionClaims } = await auth();
+  if (userId) {
+    const role = ((sessionClaims?.metadata as { role?: string } | undefined)?.role as UserRole) ?? "analyst";
+    redirect(roleHome(role));
+  }
+}
 
 const PERSONAS = [
   {
@@ -52,6 +65,8 @@ const PERSONAS = [
 ];
 
 export default async function LandingPage() {
+  await checkAuth();
+
   const [[engCount], [gateCount], [taskCount]] = await Promise.all([
     db.select({ count: count() }).from(engagements),
     db.select({ count: count() }).from(gateRecords),
