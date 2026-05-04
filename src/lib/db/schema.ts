@@ -54,7 +54,7 @@ export const sprintEventEnum = pgEnum("sprint_event", [
 ]);
 
 export const userRoleEnum = pgEnum("user_role", [
-  "admin", "consultant", "client_executive", "analyst",
+  "sysadmin", "admin", "consultant", "client_executive", "analyst",
 ]);
 
 export const remediationStatusEnum = pgEnum("remediation_status", [
@@ -89,6 +89,7 @@ export const profiles = pgTable(
   "profiles",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    clerkId: text("clerk_id").unique(),
     email: text("email").notNull().unique(),
     fullName: text("full_name").notNull(),
     role: userRoleEnum("role").notNull().default("analyst"),
@@ -98,7 +99,11 @@ export const profiles = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (t) => [index("profiles_email_idx").on(t.email), index("profiles_role_idx").on(t.role)]
+  (t) => [
+    index("profiles_email_idx").on(t.email),
+    index("profiles_role_idx").on(t.role),
+    index("profiles_clerk_id_idx").on(t.clerkId),
+  ]
 );
 
 // ─── Engagements ──────────────────────────────────────────────────────────────
@@ -684,3 +689,54 @@ export type VendorDocument = typeof vendorDocuments.$inferSelect;
 export type InnovationIdea = typeof innovationIdeas.$inferSelect;
 export type CrmDeal = typeof crmDeals.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;
+
+// ─── Audit Log ────────────────────────────────────────────────────────────────
+
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    actorId: uuid("actor_id").references(() => profiles.id),
+    actorClerkId: text("actor_clerk_id"),
+    action: text("action").notNull(),
+    targetType: text("target_type"),
+    targetId: text("target_id"),
+    payload: jsonb("payload").$type<Record<string, unknown>>().default({}),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("audit_actor_idx").on(t.actorId),
+    index("audit_action_idx").on(t.action),
+    index("audit_created_idx").on(t.createdAt),
+  ]
+);
+
+// ─── Calendar Tokens ──────────────────────────────────────────────────────────
+
+export const calendarProviderEnum = pgEnum("calendar_provider", ["google", "outlook"]);
+
+export const calendarTokens = pgTable(
+  "calendar_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    profileId: uuid("profile_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+    provider: calendarProviderEnum("provider").notNull(),
+    accessTokenEnc: text("access_token_enc").notNull(),
+    refreshTokenEnc: text("refresh_token_enc"),
+    expiresAt: timestamp("expires_at"),
+    calendarId: text("calendar_id"),
+    syncEnabled: boolean("sync_enabled").notNull().default(true),
+    lastSyncedAt: timestamp("last_synced_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("cal_tokens_profile_idx").on(t.profileId),
+    index("cal_tokens_provider_idx").on(t.provider),
+  ]
+);
+
+export type AuditLog = typeof auditLog.$inferSelect;
+export type CalendarToken = typeof calendarTokens.$inferSelect;

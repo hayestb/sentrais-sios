@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -21,8 +22,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`dark ${dmSans.variable} ${jetbrainsMono.variable}`}>
-      <body>{children}</body>
-    </html>
+    <ClerkProvider afterSignOutUrl="/sign-in">
+      <html lang="en" className={`dark ${dmSans.variable} ${jetbrainsMono.variable}`}>
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
