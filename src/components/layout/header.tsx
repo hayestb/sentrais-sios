@@ -5,9 +5,15 @@ interface HeaderProps {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  userName?: string;
+  userRole?: string;
+  userInitial?: string;
+  userImageUrl?: string;
 }
 
-export function Header({ title, subtitle, actions }: HeaderProps) {
+export function Header({ title, subtitle, actions, userName, userRole, userInitial, userImageUrl }: HeaderProps) {
+  const initial = userInitial ?? (userName ? userName[0].toUpperCase() : "?");
+
   return (
     <header className="h-14 border-b border-border bg-card/50 backdrop-blur-sm flex items-center px-6 gap-4 sticky top-0 z-10">
       <div className="flex-1">
@@ -39,12 +45,17 @@ export function Header({ title, subtitle, actions }: HeaderProps) {
 
       {/* Identity */}
       <div className="flex items-center gap-2 pl-2 border-l border-border">
-        <div className="w-7 h-7 rounded-full bg-[#0EA5E9]/20 border border-[#0EA5E9]/40 flex items-center justify-center">
-          <span className="text-[#0EA5E9] text-xs font-bold">K</span>
-        </div>
+        {userImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={userImageUrl} alt={userName ?? "User"} className="w-7 h-7 rounded-full object-cover" />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-[#0EA5E9]/20 border border-[#0EA5E9]/40 flex items-center justify-center">
+            <span className="text-[#0EA5E9] text-xs font-bold">{initial}</span>
+          </div>
+        )}
         <div className="hidden md:block">
-          <div className="text-xs font-medium">Knox Phillips</div>
-          <div className="text-[10px] text-muted-foreground">CPO / CRO</div>
+          <div className="text-xs font-medium">{userName ?? "—"}</div>
+          <div className="text-[10px] text-muted-foreground capitalize">{userRole ?? "analyst"}</div>
         </div>
       </div>
     </header>

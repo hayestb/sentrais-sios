@@ -68,7 +68,7 @@ const ROLE_PERSONAS: Record<UserRole, string[]> = {
   analyst: ["/command-center"],
 };
 
-export function Sidebar({ role }: { role: UserRole }) {
+export function Sidebar({ role, userName, userImageUrl }: { role: UserRole; userName?: string; userImageUrl?: string }) {
   const path = usePathname();
   const isActive = (href: string) => path === href || (href !== "/" && path.startsWith(href));
   const sections = ROLE_SECTIONS[role] ?? [];
@@ -187,7 +187,8 @@ export function Sidebar({ role }: { role: UserRole }) {
         <div className="flex items-center gap-2">
           <UserButton />
           <div className="flex-1 min-w-0">
-            <div className="text-[11px] text-muted-foreground truncate capitalize">{role}</div>
+            {userName && <div className="text-[11px] font-medium text-foreground truncate">{userName}</div>}
+            <div className="text-[10px] text-muted-foreground truncate capitalize">{role}</div>
           </div>
         </div>
         <div className="flex items-center gap-2">
