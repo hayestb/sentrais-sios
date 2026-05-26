@@ -10,7 +10,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "setup:integrations": "npx tsx scripts/setup-integrations.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.74",
