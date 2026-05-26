@@ -1,0 +1,28 @@
+.git
+.gitignore
+.github
+.claude
+.next
+node_modules
+npm-debug.log*
+
+# env files — never bake secrets into the image
+.env
+.env.local
+.env.*.local
+
+# dev/test artifacts
+*.test.ts
+*.spec.ts
+coverage/
+__tests__/
+
+# docs / assets not needed at runtime
+*.md
+*.pdf
+*.png
+*.jpg
+
+# OS
+.DS_Store
+Thumbs.db
