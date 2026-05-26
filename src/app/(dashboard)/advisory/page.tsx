@@ -8,6 +8,7 @@ import {
   Brain, CheckCircle2, AlertTriangle, Loader2, Zap,
   BookOpen, Lock, ExternalLink, TrendingUp, Target,
 } from "lucide-react";
+import Link from "next/link";
 import {
   RadarChart, PolarGrid, PolarAngleAxis, Radar,
   ResponsiveContainer, Tooltip,
@@ -230,7 +231,7 @@ export default function AdvisoryPage() {
           {loadingEngagements ? (
             <Loader2 size={14} className="animate-spin text-muted-foreground" />
           ) : engagements.length === 0 ? (
-            <span className="text-xs text-muted-foreground">No engagements — <a href="/engagements" className="text-primary hover:underline">create one first</a></span>
+            <span className="text-xs text-muted-foreground">No engagements — <Link href="/engagements" className="text-primary hover:underline">create one first</Link></span>
           ) : (
             <div className="flex gap-2 flex-wrap">
               {engagements.map((e) => (
