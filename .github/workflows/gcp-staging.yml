@@ -11,10 +11,10 @@ permissions:
   contents: read
 
 env:
-  PROJECT_ID: novatelabs-converge-dev
+  PROJECT_ID: sios-495313
   REGION: us-central1
   ARTIFACT_REGISTRY: us-central1-docker.pkg.dev
-  IMAGE_REPO: us-central1-docker.pkg.dev/novatelabs-converge-dev/sentrais-sios/app
+  IMAGE_REPO: us-central1-docker.pkg.dev/sios-495313/sentrais-sios/app
   CLOUD_RUN_SERVICE: sentrais-sios-staging
 
 jobs:
@@ -33,8 +33,8 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           token_format: access_token
-          workload_identity_provider: projects/962724398063/locations/global/workloadIdentityPools/wif-github-pool/providers/wif-github-provider
-          service_account: github-actions-deployer@novatelabs-shared-pc.iam.gserviceaccount.com
+          workload_identity_provider: projects/525872017863/locations/global/workloadIdentityPools/wif-github-pool/providers/wif-github-provider
+          service_account: github-actions-deployer@sios-495313.iam.gserviceaccount.com
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
@@ -81,7 +81,7 @@ jobs:
             --args="run,db:migrate" \
             --max-retries=1 \
             --task-timeout=120s \
-            --service-account=github-actions-deployer@novatelabs-shared-pc.iam.gserviceaccount.com \
+            --service-account=github-actions-deployer@sios-495313.iam.gserviceaccount.com \
           && gcloud run jobs execute sentrais-sios-migrate-${{ github.run_id }} \
             --region=${{ env.REGION }} \
             --project=${{ env.PROJECT_ID }} \

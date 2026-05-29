@@ -17,9 +17,9 @@ set -euo pipefail
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-PROJECT_ID="novatelabs-converge-dev"
+PROJECT_ID="sios-495313"
 REGION="us-central1"
-SA="github-actions-deployer@novatelabs-shared-pc.iam.gserviceaccount.com"
+SA="github-actions-deployer@sios-495313.iam.gserviceaccount.com"
 AR_REPO="sentrais-sios"
 ENV_FILE=".env.local"
 
