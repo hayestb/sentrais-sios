@@ -582,6 +582,10 @@ export const crmDeals = pgTable(
     notes: text("notes"),
     convertedToEngagementId: uuid("converted_to_engagement_id").references(() => engagements.id),
     convertedAt: timestamp("converted_at"),
+    // Integration fields — populated when deal originates from / syncs to external platforms
+    hubspotDealId: text("hubspot_deal_id").unique(),
+    licensingSector: text("licensing_sector").$type<"COMMERCIAL" | "NONPROFIT">(),
+    mondayItemId: text("monday_item_id"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

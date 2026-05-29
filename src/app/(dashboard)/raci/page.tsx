@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import {
   Users, Shield, Brain, RefreshCw, Plus, CheckCircle2, AlertTriangle,
   UserCheck, ChevronDown,
@@ -133,7 +134,7 @@ export default function RaciPage() {
           ))}
           {engagements.length === 0 && (
             <span className="text-xs text-muted-foreground">
-              No engagements — <a href="/engagements" className="text-[#0EA5E9] hover:underline">create one first</a>
+              No engagements — <Link href="/engagements" className="text-[#0EA5E9] hover:underline">create one first</Link>
             </span>
           )}
         </div>

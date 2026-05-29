@@ -282,7 +282,7 @@ export function CommandSearch() {
 
           {allResults.length === 0 && !searching && query && (
             <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-              No results for "{query}"
+              No results for &ldquo;{query}&rdquo;
             </div>
           )}
         </div>

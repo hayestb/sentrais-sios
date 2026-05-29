@@ -80,7 +80,7 @@ export default async function ClientPortalPage({
             <div>
               <div className="text-sm font-medium text-amber-400">Quality Validation In Progress</div>
               <div className="text-xs text-muted-foreground mt-0.5">
-                Our QA team is completing final validation before go-live. We'll be in touch shortly.
+                Our QA team is completing final validation before go-live. We&apos;ll be in touch shortly.
               </div>
             </div>
           </div>

@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+# Pre-commit: run ESLint and block commits that introduce lint errors.
+
+set -e
+
+echo "[pre-commit] Running ESLint..."
+npm run lint
+
+echo "[pre-commit] Checking for accidentally staged env files..."
+STAGED=$(git diff --cached --name-only)
+for f in $STAGED; do
+  case "$f" in
+    .env|.env.local|.env.*.local)
+      echo "[pre-commit] ERROR: Refusing to commit env file: $f"
+      exit 1
+      ;;
+  esac
+done
+
+echo "[pre-commit] OK"

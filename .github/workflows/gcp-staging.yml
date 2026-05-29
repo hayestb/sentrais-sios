@@ -1,0 +1,125 @@
+name: Secure GCP Staging Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+# Required to request the OIDC JWT token from GitHub Actions
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  PROJECT_ID: sios-495313
+  REGION: us-central1
+  ARTIFACT_REGISTRY: us-central1-docker.pkg.dev
+  IMAGE_REPO: us-central1-docker.pkg.dev/sios-495313/sentrais-sios/app
+  CLOUD_RUN_SERVICE: sentrais-sios-staging
+
+jobs:
+  deploy-staging:
+    name: Build & Deploy to GCP Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Zero-Trust Keyless Handshake ──────────────────────────────────────────
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token
+          workload_identity_provider: projects/525872017863/locations/global/workloadIdentityPools/wif-github-pool/providers/wif-github-provider
+          service_account: github-actions-deployer@sios-495313.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      # ── Docker → Artifact Registry ────────────────────────────────────────────
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }} --quiet
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --tag ${{ env.IMAGE_REPO }}:${{ github.sha }} \
+            --tag ${{ env.IMAGE_REPO }}:staging-latest \
+            --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
+            --build-arg NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in \
+            --build-arg NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up \
+            --build-arg NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/command-center \
+            --build-arg NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/command-center \
+            .
+
+      - name: Push image to Artifact Registry
+        run: |
+          docker push ${{ env.IMAGE_REPO }}:${{ github.sha }}
+          docker push ${{ env.IMAGE_REPO }}:staging-latest
+
+      # ── Run DB migrations via Cloud Run Job ───────────────────────────────────
+      - name: Run database migrations
+        run: |
+          gcloud run jobs create sentrais-sios-migrate-${{ github.run_id }} \
+            --image=${{ env.IMAGE_REPO }}:${{ github.sha }} \
+            --region=${{ env.REGION }} \
+            --project=${{ env.PROJECT_ID }} \
+            --set-env-vars="DATABASE_URL=${{ secrets.DATABASE_URL }}" \
+            --command="npm" \
+            --args="run,db:migrate" \
+            --max-retries=1 \
+            --task-timeout=120s \
+            --service-account=github-actions-deployer@sios-495313.iam.gserviceaccount.com \
+          && gcloud run jobs execute sentrais-sios-migrate-${{ github.run_id }} \
+            --region=${{ env.REGION }} \
+            --project=${{ env.PROJECT_ID }} \
+            --wait
+
+      # ── Deploy to Cloud Run ───────────────────────────────────────────────────
+      - name: Deploy to Cloud Run (staging)
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          image: ${{ env.IMAGE_REPO }}:${{ github.sha }}
+          region: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
+          env_vars: |
+            NODE_ENV=production
+            NEXT_PUBLIC_APP_URL=${{ secrets.STAGING_APP_URL }}
+            NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+            NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+            NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/command-center
+            NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/command-center
+          secrets: |
+            DATABASE_URL=sentrais-sios-database-url:latest
+            CLERK_SECRET_KEY=sentrais-sios-clerk-secret:latest
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=sentrais-sios-clerk-publishable:latest
+            ENCRYPTION_KEY=sentrais-sios-encryption-key:latest
+            MONDAY_API_TOKEN=sentrais-sios-monday-token:latest
+            HUBSPOT_API_KEY=sentrais-sios-hubspot-key:latest
+            HUBSPOT_WEBHOOK_SECRET=sentrais-sios-hubspot-webhook-secret:latest
+          flags: |
+            --min-instances=0
+            --max-instances=3
+            --memory=512Mi
+            --cpu=1
+            --timeout=60s
+            --concurrency=80
+
+      # ── Clean up one-off migration job ────────────────────────────────────────
+      - name: Clean up migration job
+        if: always()
+        run: |
+          gcloud run jobs delete sentrais-sios-migrate-${{ github.run_id }} \
+            --region=${{ env.REGION }} \
+            --project=${{ env.PROJECT_ID }} \
+            --quiet || true
+
+      - name: Output staging URL
+        run: echo "Staging URL ${{ steps.deploy.outputs.url }}"

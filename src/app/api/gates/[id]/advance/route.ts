@@ -14,6 +14,8 @@ import {
 import { recordGateApproval } from "@/lib/ledger/evidence";
 import { financialAgent } from "@/lib/agents/financial";
 import { communicationsAgent } from "@/lib/agents/communications";
+import { notifyMondayGateAdvancement } from "@/lib/integrations/monday";
+import type { LicensingSector } from "@/lib/integrations/monday";
 import type { GateNumber } from "@/lib/workflow/types";
 
 const AdvanceGateSchema = z.object({
@@ -184,6 +186,19 @@ export async function POST(
       trigger: gateDef.financialTrigger,
     });
   }
+
+  // Monday.com gate advancement notification (non-blocking, G2 and G5 carry invoice amounts)
+  const sector: LicensingSector =
+    (engagement.metadata as Record<string, unknown>)?.licensingSector === "NONPROFIT"
+      ? "NONPROFIT"
+      : "COMMERCIAL";
+  notifyMondayGateAdvancement({
+    engagementId,
+    clientName: engagement.clientName,
+    gateNumber: currentGate,
+    sector,
+    invoiceAmount: invoiceResult?.output.amountDue as number | undefined,
+  }).catch(() => {/* non-critical */});
 
   // Gate briefing (non-blocking)
   communicationsAgent
