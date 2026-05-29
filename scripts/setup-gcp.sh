@@ -27,7 +27,6 @@ ENV_FILE=".env.local"
 ROLES=(
   "roles/run.admin"
   "roles/artifactregistry.writer"
-  "roles/cloudsql.client"
   "roles/secretmanager.secretAccessor"
   "roles/iam.serviceAccountUser"
 )

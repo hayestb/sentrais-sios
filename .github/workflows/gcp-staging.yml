@@ -41,10 +41,6 @@ jobs:
         with:
           project_id: ${{ env.PROJECT_ID }}
 
-      # ── Verify IAM permissions before doing any real work ─────────────────────
-      - name: Verify connection & IAM scope
-        run: gcloud compute networks list --project=${{ env.PROJECT_ID }}
-
       # ── Docker → Artifact Registry ────────────────────────────────────────────
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }} --quiet
@@ -67,15 +63,12 @@ jobs:
           docker push ${{ env.IMAGE_REPO }}:staging-latest
 
       # ── Run DB migrations via Cloud Run Job ───────────────────────────────────
-      # Runs `npm run db:migrate` inside the same image before traffic shifts.
-      # The job connects to Cloud SQL via the sidecar — no public DB exposure.
       - name: Run database migrations
         run: |
           gcloud run jobs create sentrais-sios-migrate-${{ github.run_id }} \
             --image=${{ env.IMAGE_REPO }}:${{ github.sha }} \
             --region=${{ env.REGION }} \
             --project=${{ env.PROJECT_ID }} \
-            --set-cloudsql-instances=${{ secrets.CLOUD_SQL_INSTANCE }} \
             --set-env-vars="DATABASE_URL=${{ secrets.DATABASE_URL }}" \
             --command="npm" \
             --args="run,db:migrate" \
@@ -112,7 +105,6 @@ jobs:
             HUBSPOT_API_KEY=sentrais-sios-hubspot-key:latest
             HUBSPOT_WEBHOOK_SECRET=sentrais-sios-hubspot-webhook-secret:latest
           flags: |
-            --add-cloudsql-instances=${{ secrets.CLOUD_SQL_INSTANCE }}
             --min-instances=0
             --max-instances=3
             --memory=512Mi
