@@ -32,15 +32,15 @@ ROLES=(
   "roles/iam.serviceAccountUser"
 )
 
-# .env.local key → Secret Manager secret name
-declare -A SECRET_MAP=(
-  ["DATABASE_URL"]="sentrais-sios-database-url"
-  ["CLERK_SECRET_KEY"]="sentrais-sios-clerk-secret"
-  ["NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"]="sentrais-sios-clerk-publishable"
-  ["ENCRYPTION_KEY"]="sentrais-sios-encryption-key"
-  ["MONDAY_API_TOKEN"]="sentrais-sios-monday-token"
-  ["HUBSPOT_API_KEY"]="sentrais-sios-hubspot-key"
-  ["HUBSPOT_WEBHOOK_SECRET"]="sentrais-sios-hubspot-webhook-secret"
+# .env.local key → Secret Manager secret name (space-separated pairs, bash 3 compatible)
+SECRET_PAIRS=(
+  "DATABASE_URL:sentrais-sios-database-url"
+  "CLERK_SECRET_KEY:sentrais-sios-clerk-secret"
+  "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:sentrais-sios-clerk-publishable"
+  "ENCRYPTION_KEY:sentrais-sios-encryption-key"
+  "MONDAY_API_TOKEN:sentrais-sios-monday-token"
+  "HUBSPOT_API_KEY:sentrais-sios-hubspot-key"
+  "HUBSPOT_WEBHOOK_SECRET:sentrais-sios-hubspot-webhook-secret"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -113,8 +113,9 @@ setup_secrets() {
     return
   fi
 
-  for env_key in "${!SECRET_MAP[@]}"; do
-    secret_name="${SECRET_MAP[$env_key]}"
+  for pair in "${SECRET_PAIRS[@]}"; do
+    env_key="${pair%%:*}"
+    secret_name="${pair#*:}"
     value="$(read_env_value "$env_key")"
 
     if [[ -z "$value" ]]; then
