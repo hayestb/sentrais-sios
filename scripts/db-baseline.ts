@@ -1,20 +1,7 @@
 #!/usr/bin/env npx tsx
-/**
- * Baselines the drizzle migrations table when db:push was used to create
- * the initial schema. Run this once before switching to db:migrate.
- *
- * What it does:
- *   1. Checks if __drizzle_migrations table exists
- *   2. If app tables exist but tracking table doesn't, creates it and
- *      marks all existing migration files as already applied
- *   3. If tracking table already exists, exits with no changes
- *
- * Usage:
- *   npm run db:baseline
- */
-
 import postgres from "postgres";
-import { readFileSync, readdirSync, existsSync } from "fs";
+import crypto from "crypto";
+import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 
 try {
@@ -35,21 +22,60 @@ if (!DATABASE_URL) {
 
 const sql = postgres(DATABASE_URL);
 
+function computeHash(migrationsDir: string, tag: string): string {
+  const sqlContent = readFileSync(resolve(migrationsDir, `${tag}.sql`), "utf-8");
+  return crypto.createHash("sha256").update(sqlContent).digest("hex");
+}
+
 async function baseline() {
+  const migrationsDir = resolve(process.cwd(), "drizzle");
+  const journalPath = resolve(migrationsDir, "meta/_journal.json");
+
+  if (!existsSync(journalPath)) {
+    process.stderr.write("drizzle/meta/_journal.json not found — run npm run db:generate first\n");
+    await sql.end();
+    process.exit(1);
+  }
+
+  const journal = JSON.parse(readFileSync(journalPath, "utf-8")) as {
+    entries: { tag: string; when: number }[];
+  };
+
+  const migrations = journal.entries.map((entry) => ({
+    tag: entry.tag,
+    when: entry.when,
+    hash: computeHash(migrationsDir, entry.tag),
+  }));
+
   const [trackingExists] = await sql`
     SELECT 1 FROM pg_tables
     WHERE schemaname = 'public' AND tablename = '__drizzle_migrations'
   `;
 
   if (trackingExists) {
-    process.stdout.write("__drizzle_migrations already exists — no baseline needed\n");
+    const existing = await sql<{ hash: string }[]>`SELECT hash FROM "__drizzle_migrations"`;
+    const sha256Re = /^[0-9a-f]{64}$/;
+    const hasWrongHashes = existing.some((row) => !sha256Re.test(row.hash));
+
+    if (!hasWrongHashes) {
+      process.stdout.write("__drizzle_migrations exists with correct hashes — no baseline needed\n");
+      await sql.end();
+      return;
+    }
+
+    process.stdout.write("Correcting migration hashes from tag names to SHA256...\n");
+    await sql`DELETE FROM "__drizzle_migrations"`;
+    for (const m of migrations) {
+      await sql`INSERT INTO "__drizzle_migrations" (hash, created_at) VALUES (${m.hash}, ${m.when})`;
+      process.stdout.write(`  ✓ ${m.tag} → ${m.hash.slice(0, 8)}...\n`);
+    }
+    process.stdout.write("Hash correction complete.\n");
     await sql.end();
     return;
   }
 
   const [tablesExist] = await sql`
-    SELECT 1 FROM pg_tables
-    WHERE schemaname = 'public' AND tablename = 'profiles'
+    SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles'
   `;
 
   if (!tablesExist) {
@@ -68,25 +94,9 @@ async function baseline() {
     )
   `;
 
-  const migrationsDir = resolve(process.cwd(), "drizzle");
-  const journalPath = resolve(migrationsDir, "meta/_journal.json");
-
-  if (!existsSync(journalPath)) {
-    process.stderr.write("drizzle/meta/_journal.json not found — run npm run db:generate first\n");
-    await sql.end();
-    process.exit(1);
-  }
-
-  const journal = JSON.parse(readFileSync(journalPath, "utf-8")) as {
-    entries: { tag: string; when: number }[];
-  };
-
-  for (const entry of journal.entries) {
-    await sql`
-      INSERT INTO "__drizzle_migrations" (hash, created_at)
-      VALUES (${entry.tag}, ${entry.when})
-    `;
-    process.stdout.write(`  ✓ Marked ${entry.tag} as applied\n`);
+  for (const m of migrations) {
+    await sql`INSERT INTO "__drizzle_migrations" (hash, created_at) VALUES (${m.hash}, ${m.when})`;
+    process.stdout.write(`  ✓ Marked ${m.tag} as applied (${m.hash.slice(0, 8)}...)\n`);
   }
 
   process.stdout.write("Baseline complete. Future schema changes should use db:generate + db:migrate.\n");
