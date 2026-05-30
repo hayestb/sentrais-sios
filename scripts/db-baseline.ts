@@ -32,7 +32,7 @@ async function baseline() {
   const journalPath = resolve(migrationsDir, "meta/_journal.json");
 
   if (!existsSync(journalPath)) {
-    process.stderr.write("drizzle/meta/_journal.json not found\n");
+    process.stderr.write("drizzle/meta/_journal.json not found — run npm run db:generate first\n");
     await sql.end();
     process.exit(1);
   }
@@ -50,8 +50,9 @@ async function baseline() {
   const [tablesExist] = await sql`
     SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles'
   `;
+
   if (!tablesExist) {
-    process.stdout.write("No existing tables -- skipping baseline\n");
+    process.stdout.write("No existing tables — skipping baseline, db:migrate will create them\n");
     await sql.end();
     return;
   }
@@ -72,7 +73,7 @@ async function baseline() {
 
   const maxFolderMillis = Math.max(...migrations.map((m) => m.when));
   if (lastEntry && Number(lastEntry.created_at) >= maxFolderMillis) {
-    process.stdout.write("Already baselined -- no action needed\n");
+    process.stdout.write("Already baselined — no action needed\n");
     await sql.end();
     return;
   }
