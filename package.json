@@ -11,6 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:baseline": "npx tsx scripts/db-baseline.ts",
+    "db:setup": "npm run db:baseline && npm run db:migrate",
     "setup:integrations": "npx tsx scripts/setup-integrations.ts",
     "push:env": "npx tsx scripts/push-env.ts",
     "setup:gcp": "./scripts/setup-gcp.sh"
