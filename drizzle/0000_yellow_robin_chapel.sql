@@ -1,21 +1,21 @@
-CREATE TYPE "public"."agent_name" AS ENUM('governance', 'discovery', 'intake', 'assessment', 'architecture', 'design', 'delivery', 'qa', 'financial', 'transition', 'learning', 'communications', 'portfolio', 'client_success', 'legal', 'sipe', 'risk', 'compliance', 'knowledge', 'escalation', 'reporting', 'integration');--> statement-breakpoint
-CREATE TYPE "public"."calendar_provider" AS ENUM('google', 'outlook');--> statement-breakpoint
-CREATE TYPE "public"."crm_stage" AS ENUM('prospect', 'discovery', 'proposal', 'scoping', 'negotiation', 'closed_won', 'closed_lost', 'live');--> statement-breakpoint
-CREATE TYPE "public"."engagement_status" AS ENUM('active', 'paused', 'completed', 'blocked');--> statement-breakpoint
-CREATE TYPE "public"."gate_outcome" AS ENUM('commit', 'conditional_go', 'hold', 'clear', 'ceo_override');--> statement-breakpoint
-CREATE TYPE "public"."gate_status" AS ENUM('locked', 'active', 'passed', 'failed', 'blocked');--> statement-breakpoint
-CREATE TYPE "public"."innovation_phase" AS ENUM('i1_capture', 'i2_feasibility', 'i3_lab', 'i4_prototype', 'i5_validation', 'i6_scale');--> statement-breakpoint
-CREATE TYPE "public"."innovation_status" AS ENUM('active', 'paused', 'validated', 'archived', 'promoted');--> statement-breakpoint
-CREATE TYPE "public"."invoice_status" AS ENUM('pending', 'sent', 'paid', 'overdue');--> statement-breakpoint
-CREATE TYPE "public"."notification_type" AS ENUM('gate_change', 'hard_block', 'invoice_due', 'sprint_event', 'remediation_assigned', 'agent_escalation', 'vendor_expiry', 'system');--> statement-breakpoint
-CREATE TYPE "public"."phase" AS ENUM('discover', 'diagnose', 'design', 'deploy', 'debrief');--> statement-breakpoint
-CREATE TYPE "public"."raci_role" AS ENUM('responsible', 'accountable', 'consulted', 'informed');--> statement-breakpoint
-CREATE TYPE "public"."remediation_status" AS ENUM('todo', 'in_progress', 'done');--> statement-breakpoint
-CREATE TYPE "public"."sprint_event" AS ENUM('huddle', 'tech_sync', 'qa_review', 'retrospective', 'execution');--> statement-breakpoint
-CREATE TYPE "public"."task_status" AS ENUM('queued', 'running', 'completed', 'failed', 'escalated');--> statement-breakpoint
-CREATE TYPE "public"."user_role" AS ENUM('sysadmin', 'admin', 'consultant', 'client_executive', 'analyst');--> statement-breakpoint
-CREATE TYPE "public"."vendor_status" AS ENUM('active', 'inactive', 'under_review', 'offboarded');--> statement-breakpoint
-CREATE TABLE "agent_conversations" (
+CREATE TYPE IF NOT EXISTS "public"."agent_name" AS ENUM('governance', 'discovery', 'intake', 'assessment', 'architecture', 'design', 'delivery', 'qa', 'financial', 'transition', 'learning', 'communications', 'portfolio', 'client_success', 'legal', 'sipe', 'risk', 'compliance', 'knowledge', 'escalation', 'reporting', 'integration');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."calendar_provider" AS ENUM('google', 'outlook');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."crm_stage" AS ENUM('prospect', 'discovery', 'proposal', 'scoping', 'negotiation', 'closed_won', 'closed_lost', 'live');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."engagement_status" AS ENUM('active', 'paused', 'completed', 'blocked');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."gate_outcome" AS ENUM('commit', 'conditional_go', 'hold', 'clear', 'ceo_override');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."gate_status" AS ENUM('locked', 'active', 'passed', 'failed', 'blocked');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."innovation_phase" AS ENUM('i1_capture', 'i2_feasibility', 'i3_lab', 'i4_prototype', 'i5_validation', 'i6_scale');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."innovation_status" AS ENUM('active', 'paused', 'validated', 'archived', 'promoted');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."invoice_status" AS ENUM('pending', 'sent', 'paid', 'overdue');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."notification_type" AS ENUM('gate_change', 'hard_block', 'invoice_due', 'sprint_event', 'remediation_assigned', 'agent_escalation', 'vendor_expiry', 'system');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."phase" AS ENUM('discover', 'diagnose', 'design', 'deploy', 'debrief');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."raci_role" AS ENUM('responsible', 'accountable', 'consulted', 'informed');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."remediation_status" AS ENUM('todo', 'in_progress', 'done');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."sprint_event" AS ENUM('huddle', 'tech_sync', 'qa_review', 'retrospective', 'execution');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."task_status" AS ENUM('queued', 'running', 'completed', 'failed', 'escalated');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."user_role" AS ENUM('sysadmin', 'admin', 'consultant', 'client_executive', 'analyst');--> statement-breakpoint
+CREATE TYPE IF NOT EXISTS "public"."vendor_status" AS ENUM('active', 'inactive', 'under_review', 'offboarded');--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "agent_conversations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid,
 	"agent_name" "agent_name" NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE "agent_conversations" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "agent_tasks" (
+CREATE TABLE IF NOT EXISTS "agent_tasks" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid,
 	"agent_name" "agent_name" NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE "agent_tasks" (
 	"completed_at" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE "audit_log" (
+CREATE TABLE IF NOT EXISTS "audit_log" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"actor_id" uuid,
 	"actor_clerk_id" text,
@@ -56,7 +56,7 @@ CREATE TABLE "audit_log" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "budget_milestones" (
+CREATE TABLE IF NOT EXISTS "budget_milestones" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"label" text NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE "budget_milestones" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "calendar_tokens" (
+CREATE TABLE IF NOT EXISTS "calendar_tokens" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"profile_id" uuid NOT NULL,
 	"provider" "calendar_provider" NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE "calendar_tokens" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "crm_deals" (
+CREATE TABLE IF NOT EXISTS "crm_deals" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"company_name" text NOT NULL,
 	"contact_name" text,
@@ -107,7 +107,7 @@ CREATE TABLE "crm_deals" (
 	CONSTRAINT "crm_deals_hubspot_deal_id_unique" UNIQUE("hubspot_deal_id")
 );
 --> statement-breakpoint
-CREATE TABLE "engagement_assignments" (
+CREATE TABLE IF NOT EXISTS "engagement_assignments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"profile_id" uuid NOT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE "engagement_assignments" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "engagement_comments" (
+CREATE TABLE IF NOT EXISTS "engagement_comments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"author_id" uuid,
@@ -127,7 +127,7 @@ CREATE TABLE "engagement_comments" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "engagements" (
+CREATE TABLE IF NOT EXISTS "engagements" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"client_name" text NOT NULL,
 	"vertical" text NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE "engagements" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "evidence_entries" (
+CREATE TABLE IF NOT EXISTS "evidence_entries" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid,
 	"entry_type" text NOT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE "evidence_entries" (
 	CONSTRAINT "evidence_entries_sha256_hash_unique" UNIQUE("sha256_hash")
 );
 --> statement-breakpoint
-CREATE TABLE "gate_records" (
+CREATE TABLE IF NOT EXISTS "gate_records" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"gate_number" integer NOT NULL,
@@ -181,7 +181,7 @@ CREATE TABLE "gate_records" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "gate_reviews" (
+CREATE TABLE IF NOT EXISTS "gate_reviews" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"gate_record_id" uuid NOT NULL,
 	"engagement_id" uuid NOT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE "gate_reviews" (
 	"reviewed_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "innovation_ideas" (
+CREATE TABLE IF NOT EXISTS "innovation_ideas" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid,
 	"title" text NOT NULL,
@@ -217,7 +217,7 @@ CREATE TABLE "innovation_ideas" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "invoices" (
+CREATE TABLE IF NOT EXISTS "invoices" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"invoice_number" text NOT NULL,
@@ -232,7 +232,7 @@ CREATE TABLE "invoices" (
 	CONSTRAINT "invoices_invoice_number_unique" UNIQUE("invoice_number")
 );
 --> statement-breakpoint
-CREATE TABLE "kpi_snapshots" (
+CREATE TABLE IF NOT EXISTS "kpi_snapshots" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"kpi_key" text NOT NULL,
@@ -246,7 +246,7 @@ CREATE TABLE "kpi_snapshots" (
 	"captured_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "notifications" (
+CREATE TABLE IF NOT EXISTS "notifications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"profile_id" uuid,
 	"engagement_id" uuid,
@@ -258,7 +258,7 @@ CREATE TABLE "notifications" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "profiles" (
+CREATE TABLE IF NOT EXISTS "profiles" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"clerk_id" text,
 	"email" text NOT NULL,
@@ -273,7 +273,7 @@ CREATE TABLE "profiles" (
 	CONSTRAINT "profiles_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
-CREATE TABLE "raci_assignments" (
+CREATE TABLE IF NOT EXISTS "raci_assignments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"role_id" text NOT NULL,
@@ -288,7 +288,7 @@ CREATE TABLE "raci_assignments" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "remediation_actions" (
+CREATE TABLE IF NOT EXISTS "remediation_actions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"gate_review_id" uuid,
@@ -306,7 +306,7 @@ CREATE TABLE "remediation_actions" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "sipe_entries" (
+CREATE TABLE IF NOT EXISTS "sipe_entries" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid,
 	"sprint_id" uuid,
@@ -321,7 +321,7 @@ CREATE TABLE "sipe_entries" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "sprint_cycles" (
+CREATE TABLE IF NOT EXISTS "sprint_cycles" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid NOT NULL,
 	"sprint_number" integer NOT NULL,
@@ -338,7 +338,7 @@ CREATE TABLE "sprint_cycles" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "vendor_documents" (
+CREATE TABLE IF NOT EXISTS "vendor_documents" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"vendor_id" uuid NOT NULL,
 	"engagement_id" uuid,
@@ -350,7 +350,7 @@ CREATE TABLE "vendor_documents" (
 	"uploaded_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "vendors" (
+CREATE TABLE IF NOT EXISTS "vendors" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"engagement_id" uuid,
 	"name" text NOT NULL,
