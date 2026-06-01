@@ -142,8 +142,8 @@ def setup_corp_workspace(token, ws_id, dry_run):
         create_board(token, "Active Deployments (NIN tracker)", ws_id, dry_run)
 
     for col_name, col_type in [
-        ("NIN Phase", "color"),
-        ("Gate Status", "color"),
+        ("NIN Phase", "status"),
+        ("Gate Status", "status"),
         ("Vertical", "dropdown"),
         ("Doctrine Mode", "dropdown"),
         ("Gate Stage", "dropdown"),
@@ -161,7 +161,7 @@ def setup_corp_workspace(token, ws_id, dry_run):
     bp_board = existing.get("Blueprint360 POC Tracker") or \
         create_board(token, "Blueprint360 POC Tracker", ws_id, dry_run)
     for col_name, col_type in [
-        ("POC Status", "color"),
+        ("POC Status", "status"),
         ("Target Vertical", "dropdown"),
         ("Entry Route", "dropdown"),
         ("Class 2 Advisor", "people"),
@@ -218,7 +218,7 @@ def setup_corp_workspace(token, ws_id, dry_run):
 
         # Columns for city node board
         for col_name, col_type in [
-            ("Status", "color"),
+            ("Status", "status"),
             ("Hard Block?", "checkbox"),
             ("Evidence on file?", "checkbox"),
             ("Owner", "people"),
@@ -248,7 +248,7 @@ def setup_sri_workspace(token, ws_id, dry_run):
         ("Author", "people"),
         ("Reviewer", "people"),
         ("Founder Sign-off", "people"),
-        ("Approval Status", "color"),
+        ("Approval Status", "status"),
         ("Version bump", "text"),
         ("Effective date", "date"),
     ]:
@@ -271,7 +271,7 @@ def setup_sri_workspace(token, ws_id, dry_run):
     for col_name, col_type in [
         ("Advisor Class", "dropdown"),
         ("Domain vertical", "dropdown"),
-        ("§4.6 compliance status", "color"),
+        ("§4.6 compliance status", "status"),
         ("Government deal carve-out?", "checkbox"),
         ("Agreement signed date", "date"),
         ("Contact owner", "people"),
@@ -291,7 +291,7 @@ def setup_novatorg_workspace(token, ws_id, dry_run):
     mou_board = create_board(token, "Academic MOU Tracker (CampusGrid)", ws_id, dry_run)
     for col_name, col_type in [
         ("Institution", "text"),
-        ("MOU status", "color"),
+        ("MOU status", "status"),
         ("UN gate", "dropdown"),
         ("Signed date", "date"),
         ("Expiry date", "date"),
@@ -323,7 +323,7 @@ def setup_ventures_workspace(token, ws_id, dry_run):
     for col_name, col_type in [
         ("Gate", "text"),
         ("Hard Block?", "checkbox"),
-        ("Status", "color"),
+        ("Status", "status"),
         ("Clearance criteria", "long_text"),
         ("Authority", "people"),
         ("Cleared date", "date"),
