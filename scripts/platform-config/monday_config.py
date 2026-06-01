@@ -52,7 +52,7 @@ def gql(token, query, variables=None, dry_run=False, label=""):
         payload["variables"] = variables
     resp = requests.post(
         API_URL,
-        headers={"Authorization": token, "Content-Type": "application/json", "API-Version": "2024-01"},
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json", "API-Version": "2024-01"},
         json=payload,
         timeout=30,
     )
