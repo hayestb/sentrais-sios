@@ -21,7 +21,7 @@ try {
   }
 } catch {}
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
 if (!DATABASE_URL) {
   process.stderr.write("DATABASE_URL not set\n");
   process.exit(1);
