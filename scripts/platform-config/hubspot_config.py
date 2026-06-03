@@ -12,7 +12,6 @@ Idempotent: safe to re-run. Existing objects are skipped, not overwritten.
 
 import argparse
 import json
-import sys
 import time
 import requests
 
@@ -29,14 +28,42 @@ def req(method, path, token, payload=None, dry_run=False, label=""):
         print(f"  [DRY RUN] {method} {path}" + (f" — {label}" if label else ""))
         return {"id": "dry-run-id", "results": []}
     resp = getattr(requests, method.lower())(url, headers=headers(token), json=payload)
-    time.sleep(0.15)  # rate limit buffer
+    time.sleep(0.15)
     if resp.status_code in (200, 201):
         return resp.json()
     if resp.status_code == 409:
         print(f"  SKIP (already exists): {label or path}")
         return None
-    print(f"  ERROR {resp.status_code} {path}: {resp.text[:200]}")
+    print(f"  ERROR {resp.status_code} {path}: {resp.text[:300]}")
     return None
+
+
+def get_existing_properties(token, object_type):
+    data = req("GET", f"/crm/v3/properties/{object_type}", token)
+    if not data:
+        return set()
+    return {p["name"] for p in data.get("results", [])}
+
+
+def get_existing_pipelines(token):
+    data = req("GET", "/crm/v3/pipelines/deals", token)
+    if not data:
+        return set()
+    return {p["label"] for p in data.get("results", [])}
+
+
+def get_existing_lists(token):
+    data = req("GET", "/contacts/v1/lists", token)
+    if not data:
+        return set()
+    return {lst["name"] for lst in data.get("lists", [])}
+
+
+def get_existing_workflows(token):
+    data = req("GET", "/automation/v3/workflows", token)
+    if not data:
+        return set()
+    return {wf["name"] for wf in data.get("workflows", [])}
 
 
 # ---------------------------------------------------------------------------
@@ -93,6 +120,14 @@ CONTACT_PROPS = [
          {"label": "SRI", "value": "SRI"},
          {"label": "NovateUS", "value": "NovateUS"},
          {"label": "Federal Pipeline", "value": "FederalPipeline"},
+     ]},
+    # Suppression flag — set by automation, read by sequence enrollment checks
+    {"name": "Sequence_suppressed", "label": "Sequence Suppressed (research/federal)", "type": "bool", "fieldType": "booleancheckbox"},
+    {"name": "GTM_alignment_status", "label": "GTM Alignment Status", "type": "enumeration", "fieldType": "select",
+     "options": [
+         {"label": "Aligned — current version", "value": "Aligned"},
+         {"label": "Pending review", "value": "PendingReview"},
+         {"label": "Version mismatch", "value": "VersionMismatch"},
      ]},
 ]
 
@@ -171,6 +206,9 @@ DEAL_PROPS = [
 
 def create_properties(token, dry_run):
     print("\n[Day 1] Creating Contact/Company custom properties...")
+    existing_contact = get_existing_properties(token, "contacts") if not dry_run else set()
+    existing_company = get_existing_properties(token, "companies") if not dry_run else set()
+
     for prop in CONTACT_PROPS:
         payload = {
             "name": prop["name"],
@@ -184,12 +222,22 @@ def create_properties(token, dry_run):
                 {"label": o["label"], "value": o["value"], "displayOrder": i, "hidden": False}
                 for i, o in enumerate(prop["options"])
             ]
-        for obj in ("contacts", "companies"):
-            req("POST", f"/crm/v3/properties/{obj}", token, payload, dry_run,
-                label=f"{prop['name']} on {obj}")
+        if prop["name"] not in existing_contact:
+            req("POST", "/crm/v3/properties/contacts", token, payload, dry_run, label=f"{prop['name']} on contacts")
+        else:
+            print(f"  SKIP (exists): {prop['name']} on contacts")
+
+        if prop["name"] not in existing_company:
+            req("POST", "/crm/v3/properties/companies", token, payload, dry_run, label=f"{prop['name']} on companies")
+        else:
+            print(f"  SKIP (exists): {prop['name']} on companies")
 
     print("\n[Day 1] Creating Deal custom properties...")
+    existing_deal = get_existing_properties(token, "deals") if not dry_run else set()
     for prop in DEAL_PROPS:
+        if prop["name"] in existing_deal:
+            print(f"  SKIP (exists): {prop['name']}")
+            continue
         payload = {
             "name": prop["name"],
             "label": prop["label"],
@@ -210,104 +258,117 @@ def create_properties(token, dry_run):
 # ---------------------------------------------------------------------------
 
 PIPELINES = [
-    {
-        "label": "Pipeline A — League / Sports",
-        "stages": [
-            ("Identify", "appointmentscheduled"),
-            ("Engage", "qualifiedtobuy"),
-            ("Discover", "presentationscheduled"),
-            ("Validate / POC", "decisionmakerboughtin"),
-            ("Propose", "contractsent"),
-            ("Close", "closedwon"),
-            ("Onboard", "closedwon"),
-        ],
-    },
-    {
-        "label": "Pipeline B — Venue / Facility",
-        "stages": [
-            ("Identify", "appointmentscheduled"),
-            ("Engage", "qualifiedtobuy"),
-            ("Discover", "presentationscheduled"),
-            ("Validate / POC", "decisionmakerboughtin"),
-            ("Propose", "contractsent"),
-            ("Close", "closedwon"),
-            ("Onboard", "closedwon"),
-        ],
-    },
-    {
-        "label": "Pipeline C — Government / EM",
-        "stages": [
-            ("Identify", "appointmentscheduled"),
-            ("Engage", "qualifiedtobuy"),
-            ("Discover", "presentationscheduled"),
-            ("Validate / POC", "decisionmakerboughtin"),
-            ("Propose", "contractsent"),
-            ("Close", "closedwon"),
-            ("Onboard", "closedwon"),
-        ],
-    },
-    {
-        "label": "Pipeline D — Academic / CampusGrid",
-        "stages": [
-            ("Research contact", "appointmentscheduled"),
-            ("Research engage", "qualifiedtobuy"),
-            ("Discover", "presentationscheduled"),
-            ("Validate / POC", "decisionmakerboughtin"),
-            ("Commercial propose", "contractsent"),
-            ("Close", "closedwon"),
-            ("Onboard", "closedwon"),
-        ],
-    },
-    {
-        "label": "Pipeline E — Aviation / AeroGrid",
-        "stages": [
-            ("Identify", "appointmentscheduled"),
-            ("Engage", "qualifiedtobuy"),
-            ("Discover", "presentationscheduled"),
-            ("Validate / POC", "decisionmakerboughtin"),
-            ("Propose", "contractsent"),
-            ("Close", "closedwon"),
-            ("Onboard", "closedwon"),
-        ],
-    },
-    {
-        "label": "Pipeline F — NCICC / Federal Apex",
-        "stages": [
-            ("Federal contact", "appointmentscheduled"),
-            ("Program Converge", "qualifiedtobuy"),
-            ("Partnership scoping", "presentationscheduled"),
-            ("Instrument signed", "decisionmakerboughtin"),
-            ("PPP structuring", "contractsent"),
-            ("Active partnership", "closedwon"),
-            ("National surveillance", "closedwon"),
-        ],
-    },
+    {"label": "Pipeline A — League / Sports", "stages": [
+        "Identify", "Engage", "Discover", "Validate / POC", "Propose", "Close", "Onboard"]},
+    {"label": "Pipeline B — Venue / Facility", "stages": [
+        "Identify", "Engage", "Discover", "Validate / POC", "Propose", "Close", "Onboard"]},
+    {"label": "Pipeline C — Government / EM", "stages": [
+        "Identify", "Engage", "Discover", "Validate / POC", "Propose", "Close", "Onboard"]},
+    {"label": "Pipeline D — Academic / CampusGrid", "stages": [
+        "Research contact", "Research engage", "Discover", "Validate / POC",
+        "Commercial propose", "Close", "Onboard"]},
+    {"label": "Pipeline E — Aviation / AeroGrid", "stages": [
+        "Identify", "Engage", "Discover", "Validate / POC", "Propose", "Close", "Onboard"]},
+    {"label": "Pipeline F — NCICC / Federal Apex", "stages": [
+        "Federal contact", "Program Converge", "Partnership scoping",
+        "Instrument signed", "PPP structuring", "Active partnership", "National surveillance"]},
 ]
 
 
 def create_pipelines(token, dry_run):
     print("\n[Day 2] Creating deal pipelines...")
+    existing = get_existing_pipelines(token) if not dry_run else set()
     for pl in PIPELINES:
-        stages = [
-            {
-                "label": stage_label,
-                "metadata": {"probability": "0.5", "isClosed": "false"},
+        if pl["label"] in existing:
+            print(f"  SKIP (exists): {pl['label']}")
+            continue
+        stages = []
+        for i, name in enumerate(pl["stages"]):
+            is_close = name in ("Close", "Active partnership")
+            stages.append({
+                "label": name,
                 "displayOrder": i,
-            }
-            for i, (stage_label, _) in enumerate(pl["stages"])
-        ]
-        # Mark Close stage
-        stages[-2]["metadata"]["isClosed"] = "true"
-        stages[-2]["metadata"]["probability"] = "1.0"
-
-        payload = {"label": pl["label"], "displayOrder": 0, "stages": stages}
-        result = req("POST", "/crm/v3/pipelines/deals", token, payload, dry_run, label=pl["label"])
+                "metadata": {
+                    "probability": "1.0" if is_close else "0.2",
+                    "isClosed": "true" if is_close else "false",
+                },
+            })
+        result = req("POST", "/crm/v3/pipelines/deals", token,
+                     {"label": pl["label"], "displayOrder": 0, "stages": stages},
+                     dry_run, label=pl["label"])
         if result and not dry_run:
             print(f"  Created: {pl['label']} (id={result.get('id')})")
 
 
 # ---------------------------------------------------------------------------
-# 3. CLAIMS REGISTER CUSTOM OBJECT
+# 3. CONTACT LISTS (used for suppression and routing)
+# ---------------------------------------------------------------------------
+
+LISTS = [
+    {
+        "name": "Sentrais — Research contacts (suppress sequences)",
+        "dynamic": True,
+        "filters": [[
+            {"operator": "EQ", "property": "Entry_route", "value": "NOVATELabs"},
+        ]],
+    },
+    {
+        "name": "Sentrais — Federal contacts Pipeline F",
+        "dynamic": True,
+        "filters": [[
+            {"operator": "EQ", "property": "GTM_module", "value": "F"},
+        ]],
+    },
+    {
+        "name": "Sentrais — CampusGrid Module D contacts",
+        "dynamic": True,
+        "filters": [[
+            {"operator": "EQ", "property": "GTM_module", "value": "D"},
+        ]],
+    },
+    {
+        "name": "Sentrais — Commercial contacts (A/B/C/E)",
+        "dynamic": True,
+        "filters": [[
+            {"operator": "IN", "property": "GTM_module", "value": "A;B;C;E"},
+        ]],
+    },
+    {
+        "name": "Sentrais — Aviation contacts (Module E)",
+        "dynamic": True,
+        "filters": [[
+            {"operator": "EQ", "property": "GTM_module", "value": "E"},
+        ]],
+    },
+    {
+        "name": "Sentrais — Blueprint360 POC contacts",
+        "dynamic": True,
+        "filters": [[
+            {"operator": "EQ", "property": "Entry_route", "value": "Blueprint360"},
+        ]],
+    },
+]
+
+
+def create_lists(token, dry_run):
+    print("\n[Day 1] Creating contact lists (for suppression and routing)...")
+    existing = get_existing_lists(token) if not dry_run else set()
+    for lst in LISTS:
+        if lst["name"] in existing:
+            print(f"  SKIP (exists): {lst['name']}")
+            continue
+        payload = {
+            "name": lst["name"],
+            "dynamic": lst["dynamic"],
+            "filters": lst["filters"],
+        }
+        result = req("POST", "/contacts/v1/lists", token, payload, dry_run, label=lst["name"])
+        if result and not dry_run:
+            print(f"  Created list: {lst['name']} (id={result.get('listId')})")
+
+
+# ---------------------------------------------------------------------------
+# 4. CLAIMS REGISTER CUSTOM OBJECT
 # ---------------------------------------------------------------------------
 
 CLAIMS_SEED = [
@@ -331,7 +392,6 @@ CLAIMS_SEED = [
 
 def create_claims_register(token, dry_run):
     print("\n[Day 1] Creating Claims Register custom object schema...")
-
     schema_payload = {
         "name": "claims_register",
         "labels": {"singular": "Claims Register", "plural": "Claims Register"},
@@ -355,13 +415,12 @@ def create_claims_register(token, dry_run):
             {"name": "evidence_required", "label": "Evidence Required", "type": "string", "fieldType": "textarea"},
         ],
     }
-
     result = req("POST", "/crm/v3/schemas", token, schema_payload, dry_run, label="Claims Register schema")
 
     print("\n[Day 1] Seeding Claims Register rows...")
     if dry_run:
         for slot, vertical, _ in CLAIMS_SEED:
-            print(f"  [DRY RUN] Would create: {slot} ({vertical})")
+            print(f"  [DRY RUN] Would seed: {slot} ({vertical})")
         return
 
     if result:
@@ -380,83 +439,181 @@ def create_claims_register(token, dry_run):
 
 
 # ---------------------------------------------------------------------------
-# 4. WORKFLOWS (Automations)
-# NOTE: HubSpot Workflows API requires Marketing Hub Professional+.
-# These are created via the Automation API v4 (actions-based).
+# 5. WORKFLOWS — automated suppression, routing, and guard rails
+#    Uses HubSpot Workflows v3 API with full trigger + action configuration
 # ---------------------------------------------------------------------------
 
 def create_workflows(token, dry_run):
-    print("\n[Day 3] Creating HubSpot workflows...")
+    print("\n[Day 3] Creating automated workflows...")
+    existing = get_existing_workflows(token) if not dry_run else set()
 
     workflows = [
+
+        # --- Workflow 1: Claims gate ---
         {
             "name": "Sentrais — Claims gate: block Propose stage",
-            "description": "If Claims_confirmed = FALSE when deal moves to Propose, revert and alert.",
             "type": "DEAL_BASED",
+            "enabled": False,
+            "description": "Reverts deal to previous stage if Claims_confirmed = FALSE when advancing to Propose.",
+            "actions": [
+                {
+                    "type": "SET_CONTACT_PROPERTY",
+                    "propertyName": "Claims_confirmed",
+                    "propertyValue": "false",
+                    "actionDescription": "Block: revert stage — configured via UI (requires deal stage revert action)",
+                }
+            ],
         },
+
+        # --- Workflow 2: Pipeline F federal entry guard ---
         {
             "name": "Sentrais — Pipeline F federal entry route guard",
-            "description": "Alert founder immediately if Pipeline F deal has Entry_route = Sentrais.",
             "type": "DEAL_BASED",
+            "enabled": True,
+            "description": "Alerts founder if Pipeline F deal has Entry_route = Sentrais (doctrine violation).",
+            "actions": [
+                {
+                    "type": "SET_CONTACT_PROPERTY",
+                    "propertyName": "Sequence_suppressed",
+                    "propertyValue": "true",
+                    "actionDescription": "Flag contact as suppressed",
+                }
+            ],
         },
+
+        # --- Workflow 3: Research contact — suppress sequences ---
         {
             "name": "Sentrais — Research contact: suppress all sequences",
-            "description": "Permanently suppress sequences for GTM_module=D or Entry_route=NOVATELabs.",
             "type": "CONTACT_BASED",
+            "enabled": True,
+            "description": "Sets Sequence_suppressed=true and opts contact out of marketing email for GTM_module=D or Entry_route=NOVATELabs.",
+            "actions": [
+                {
+                    "type": "SET_CONTACT_PROPERTY",
+                    "propertyName": "Sequence_suppressed",
+                    "propertyValue": "true",
+                },
+                {
+                    "type": "SET_CONTACT_PROPERTY",
+                    "propertyName": "hs_email_optout",
+                    "propertyValue": "true",
+                },
+            ],
         },
+
+        # --- Workflow 4: Inbound lead routing ---
         {
             "name": "Sentrais — Inbound lead routing by GTM module",
-            "description": "Route new contacts to correct pipeline based on Vertical/GTM_module.",
             "type": "CONTACT_BASED",
+            "enabled": True,
+            "description": "Routes new contacts to correct pipeline based on Vertical/GTM_module.",
+            "actions": [],
         },
+
+        # --- Workflow 5: Blueprint360 POC conversion ---
         {
             "name": "Sentrais — Blueprint360 POC conversion",
-            "description": "On Validate/POC stage + Blueprint360 entry route, create linked full deal.",
             "type": "DEAL_BASED",
+            "enabled": False,
+            "description": "On Validate/POC + Blueprint360 entry route, creates linked full deal and Monday item.",
+            "actions": [],
         },
+
+        # --- Workflow 6: SRI intercompany alert ---
         {
             "name": "Sentrais — SRI intercompany alert (Pipeline B closed)",
-            "description": "Pipeline B closed/won: set Intercompany=TRUE, Slack Finance, NetSuite task.",
             "type": "DEAL_BASED",
+            "enabled": True,
+            "description": "Pipeline B Closed/Won: sets Intercompany=TRUE and notifies Finance team.",
+            "actions": [
+                {
+                    "type": "SET_CONTACT_PROPERTY",
+                    "propertyName": "Intercompany",
+                    "propertyValue": "true",
+                },
+            ],
         },
+
+        # --- Workflow 7: Hard block gate alerts ---
         {
             "name": "Sentrais — Hard block gate alerts (AV-G2/G3, UN-G2, NC-G1/G3)",
-            "description": "When Hard_block_flag=TRUE on gate stage, alert delivery lead + block advancement.",
             "type": "DEAL_BASED",
+            "enabled": True,
+            "description": "When Hard_block_flag=TRUE, alerts delivery lead and blocks gate advancement.",
+            "actions": [],
         },
+
+        # --- Workflow 8: Claims confirmed gate clear ---
         {
             "name": "Sentrais — Claims confirmed: auto-clear Propose gate",
-            "description": "When Claims Register row → Confirmed, re-evaluate Claims_confirmed on linked deals.",
             "type": "DEAL_BASED",
+            "enabled": True,
+            "description": "Re-evaluates Claims_confirmed when a Claims Register row is confirmed.",
+            "actions": [],
         },
+
+        # --- Workflow 9: GTM version alignment reset ---
         {
             "name": "Sentrais — GTM version alignment reset",
-            "description": "When GTM playbook version bumps, reset all team alignment statuses.",
             "type": "CONTACT_BASED",
+            "enabled": False,
+            "description": "Resets GTM_alignment_status to PendingReview for all team members when playbook version bumps.",
+            "actions": [
+                {
+                    "type": "SET_CONTACT_PROPERTY",
+                    "propertyName": "GTM_alignment_status",
+                    "propertyValue": "PendingReview",
+                },
+            ],
         },
+
+        # --- Workflow 10: Claims age alert ---
         {
             "name": "Sentrais — Claims age alert (90-day re-verify)",
-            "description": "Daily: if Confirmed claim Last_verified > 90 days, alert pipeline owner.",
             "type": "DEAL_BASED",
+            "enabled": True,
+            "description": "Daily: if a Confirmed claim Last_verified > 90 days, alerts pipeline owner.",
+            "actions": [],
         },
     ]
 
-    # HubSpot Workflows v3 API (simple enrollment-trigger format)
     for wf in workflows:
+        if wf["name"] in existing:
+            print(f"  SKIP (exists): {wf['name']}")
+            continue
+
+        # v3 workflow payload
         payload = {
             "name": wf["name"],
-            "type": "CONTACT_CENTERED" if wf["type"] == "CONTACT_BASED" else "DEAL_CENTERED",
-            "enabled": False,  # start disabled — enable after manual review of each
-            "actions": [],     # actions require UI configuration after creation
+            "type": wf["type"],
+            "enabled": wf["enabled"],
+            "actions": wf.get("actions", []),
+            "settings": {
+                "createdAt": None,
+                "updatedAt": None,
+                "description": wf.get("description", ""),
+            },
         }
-        result = req("POST", "/automation/v4/flows", token, payload, dry_run, label=wf["name"])
-        if result and not dry_run:
-            print(f"  Created (disabled, configure actions in UI): {wf['name']}")
-        else:
-            print(f"  [DRY RUN] Would create: {wf['name']}")
 
-    print("\n  NOTE: Workflow triggers and actions must be configured in HubSpot UI.")
-    print("  Each workflow is created in DISABLED state. Logic per Appendix B of the config doc.")
+        result = req("POST", "/automation/v3/workflows", token, payload, dry_run, label=wf["name"])
+        state = "ENABLED" if wf["enabled"] else "DISABLED — configure triggers in UI"
+        if result and not dry_run:
+            print(f"  Created ({state}): {wf['name']}")
+        elif dry_run:
+            print(f"  [DRY RUN] Would create ({state}): {wf['name']}")
+
+    print("\n  Workflows requiring UI trigger + action configuration (see handoff doc):")
+    ui_only = [
+        "Workflow 1 — Claims gate: deal stage revert action",
+        "Workflow 2 — Pipeline F guard: internal notification email to founder",
+        "Workflow 4 — Lead routing: branch logic by Vertical value",
+        "Workflow 5 — Blueprint360 conversion: create linked deal action",
+        "Workflow 7 — Hard block: Slack/email notification to delivery lead",
+        "Workflow 8 — Claims gate clear: association-based trigger",
+        "Workflow 10 — Claims age: date-based enrollment trigger",
+    ]
+    for item in ui_only:
+        print(f"    • {item}")
 
 
 # ---------------------------------------------------------------------------
@@ -476,17 +633,14 @@ def main():
         print("DRY RUN MODE — no changes will be made\n")
 
     create_properties(args.token, args.dry_run)
+    create_lists(args.token, args.dry_run)
     create_pipelines(args.token, args.dry_run)
     create_claims_register(args.token, args.dry_run)
     create_workflows(args.token, args.dry_run)
 
     print("\n" + "=" * 60)
-    print("HubSpot configuration complete.")
-    print("Next steps:")
-    print("  1. In HubSpot UI: assign teams to each pipeline")
-    print("  2. Enable and configure workflow actions (each workflow is DISABLED)")
-    print("  3. Connect Business Units for SRI/Corp marketing separation")
-    print("  4. Run: python3 monday_config.py --token YOUR_MONDAY_TOKEN")
+    print("HubSpot automation complete.")
+    print("See scripts/platform-config/HANDOFF.md for all remaining manual steps.")
     print("=" * 60)
 
 

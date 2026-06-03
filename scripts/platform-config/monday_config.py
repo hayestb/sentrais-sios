@@ -52,7 +52,7 @@ def gql(token, query, variables=None, dry_run=False, label=""):
         payload["variables"] = variables
     resp = requests.post(
         API_URL,
-        headers={"Authorization": token, "Content-Type": "application/json", "API-Version": "2024-01"},
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json", "API-Version": "2024-01"},
         json=payload,
         timeout=30,
     )
@@ -108,9 +108,12 @@ def create_board(token, name, workspace_id, dry_run):
 
 
 def add_column(token, board_id, title, col_type, dry_run, defaults=None):
-    q = 'mutation($bid: ID!, $title: String!, $type: ColumnType!, $defaults: JSON) { create_column(board_id: $bid, title: $title, column_type: $type, defaults: $defaults) { id title } }'
-    gql(token, q, {"bid": board_id, "title": title, "type": col_type, "defaults": json.dumps(defaults) if defaults else None},
-        dry_run=dry_run, label=f"column: {title}")
+    defaults_part = ', defaults: $defaults' if defaults else ''
+    q = f'mutation($bid: ID!, $title: String!{", $defaults: JSON" if defaults else ""}) {{ create_column(board_id: $bid, title: $title, column_type: {col_type}{defaults_part}) {{ id title }} }}'
+    vars_ = {"bid": board_id, "title": title}
+    if defaults:
+        vars_["defaults"] = json.dumps(defaults)
+    gql(token, q, vars_, dry_run=dry_run, label=f"column: {title}")
 
 
 def add_group(token, board_id, name, dry_run):
@@ -139,8 +142,8 @@ def setup_corp_workspace(token, ws_id, dry_run):
         create_board(token, "Active Deployments (NIN tracker)", ws_id, dry_run)
 
     for col_name, col_type in [
-        ("NIN Phase", "color"),
-        ("Gate Status", "color"),
+        ("NIN Phase", "status"),
+        ("Gate Status", "status"),
         ("Vertical", "dropdown"),
         ("Doctrine Mode", "dropdown"),
         ("Gate Stage", "dropdown"),
@@ -158,7 +161,7 @@ def setup_corp_workspace(token, ws_id, dry_run):
     bp_board = existing.get("Blueprint360 POC Tracker") or \
         create_board(token, "Blueprint360 POC Tracker", ws_id, dry_run)
     for col_name, col_type in [
-        ("POC Status", "color"),
+        ("POC Status", "status"),
         ("Target Vertical", "dropdown"),
         ("Entry Route", "dropdown"),
         ("Class 2 Advisor", "people"),
@@ -195,26 +198,27 @@ def setup_corp_workspace(token, ws_id, dry_run):
             "Exercise & AAR",
             "NIN Delivery Phases",
         ]
+        group_ids = {}
         for grp in groups:
-            add_group(token, city_board, grp, dry_run)
+            group_ids[grp] = add_group(token, city_board, grp, dry_run)
 
         # AeroGrid gate items
         for gate in ["AV-G0", "AV-G1", "AV-G2", "AV-G3", "AV-G4", "AV-G5", "AV-G6"]:
-            add_item(token, city_board, "AeroGrid Gates (AV-G0 → AV-G6)", gate, dry_run)
+            add_item(token, city_board, group_ids["AeroGrid Gates (AV-G0 → AV-G6)"], gate, dry_run)
 
         # CiviGrid gate items
         for gate in ["G0", "G1", "G2", "G3", "G4", "G5", "G6"]:
-            add_item(token, city_board, "CiviGrid Gates (G0 → G6)", gate, dry_run)
+            add_item(token, city_board, group_ids["CiviGrid Gates (G0 → G6)"], gate, dry_run)
 
         # Integration feeds
         for feed in ["FAA SWIM", "ASDE-X", "Airport AODB", "Airline DCS", "CAD/911",
                      "Mass notification", "Radio dispatch", "Access control", "CCTV/VMS",
                      "City/county CAD (mutual aid)", "Weather alerting"]:
-            add_item(token, city_board, "Integration Feeds", feed, dry_run)
+            add_item(token, city_board, group_ids["Integration Feeds"], feed, dry_run)
 
         # Columns for city node board
         for col_name, col_type in [
-            ("Status", "color"),
+            ("Status", "status"),
             ("Hard Block?", "checkbox"),
             ("Evidence on file?", "checkbox"),
             ("Owner", "people"),
@@ -244,7 +248,7 @@ def setup_sri_workspace(token, ws_id, dry_run):
         ("Author", "people"),
         ("Reviewer", "people"),
         ("Founder Sign-off", "people"),
-        ("Approval Status", "color"),
+        ("Approval Status", "status"),
         ("Version bump", "text"),
         ("Effective date", "date"),
     ]:
@@ -267,7 +271,7 @@ def setup_sri_workspace(token, ws_id, dry_run):
     for col_name, col_type in [
         ("Advisor Class", "dropdown"),
         ("Domain vertical", "dropdown"),
-        ("§4.6 compliance status", "color"),
+        ("§4.6 compliance status", "status"),
         ("Government deal carve-out?", "checkbox"),
         ("Agreement signed date", "date"),
         ("Contact owner", "people"),
@@ -287,7 +291,7 @@ def setup_novatorg_workspace(token, ws_id, dry_run):
     mou_board = create_board(token, "Academic MOU Tracker (CampusGrid)", ws_id, dry_run)
     for col_name, col_type in [
         ("Institution", "text"),
-        ("MOU status", "color"),
+        ("MOU status", "status"),
         ("UN gate", "dropdown"),
         ("Signed date", "date"),
         ("Expiry date", "date"),
@@ -319,7 +323,7 @@ def setup_ventures_workspace(token, ws_id, dry_run):
     for col_name, col_type in [
         ("Gate", "text"),
         ("Hard Block?", "checkbox"),
-        ("Status", "color"),
+        ("Status", "status"),
         ("Clearance criteria", "long_text"),
         ("Authority", "people"),
         ("Cleared date", "date"),
@@ -327,7 +331,7 @@ def setup_ventures_workspace(token, ws_id, dry_run):
         add_column(token, ncicc_board, col_name, col_type, dry_run)
 
     for gate_name, is_block, criteria in NC_GATES:
-        add_item(token, ncicc_board, "Topics", gate_name, dry_run)
+        add_item(token, ncicc_board, "topics", gate_name, dry_run)
 
     # --- SEAR 2026 Master Tracker ---
     print("  Creating: SEAR 2026 Master Tracker")
@@ -372,9 +376,9 @@ def setup_ventures_workspace(token, ws_id, dry_run):
         add_column(token, cal_board, col_name, col_type, dry_run)
 
     # FIFA 2026 milestone
-    add_item(token, cal_board, "Topics", "FIFA World Cup 2026 — Opening Match (LA/MetLife, June 11)", dry_run)
-    add_item(token, cal_board, "Topics", "FIFA World Cup 2026 — Final (July 19, 2026)", dry_run)
-    add_item(token, cal_board, "Topics", "LA 2028 — NCICC Doctrine Activation (milestone placeholder)", dry_run)
+    add_item(token, cal_board, "topics", "FIFA World Cup 2026 — Opening Match (LA/MetLife, June 11)", dry_run)
+    add_item(token, cal_board, "topics", "FIFA World Cup 2026 — Final (July 19, 2026)", dry_run)
+    add_item(token, cal_board, "topics", "LA 2028 — NCICC Doctrine Activation (milestone placeholder)", dry_run)
 
     # --- PPP Structuring ---
     print("  Creating: PPP Structuring")
