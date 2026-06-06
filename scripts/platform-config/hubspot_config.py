@@ -83,7 +83,7 @@ CONTACT_PROPS = [
     {"name": "Entry_route", "label": "Entry Route", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Sentrais", "value": "Sentrais"},
-         {"label": "NOVATELabs.org", "value": "NOVATELabs"},
+         {"label": "Barbara Geter Institute", "value": "BGI"},
          {"label": "Blueprint360", "value": "Blueprint360"},
          {"label": "Sentrais Ventures", "value": "Ventures"},
      ]},
@@ -118,7 +118,7 @@ CONTACT_PROPS = [
      "options": [
          {"label": "Sentrais Corp", "value": "SentraisCorp"},
          {"label": "SRI", "value": "SRI"},
-         {"label": "NovateUS", "value": "NovateUS"},
+         {"label": "Barbara Geter Institute", "value": "BGI"},
          {"label": "Federal Pipeline", "value": "FederalPipeline"},
      ]},
     # Suppression flag — set by automation, read by sequence enrollment checks
@@ -486,7 +486,7 @@ def create_workflows(token, dry_run):
             "name": "Sentrais — Research contact: suppress all sequences",
             "type": "CONTACT_BASED",
             "enabled": True,
-            "description": "Sets Sequence_suppressed=true and opts contact out of marketing email for GTM_module=D or Entry_route=NOVATELabs.",
+            "description": "Sets Sequence_suppressed=true and opts contact out of marketing email for GTM_module=D or Entry_route=BGI.",
             "actions": [
                 {
                     "type": "SET_CONTACT_PROPERTY",
@@ -617,6 +617,112 @@ def create_workflows(token, dry_run):
 
 
 # ---------------------------------------------------------------------------
+# 6. SIOS CUSTOM OBJECTS
+# ---------------------------------------------------------------------------
+
+def create_sios_objects(token, dry_run):
+    print("\n[SIOS Sprint 1] Creating SIOS custom object schemas...")
+
+    objects = [
+        {
+            "name": "sios_engagement",
+            "labels": {"singular": "SIOS Engagement", "plural": "SIOS Engagements"},
+            "primaryDisplayProperty": "engagement_name",
+            "properties": [
+                {"name": "engagement_name", "label": "Engagement Name", "type": "string", "fieldType": "text"},
+                {"name": "engagement_type", "label": "Engagement Type", "type": "enumeration", "fieldType": "select",
+                 "options": [
+                     {"label": "Intro Call", "value": "Intro Call", "displayOrder": 0, "hidden": False},
+                     {"label": "Discovery", "value": "Discovery", "displayOrder": 1, "hidden": False},
+                     {"label": "Proposal", "value": "Proposal", "displayOrder": 2, "hidden": False},
+                     {"label": "POC", "value": "POC", "displayOrder": 3, "hidden": False},
+                     {"label": "Partnership", "value": "Partnership", "displayOrder": 4, "hidden": False},
+                 ]},
+                {"name": "status", "label": "Status", "type": "enumeration", "fieldType": "select",
+                 "options": [
+                     {"label": "Open", "value": "Open", "displayOrder": 0, "hidden": False},
+                     {"label": "Active", "value": "Active", "displayOrder": 1, "hidden": False},
+                     {"label": "On Hold", "value": "On Hold", "displayOrder": 2, "hidden": False},
+                     {"label": "Closed Won", "value": "Closed Won", "displayOrder": 3, "hidden": False},
+                     {"label": "Closed Lost", "value": "Closed Lost", "displayOrder": 4, "hidden": False},
+                 ]},
+                {"name": "assigned_to", "label": "Assigned To", "type": "string", "fieldType": "text"},
+                {"name": "hubspot_contact_id", "label": "HubSpot Contact ID", "type": "string", "fieldType": "text"},
+                {"name": "monday_item_id", "label": "Monday Item ID", "type": "string", "fieldType": "text"},
+                {"name": "next_action_date", "label": "Next Action Date", "type": "date", "fieldType": "date"},
+                {"name": "notes", "label": "Notes", "type": "string", "fieldType": "textarea"},
+            ],
+        },
+        {
+            "name": "sios_gate",
+            "labels": {"singular": "SIOS Gate", "plural": "SIOS Gates"},
+            "primaryDisplayProperty": "gate_name",
+            "properties": [
+                {"name": "gate_name", "label": "Gate Name", "type": "string", "fieldType": "text"},
+                {"name": "gate_type", "label": "Gate Type", "type": "enumeration", "fieldType": "select",
+                 "options": [
+                     {"label": o, "value": o, "displayOrder": i, "hidden": False}
+                     for i, o in enumerate([
+                         "G0","G1","G2","G3","G4","G5","G6",
+                         "AV-G0","AV-G1","AV-G2","AV-G3","AV-G4","AV-G5","AV-G6",
+                         "NC-G0","NC-G1","NC-G2","NC-G3","NC-G4","NC-G5","NC-G6",
+                     ])
+                 ]},
+                {"name": "status", "label": "Status", "type": "enumeration", "fieldType": "select",
+                 "options": [
+                     {"label": "Open", "value": "Open", "displayOrder": 0, "hidden": False},
+                     {"label": "In Progress", "value": "In Progress", "displayOrder": 1, "hidden": False},
+                     {"label": "Cleared", "value": "Cleared", "displayOrder": 2, "hidden": False},
+                     {"label": "Hard Block", "value": "Hard Block", "displayOrder": 3, "hidden": False},
+                 ]},
+                {"name": "hard_block", "label": "Hard Block", "type": "bool", "fieldType": "booleancheckbox"},
+                {"name": "cleared_date", "label": "Cleared Date", "type": "date", "fieldType": "date"},
+                {"name": "notes", "label": "Notes", "type": "string", "fieldType": "textarea"},
+            ],
+        },
+        {
+            "name": "sios_invoice",
+            "labels": {"singular": "SIOS Invoice", "plural": "SIOS Invoices"},
+            "primaryDisplayProperty": "invoice_number",
+            "properties": [
+                {"name": "invoice_number", "label": "Invoice Number", "type": "string", "fieldType": "text"},
+                {"name": "client_name", "label": "Client Name", "type": "string", "fieldType": "text"},
+                {"name": "amount", "label": "Amount", "type": "number", "fieldType": "number"},
+                {"name": "status", "label": "Status", "type": "enumeration", "fieldType": "select",
+                 "options": [
+                     {"label": "Draft", "value": "Draft", "displayOrder": 0, "hidden": False},
+                     {"label": "Sent", "value": "Sent", "displayOrder": 1, "hidden": False},
+                     {"label": "Paid", "value": "Paid", "displayOrder": 2, "hidden": False},
+                     {"label": "Overdue", "value": "Overdue", "displayOrder": 3, "hidden": False},
+                     {"label": "Cancelled", "value": "Cancelled", "displayOrder": 4, "hidden": False},
+                 ]},
+                {"name": "issue_date", "label": "Issue Date", "type": "date", "fieldType": "date"},
+                {"name": "due_date", "label": "Due Date", "type": "date", "fieldType": "date"},
+                {"name": "pipeline", "label": "Pipeline", "type": "enumeration", "fieldType": "select",
+                 "options": [
+                     {"label": o, "value": o, "displayOrder": i, "hidden": False}
+                     for i, o in enumerate(["A","B","C","D","E","F"])
+                 ]},
+                {"name": "hubspot_deal_id", "label": "HubSpot Deal ID", "type": "string", "fieldType": "text"},
+            ],
+        },
+    ]
+
+    for obj in objects:
+        schema_payload = {
+            "name": obj["name"],
+            "labels": obj["labels"],
+            "primaryDisplayProperty": obj["primaryDisplayProperty"],
+            "properties": obj["properties"],
+        }
+        result = req("POST", "/crm/v3/schemas", token, schema_payload, dry_run, label=f"{obj['name']} schema")
+        if result and not dry_run:
+            print(f"  Created: {obj['name']} (id={result.get('id', '?')})")
+        elif dry_run:
+            print(f"  [DRY RUN] Would create schema: {obj['name']}")
+
+
+# ---------------------------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------------------------
 
@@ -637,10 +743,12 @@ def main():
     create_pipelines(args.token, args.dry_run)
     create_claims_register(args.token, args.dry_run)
     create_workflows(args.token, args.dry_run)
+    create_sios_objects(args.token, args.dry_run)
 
     print("\n" + "=" * 60)
     print("HubSpot automation complete.")
     print("See scripts/platform-config/HANDOFF.md for all remaining manual steps.")
+    print("  See SIOS custom objects: sios_engagement, sios_gate, sios_invoice — configure associations in HubSpot UI.")
     print("=" * 60)
 
 

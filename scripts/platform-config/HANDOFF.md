@@ -24,7 +24,7 @@ Create these five teams exactly as named:
 | Academy/Corp | Pipeline A (League), Pipeline B (Venue) | sales@sentrais.com |
 | SRI Partnerships | Pipeline B (SRI curriculum side) | partnerships@sentrais.com |
 | Federal BD | Pipeline C (Gov/EM), Pipeline E (AeroGrid) | gov@sentrais.com, aviation@sentrais.com |
-| NovateUS Programs | Pipeline D (Academic/CampusGrid) | research@novatelabs.org, campus@novatelabs.org |
+| BGI Programs | Pipeline D (Academic/CampusGrid) | research@novatelabs.org (BGI inbox), campus@novatelabs.org (BGI inbox) |
 | Ventures/NCICC | Pipeline F (Federal Apex) | ventures@sentrais.com (group alias) |
 
 ### 1.2 Assign teams to pipelines
@@ -38,7 +38,7 @@ For each pipeline, click the pipeline name → Settings → assign the owning te
 | Pipeline A — League/Sports | Academy/Corp |
 | Pipeline B — Venue/Facility | Academy/Corp + SRI Partnerships |
 | Pipeline C — Gov/EM | Federal BD |
-| Pipeline D — Academic/CampusGrid | NovateUS Programs |
+| Pipeline D — Academic/CampusGrid | BGI Programs |
 | Pipeline E — Aviation/AeroGrid | Federal BD |
 | Pipeline F — NCICC/Federal Apex | Ventures/NCICC |
 
@@ -59,8 +59,8 @@ Inboxes to connect:
 | pocs@sentrais.com | Academy/Corp | Yes |
 | aviation@sentrais.com | Federal BD | Yes |
 | gov@sentrais.com | Federal BD | Yes |
-| research@novatelabs.org | NovateUS Programs | **NO** |
-| campus@novatelabs.org | NovateUS Programs | **NO** |
+| research@novatelabs.org | BGI Programs | **NO** |
+| campus@novatelabs.org | BGI Programs | **NO** |
 | ventures@sentrais.com | Ventures/NCICC | **NO** |
 
 ### 1.4 Configure workflow triggers and actions
@@ -96,7 +96,7 @@ All 10 workflows are already created. Configure triggers and actions as follows:
 **Workflow 3 — Research contact: suppress all sequences** *(ENABLED — property actions already set)*
 
 - **Trigger:** Contact is created or updated
-- **Condition (branch 1):** `Entry_route` is `NOVATELabs`
+- **Condition (branch 1):** `Entry_route` is `BGI`
 - **Condition (branch 2):** `GTM_module` is `D` or `F`
 - **Actions already set:** `Sequence_suppressed = true`, `hs_email_optout = true`
 - **Add:** Enroll in suppression list "Sentrais — Research contacts (suppress sequences)"
@@ -112,7 +112,7 @@ All 10 workflows are already created. Configure triggers and actions as follows:
 | If `Vertical` equals | Then |
 |---|---|
 | `Aviation` | Assign to Pipeline E, Team = Federal BD |
-| `Academic` | Assign to Pipeline D, set `Entry_route = NOVATELabs`, Team = NovateUS Programs |
+| `Academic` | Assign to Pipeline D, set `Entry_route = BGI`, Team = BGI Programs |
 | `GovEM` or `Federal` | Assign to Pipeline C, Team = Federal BD |
 | `GTM_module = F` | Assign to Pipeline F, send founder alert |
 | Default | Assign to Pipeline A, Team = Academy/Corp |
@@ -205,10 +205,10 @@ The `Claims_confirmed` deal property auto-calculates once rows are associated. D
 
 ### 2.1 Workspace access restrictions
 
-**NOVATELabs.org — Research & Program Converge workspace:**
+**Barbara Geter Institute — Research & Program Converge workspace:**
 - Go to: Workspace settings → Members → set to "Invite only"
 - Remove any Sentrais Corp team members
-- Permitted members: research leads, NovateUS Programs team, legal counsel only
+- Permitted members: research leads, BGI Programs team, legal counsel only
 
 **Sentrais Ventures — Federal PPP & NCICC workspace:**
 - Go to: Workspace settings → Members → set to "Invite only"

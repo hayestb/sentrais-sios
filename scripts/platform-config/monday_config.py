@@ -280,10 +280,10 @@ def setup_sri_workspace(token, ws_id, dry_run):
 
 
 # ---------------------------------------------------------------------------
-# WORKSPACE 3: NOVATELabs.org — Research & Program Converge
+# WORKSPACE 3: Barbara Geter Institute — Research & Program Converge
 # ---------------------------------------------------------------------------
 
-def setup_novatorg_workspace(token, ws_id, dry_run):
+def setup_bgi_workspace(token, ws_id, dry_run):
     print("  Creating: Program Converge Engagements")
     create_board(token, "Program Converge Engagements", ws_id, dry_run)
 
@@ -305,7 +305,90 @@ def setup_novatorg_workspace(token, ws_id, dry_run):
     print("  Creating: Grant Applications")
     create_board(token, "Grant Applications", ws_id, dry_run)
 
-    print("  NOTE: Zero commercial deal items permitted on this workspace. Restrict access to NovateUS/Research teams only.")
+    print("  NOTE: Zero commercial deal items permitted on this workspace. Restrict access to BGI/Research teams only.")
+
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 5: SENTRAIS_Operations — SIOS Sprint 1
+# ---------------------------------------------------------------------------
+
+def setup_sios_workspace(token, ws_id, dry_run):
+    existing = get_existing_boards(token, ws_id) if not dry_run else {}
+
+    print("  Creating: Daily Standup")
+    ds_board = existing.get("Daily Standup") or \
+        create_board(token, "Daily Standup", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Owner", "people"),
+        ("Today's Focus", "long_text"),
+        ("Blockers", "long_text"),
+        ("Date", "date"),
+    ]:
+        add_column(token, ds_board, col_name, col_type, dry_run)
+
+    print("  Creating: Partnership Pipeline")
+    pp_board = existing.get("Partnership Pipeline") or \
+        create_board(token, "Partnership Pipeline", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Stage", "status"),
+        ("Partner Name", "text"),
+        ("Vertical", "dropdown"),
+        ("Owner", "people"),
+        ("Next Action", "long_text"),
+        ("Close Date", "date"),
+    ]:
+        add_column(token, pp_board, col_name, col_type, dry_run)
+
+    print("  Creating: Revenue Pipeline")
+    rp_board = existing.get("Revenue Pipeline") or \
+        create_board(token, "Revenue Pipeline", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Stage", "status"),
+        ("Deal Name", "text"),
+        ("Revenue Type", "dropdown"),
+        ("Amount", "numbers"),
+        ("Owner", "people"),
+        ("Close Date", "date"),
+        ("HubSpot Deal ID", "text"),
+    ]:
+        add_column(token, rp_board, col_name, col_type, dry_run)
+
+    print("  Creating: Community Impact")
+    ci_board = existing.get("Community Impact") or \
+        create_board(token, "Community Impact", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Program Name", "text"),
+        ("Impact Area", "dropdown"),
+        ("Lead", "people"),
+        ("Target Date", "date"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, ci_board, col_name, col_type, dry_run)
+
+    print("  Creating: Founder Decisions")
+    fd_board = existing.get("Founder Decisions") or \
+        create_board(token, "Founder Decisions", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Priority", "status"),
+        ("Decision", "long_text"),
+        ("Owner", "people"),
+        ("Due Date", "date"),
+        ("Status", "status"),
+    ]:
+        add_column(token, fd_board, col_name, col_type, dry_run)
+
+    print("  Creating: Founder Dashboard")
+    fdb_board = existing.get("Founder Dashboard") or \
+        create_board(token, "Founder Dashboard", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Metric", "text"),
+        ("Value", "numbers"),
+        ("Status", "status"),
+        ("Last Updated", "date"),
+    ]:
+        add_column(token, fdb_board, col_name, col_type, dry_run)
 
 
 # ---------------------------------------------------------------------------
@@ -424,8 +507,9 @@ def main():
 
     corp_ws = get_or_create_ws("Sentrais Corp — Commercial Delivery")
     sri_ws = get_or_create_ws("SRI — IP & Curriculum")
-    nova_ws = get_or_create_ws("NOVATELabs.org — Research & Program Converge")
+    nova_ws = get_or_create_ws("Barbara Geter Institute — Research & Program Converge")
     ventures_ws = get_or_create_ws("Sentrais Ventures — Federal PPP & NCICC")
+    sios_ws = get_or_create_ws("SENTRAIS_Operations")
 
     print("\n[Day 4–5] Configuring Sentrais Corp workspace (commercial delivery + 11 city nodes)...")
     setup_corp_workspace(args.token, corp_ws, args.dry_run)
@@ -433,16 +517,19 @@ def main():
     print("\n[Day 4] Configuring SRI workspace (IP & curriculum)...")
     setup_sri_workspace(args.token, sri_ws, args.dry_run)
 
-    print("\n[Day 4] Configuring NOVATELabs.org workspace (research)...")
-    setup_novatorg_workspace(args.token, nova_ws, args.dry_run)
+    print("\n[Day 4] Configuring Barbara Geter Institute workspace (research)...")
+    setup_bgi_workspace(args.token, nova_ws, args.dry_run)
 
     print("\n[Day 5] Configuring Sentrais Ventures workspace (NCICC & federal PPP)...")
     setup_ventures_workspace(args.token, ventures_ws, args.dry_run)
 
+    print("\n[SIOS Sprint 1] Configuring SENTRAIS Operations workspace...")
+    setup_sios_workspace(args.token, sios_ws, args.dry_run)
+
     print("\n" + "=" * 60)
     print("Monday.com configuration complete.")
     print("\nManual steps required in Monday UI:")
-    print("  1. Set access restrictions on NOVATELabs.org workspace (research team only)")
+    print("  1. Set access restrictions on Barbara Geter Institute workspace (research team only)")
     print("  2. Set access restrictions on Sentrais Ventures workspace (leadership + legal)")
     print("  3. Configure Automation 10 (SEAR hard-block propagation) via Automations tab")
     print("  4. Configure Automation 11 (NC-G3 SIPE alert) via Automations tab")
@@ -450,6 +537,9 @@ def main():
     print("  6. Configure Automation 14 (NovateUS inurement guard) via Automations tab")
     print("  7. Connect HubSpot ↔ Monday via Monday marketplace app (HubSpot CRM)")
     print("  8. Set SEAR 2026 Master Tracker formula: Days to T-0 = DATIF(TODAY(), DATE(2026,6,11), 'D')")
+    print("  9. Add 8 core seats to SENTRAIS_Operations workspace")
+    print("  10. Enforce underscores-only naming convention in #sios-sprint1 Slack channel")
+    print("  11. Configure Google Calendar and Slack integrations for automated reminders")
     print("=" * 60)
 
 
