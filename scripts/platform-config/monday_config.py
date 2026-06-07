@@ -183,6 +183,59 @@ def setup_corp_workspace(token, ws_id, dry_run):
     print("  Creating: Module E AeroGrid Pipeline")
     create_board(token, "Module E AeroGrid Pipeline", ws_id, dry_run)
 
+    # --- NFL GDA Delivery Tracker ---
+    print("  Creating: NFL GDA Delivery Tracker")
+    nfl_board = existing.get("NFL GDA Delivery Tracker") or \
+        create_board(token, "NFL GDA Delivery Tracker", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Workstream", "dropdown"),
+        ("Owner", "people"),
+        ("SEG Owner", "text"),
+        ("Due Date", "date"),
+        ("GDA Go-Live", "date"),
+        ("Blocker?", "checkbox"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, nfl_board, col_name, col_type, dry_run)
+    nfl_groups = ["Workstream 1 — Game Day Automation", "Workstream 2 — Stadium Certification",
+                  "Workstream 3 — Qubika Build", "SEG Delivery Milestones", "NFL MSA Obligations"]
+    nfl_group_ids = {}
+    for grp in nfl_groups:
+        nfl_group_ids[grp] = add_group(token, nfl_board, grp, dry_run)
+    for item in ["GDA Go-Live — June 30", "Q1 Invoice — June 30", "Preseason POC — August",
+                 "AWS GenAIIC Sprint — July 3"]:
+        add_item(token, nfl_board, nfl_group_ids["SEG Delivery Milestones"], item, dry_run)
+
+    # --- SEG Subcontract Tracker ---
+    print("  Creating: SEG Subcontract Tracker")
+    seg_board = existing.get("SEG Subcontract Tracker") or \
+        create_board(token, "SEG Subcontract Tracker", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Document", "dropdown"),
+        ("Owner", "people"),
+        ("Counsel", "text"),
+        ("Due Date", "date"),
+        ("Executed?", "checkbox"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, seg_board, col_name, col_type, dry_run)
+    seg_groups = ["Term Sheet", "Master Subcontractor Agreement", "Hub Challenge Release",
+                  "Revenue Share Tracking", "Delivery Warranties"]
+    seg_group_ids = {}
+    for grp in seg_groups:
+        seg_group_ids[grp] = add_group(token, seg_board, grp, dry_run)
+    for item, grp in [
+        ("Term sheet to counsel — June 9", "Term Sheet"),
+        ("Term sheet signed — June 16", "Term Sheet"),
+        ("Subcontract executed — June 20", "Master Subcontractor Agreement"),
+        ("Hub Challenge release scope confirmed", "Hub Challenge Release"),
+        ("Q1 NFL revenue — SEG 70% / Sentrais 30%", "Revenue Share Tracking"),
+        ("GDA Go-Live warranty — June 30", "Delivery Warranties"),
+    ]:
+        add_item(token, seg_board, seg_group_ids[grp], item, dry_run)
+
     # --- 11 City Node Detail boards ---
     print("  Creating: 11 City Node Detail boards...")
     for city in FIFA_CITIES:
@@ -304,6 +357,39 @@ def setup_bgi_workspace(token, ws_id, dry_run):
 
     print("  Creating: Grant Applications")
     create_board(token, "Grant Applications", ws_id, dry_run)
+
+    # --- Evidence Ledger & SEAROS ---
+    print("  Creating: Evidence Ledger & SEAROS")
+    ev_board = create_board(token, "Evidence Ledger & SEAROS", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Claim Slot", "dropdown"),
+        ("Evidence File Link", "text"),
+        ("Last Verified", "date"),
+        ("Verified By", "people"),
+        ("External Use Approved?", "checkbox"),
+        ("Change Control Ref", "text"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, ev_board, col_name, col_type, dry_run)
+    ev_groups = ["Active Claims — NFL", "Active Claims — BRIC/Federal", "SEAROS Feeds",
+                 "n8n Workflow Logs", "NFL Cooperation Log", "Archive"]
+    for grp in ev_groups:
+        add_group(token, ev_board, grp, dry_run)
+
+    print("  Creating: Contractor Roster (BGI)")
+    contractor_board = create_board(token, "Contractor Roster (BGI)", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Role", "dropdown"),
+        ("ICA Executed?", "checkbox"),
+        ("Jurisdiction", "text"),
+        ("Rate (USD annualized)", "numbers"),
+        ("Start Date", "date"),
+        ("End Date", "date"),
+        ("Workspace Access", "dropdown"),
+    ]:
+        add_column(token, contractor_board, col_name, col_type, dry_run)
 
     print("  NOTE: Zero commercial deal items permitted on this workspace. Restrict access to BGI/Research teams only.")
 
@@ -540,6 +626,9 @@ def main():
     print("  9. Add 8 core seats to SENTRAIS_Operations workspace")
     print("  10. Enforce underscores-only naming convention in #sios-sprint1 Slack channel")
     print("  11. Configure Google Calendar and Slack integrations for automated reminders")
+    print("  12. Assign Zoie to Evidence Ledger & SEAROS board (BGI workspace) — contractor seat")
+    print("  13. SEG Subcontract Tracker — restrict to CEO + legal counsel only")
+    print("  14. NFL GDA Delivery Tracker — assign Erin as GDA audit owner, SEG as delivery owner")
     print("=" * 60)
 
 

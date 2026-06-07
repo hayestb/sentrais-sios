@@ -86,6 +86,7 @@ CONTACT_PROPS = [
          {"label": "Barbara Geter Institute", "value": "BGI"},
          {"label": "Blueprint360", "value": "Blueprint360"},
          {"label": "Sentrais Ventures", "value": "Ventures"},
+         {"label": "SEG Subcontract", "value": "SEG"},
      ]},
     {"name": "Vertical", "label": "Vertical", "type": "enumeration", "fieldType": "select",
      "options": [
@@ -120,6 +121,7 @@ CONTACT_PROPS = [
          {"label": "SRI", "value": "SRI"},
          {"label": "Barbara Geter Institute", "value": "BGI"},
          {"label": "Federal Pipeline", "value": "FederalPipeline"},
+         {"label": "SEG (Subcontractor)", "value": "SEG"},
      ]},
     # Suppression flag — set by automation, read by sequence enrollment checks
     {"name": "Sequence_suppressed", "label": "Sequence Suppressed (research/federal)", "type": "bool", "fieldType": "booleancheckbox"},
@@ -201,6 +203,25 @@ DEAL_PROPS = [
          {"label": "Onboard complete", "value": "OnboardComplete"},
      ]},
     {"name": "Intercompany", "label": "Intercompany (SRI)", "type": "bool", "fieldType": "booleancheckbox"},
+    # SEG subcontract tracking
+    {"name": "Subcontractor_entity", "label": "Subcontractor Entity", "type": "enumeration", "fieldType": "select",
+     "options": [
+         {"label": "None", "value": "None"},
+         {"label": "SEG — Serendipity Equity Group", "value": "SEG"},
+     ]},
+    {"name": "Subcontract_status", "label": "Subcontract Status", "type": "enumeration", "fieldType": "select",
+     "options": [
+         {"label": "Not applicable", "value": "NA"},
+         {"label": "Term sheet in drafting", "value": "TermSheetDrafting"},
+         {"label": "Term sheet signed", "value": "TermSheetSigned"},
+         {"label": "Agreement in drafting", "value": "AgreementDrafting"},
+         {"label": "Agreement executed", "value": "AgreementExecuted"},
+         {"label": "Active", "value": "Active"},
+         {"label": "Terminated", "value": "Terminated"},
+     ]},
+    {"name": "Revenue_share_pct", "label": "Subcontractor Revenue Share %", "type": "number", "fieldType": "number"},
+    {"name": "GDA_golive_date", "label": "GDA Go-Live Date", "type": "date", "fieldType": "date"},
+    {"name": "NFL_MSA_ref", "label": "NFL MSA Reference", "type": "string", "fieldType": "text"},
 ]
 
 
@@ -345,6 +366,13 @@ LISTS = [
         "dynamic": True,
         "filters": [[
             {"operator": "EQ", "property": "Entry_route", "value": "Blueprint360"},
+        ]],
+    },
+    {
+        "name": "Sentrais — SEG subcontract contacts",
+        "dynamic": True,
+        "filters": [[
+            {"operator": "EQ", "property": "Entry_route", "value": "SEG"},
         ]],
     },
 ]
@@ -575,6 +603,31 @@ def create_workflows(token, dry_run):
             "description": "Daily: if a Confirmed claim Last_verified > 90 days, alerts pipeline owner.",
             "actions": [],
         },
+
+        # --- Workflow 11: SEG revenue share alert ---
+        {
+            "name": "Sentrais — SEG subcontract revenue share alert",
+            "type": "DEAL_BASED",
+            "enabled": True,
+            "description": "When NFL deal (Pipeline A, Entry_route=SEG) moves to Close, alerts Finance to calculate SEG 70% revenue share and create payable record. Also flags if Subcontract_status is not AgreementExecuted.",
+            "actions": [
+                {
+                    "type": "SET_CONTACT_PROPERTY",
+                    "propertyName": "Subcontract_status",
+                    "propertyValue": "Active",
+                    "actionDescription": "Mark subcontract active on deal close",
+                },
+            ],
+        },
+
+        # --- Workflow 12: SEG delivery warranty monitor ---
+        {
+            "name": "Sentrais — SEG GDA Go-Live delivery warranty",
+            "type": "DEAL_BASED",
+            "enabled": True,
+            "description": "Daily: if GDA_golive_date is within 7 days and Subcontract_status != AgreementExecuted, alert CEO. If GDA_golive_date is past and deal not Closed/Won, trigger liquidated damages alert (revenue share auto-reduces to 50%).",
+            "actions": [],
+        },
     ]
 
     for wf in workflows:
@@ -611,6 +664,8 @@ def create_workflows(token, dry_run):
         "Workflow 7 — Hard block: Slack/email notification to delivery lead",
         "Workflow 8 — Claims gate clear: association-based trigger",
         "Workflow 10 — Claims age: date-based enrollment trigger",
+        "Workflow 11 — SEG revenue share: add Finance task + NFL deal filter",
+        "Workflow 12 — SEG delivery warranty: date-based trigger on GDA_golive_date",
     ]
     for item in ui_only:
         print(f"    • {item}")
