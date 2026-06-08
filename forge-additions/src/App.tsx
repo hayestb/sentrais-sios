@@ -12,6 +12,9 @@ import MasterCalendar from "./pages/MasterCalendar";
 import MasterCalendarLight from "./pages/MasterCalendarLight";
 import DocVersionControl from "./pages/DocVersionControl";
 import ProgramConverge from "./pages/ProgramConverge";
+import BankingGovernance from "./pages/BankingGovernance";
+import FellowshipFramework from "./pages/FellowshipFramework";
+import CityReadiness from "./pages/CityReadiness";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -44,6 +47,9 @@ export default function App() {
           <Route path="calendar-light" element={<MasterCalendarLight />} />
           <Route path="doc-control" element={<DocVersionControl />} />
           <Route path="converge" element={<ProgramConverge />} />
+          <Route path="banking" element={<BankingGovernance />} />
+          <Route path="fellowship" element={<FellowshipFramework />} />
+          <Route path="city-readiness" element={<CityReadiness />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>

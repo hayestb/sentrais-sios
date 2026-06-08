@@ -598,7 +598,8 @@ export default function FinancialOperatingModel() {
           <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
             {[
               ["personas","Personas"],["fractional","Fractional Roles"],
-              ["approvals","Approval Engine"],["risks","Risk Register"],["onboarding","Onboarding"]
+              ["approvals","Approval Engine"],["risks","Risk Register"],["onboarding","Onboarding"],
+              ["revenue","Revenue Segments"]
             ].map(([v,l]) => (
               <button key={v} onClick={() => setView(v)} style={{
                 background: view===v?"#1E3A8A":"white", border:`1.5px solid ${view===v?"#1E3A8A":"#D1D5DB"}`,
@@ -949,6 +950,160 @@ export default function FinancialOperatingModel() {
           </div>
         )}
       </div>
+
+      {/* REVENUE SEGMENTS */}
+      {view === "revenue" && (
+        <div style={{ padding: "24px 28px" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: "700", color: "#1E3A8A", marginBottom: "4px" }}>Revenue Segment Breakdown</h2>
+          <p style={{ fontSize: "12px", color: "#6B7280", marginBottom: "20px", fontFamily: "Arial, sans-serif" }}>
+            Three revenue categories: Professional Services · Platform & Product · Foundation Income. Each flows through a different entity and has distinct margin profiles, collection cycles, and IP royalty obligations.
+          </p>
+
+          {/* Segment Cards */}
+          {[
+            {
+              id: "services",
+              label: "Professional Services",
+              entity: "Sentrais Corp",
+              color: "#1E3A8A",
+              bg: "#EFF6FF",
+              border: "#BFDBFE",
+              share: "~70%",
+              arTarget: "$7.0M",
+              margin: "55–65%",
+              examples: ["City resilience engagements (ARI model)", "SEG subcontract revenue (70% share)", "Federal program delivery (Sentrais Federal Inc)", "Advisory retainers"],
+              collections: "Net-30 invoices; milestone-triggered per gate passage",
+              ipRoyalty: "10% of gross revenue flows to Sentrais IP LLC before P&L recognition",
+              cogsDrivers: ["Labor (W-2 + 1099)", "Travel & client entertainment", "Platform hosting allocation", "Subcontractor pass-through (SEG)"],
+              risks: [
+                { level: "HIGH", text: "SEG subcontract — 70% revenue share cap; $10K/day LD if deliverables missed; Step-In Rights clause must be active before NFL GDA go-live Jun 30" },
+                { level: "MEDIUM", text: "Over-concentration: Atlanta anchor represents >80% of current contract value — diversification required" },
+              ],
+            },
+            {
+              id: "platform",
+              label: "Platform & Product",
+              entity: "Sentrais Corp / Sentrais IP LLC",
+              color: "#0EA5E9",
+              bg: "#F0F9FF",
+              border: "#BAE6FD",
+              share: "~20%",
+              arTarget: "$2.0M",
+              margin: "70–80%",
+              examples: ["SIOS platform SaaS licenses (CiviGrid modules)", "ARI program data subscriptions", "API access tiers for city partners", "White-label platform deployments (Boston, LA, NOLA)"],
+              collections: "Monthly/annual SaaS subscriptions; auto-renewal; ACH preferred",
+              ipRoyalty: "Royalties recognized directly by Sentrais IP LLC; commercial entities pay licensing fee",
+              cogsDrivers: ["Cloud infrastructure (GCP/AWS)", "Engineering labor (W-2 tech team)", "Security & compliance", "Customer success allocation"],
+              risks: [
+                { level: "MEDIUM", text: "Multi-city architecture (LA 88-municipality scale) requires dedicated infra investment in 2026 to hit 2027 targets" },
+                { level: "LOW", text: "SaaS churn risk minimal while Atlanta anchor active; renewal risk increases post year 2" },
+              ],
+            },
+            {
+              id: "foundation",
+              label: "Foundation & Grant Income",
+              entity: "NOVATELabs Inc / BGI (pending EIN)",
+              color: "#10B981",
+              bg: "#F0FDF4",
+              border: "#BBF7D0",
+              share: "~10%",
+              arTarget: "$1.0M",
+              margin: "N/A (nonprofit)",
+              examples: ["NOVATELabs research grants (NSF, DARPA, private foundations)", "BGI programmatic grants (pending 501c3 determination)", "Fellowship sponsorships", "Endowment interest income (future)"],
+              collections: "Grant drawdowns per award schedule; reimbursement vs advance basis varies by funder",
+              ipRoyalty: "NOT APPLICABLE — foundation income must not flow to commercial entities. BGI §4958 private inurement prohibition. Zero commingling.",
+              cogsDrivers: ["Program delivery labor (W-2 research staff)", "Fellow stipends", "Research materials & travel", "Indirect cost allocation (negotiated rate)"],
+              risks: [
+                { level: "HIGH", text: "BGI EIN not confirmed — BGI programmatic grants blocked until 501(c)(3) determination received. No BGI funds to commercial entities under any circumstances." },
+                { level: "MEDIUM", text: "Foundation grants require separate accounting, restricted fund tracking, and board-approved disbursements — add-on to existing finance infrastructure" },
+              ],
+            },
+          ].map((seg) => (
+            <div key={seg.id} style={{ background: seg.bg, border: `1.5px solid ${seg.border}`, borderRadius: "10px", padding: "18px 20px", marginBottom: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                <div>
+                  <div style={{ fontSize: "15px", fontWeight: "700", color: seg.color }}>{seg.label}</div>
+                  <div style={{ fontSize: "12px", color: "#6B7280", fontFamily: "Arial, sans-serif", marginTop: "2px" }}>Entity: {seg.entity}</div>
+                </div>
+                <div style={{ display: "flex", gap: "12px" }}>
+                  {[
+                    { label: "Revenue Share", value: seg.share },
+                    { label: "AR Target", value: seg.arTarget },
+                    { label: "Gross Margin", value: seg.margin },
+                  ].map((s) => (
+                    <div key={s.label} style={{ textAlign: "center", padding: "8px 14px", background: "white", border: `1px solid ${seg.border}`, borderRadius: "6px" }}>
+                      <div style={{ fontSize: "15px", fontWeight: "700", color: seg.color }}>{s.value}</div>
+                      <div style={{ fontSize: "10px", color: "#6B7280", fontFamily: "Arial, sans-serif" }}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "12px", fontFamily: "Arial, sans-serif" }}>
+                <div>
+                  <div style={{ fontWeight: "600", color: seg.color, marginBottom: "6px", textTransform: "uppercase", fontSize: "10px", letterSpacing: "1px" }}>Revenue Examples</div>
+                  {seg.examples.map((e, i) => (
+                    <div key={i} style={{ display: "flex", gap: "8px", color: "#374151", marginBottom: "4px" }}>
+                      <span style={{ color: seg.color, flexShrink: 0 }}>→</span> {e}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div style={{ fontWeight: "600", color: seg.color, marginBottom: "6px", textTransform: "uppercase", fontSize: "10px", letterSpacing: "1px" }}>COGS Drivers</div>
+                  {seg.cogsDrivers.map((d, i) => (
+                    <div key={i} style={{ color: "#374151", marginBottom: "4px" }}>· {d}</div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginTop: "12px", padding: "8px 12px", background: "white", borderRadius: "6px", border: `1px solid ${seg.border}`, fontSize: "12px", fontFamily: "Arial, sans-serif" }}>
+                <span style={{ fontWeight: "600", color: seg.color }}>IP Royalty / Fund Flow: </span>
+                <span style={{ color: "#374151" }}>{seg.ipRoyalty}</span>
+              </div>
+
+              <div style={{ marginTop: "10px", padding: "8px 12px", background: "white", borderRadius: "6px", border: `1px solid ${seg.border}`, fontSize: "12px", fontFamily: "Arial, sans-serif" }}>
+                <span style={{ fontWeight: "600", color: seg.color }}>Collections: </span>
+                <span style={{ color: "#374151" }}>{seg.collections}</span>
+              </div>
+
+              <div style={{ marginTop: "10px" }}>
+                {seg.risks.map((r, i) => (
+                  <div key={i} style={{
+                    display: "flex", gap: "8px", padding: "8px 10px", marginBottom: "6px",
+                    background: r.level === "HIGH" ? "#FEF2F2" : r.level === "MEDIUM" ? "#FFFBEB" : "#F0FDF4",
+                    border: `1px solid ${r.level === "HIGH" ? "#FECACA" : r.level === "MEDIUM" ? "#FDE68A" : "#BBF7D0"}`,
+                    borderRadius: "5px", fontSize: "11px", fontFamily: "Arial, sans-serif",
+                  }}>
+                    <span style={{ fontWeight: "700", color: r.level === "HIGH" ? "#B91C1C" : r.level === "MEDIUM" ? "#92400E" : "#065F46", flexShrink: 0 }}>
+                      ⚠ {r.level}
+                    </span>
+                    <span style={{ color: "#374151" }}>{r.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          {/* Waterfall summary */}
+          <div style={{ background: "white", border: "1.5px solid #E5E7EB", borderRadius: "10px", padding: "16px 20px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "700", color: "#1E3A8A", marginBottom: "12px" }}>Revenue Waterfall — $10M ARR Target</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", fontFamily: "Arial, sans-serif", fontSize: "12px" }}>
+              {[
+                { step: "Gross Revenue", amount: "$10.0M", note: "All entities combined", color: "#1E3A8A" },
+                { step: "IP Royalty (−10%)", amount: "−$700K", note: "Services + Platform only → Sentrais IP LLC", color: "#6B7280" },
+                { step: "COGS & Direct Labor", amount: "−$3.5M", note: "Est. blended across segments", color: "#6B7280" },
+                { step: "Gross Profit", amount: "$5.8M", note: "~58% blended gross margin", color: "#10B981" },
+              ].map((w, i) => (
+                <div key={i} style={{ padding: "12px", background: "#F9FAFB", borderRadius: "6px", border: "1px solid #E5E7EB" }}>
+                  <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>{w.step}</div>
+                  <div style={{ fontSize: "18px", fontWeight: "700", color: w.color }}>{w.amount}</div>
+                  <div style={{ fontSize: "10px", color: "#9CA3AF", marginTop: "2px" }}>{w.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER */}
       <div style={{ borderTop: "1px solid #E5E7EB", padding: "12px 28px", background: "white", display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#9CA3AF", flexWrap: "wrap", gap: "8px", fontFamily: "Arial, sans-serif" }}>

@@ -16,6 +16,9 @@ import {
   FileText,
   Target,
   LogOut,
+  CreditCard,
+  GraduationCap,
+  Globe,
 } from "lucide-react";
 
 const NAV = [
@@ -27,6 +30,9 @@ const NAV = [
   { to: "/ari-map",          icon: MapPin,          label: "ARI Program Map" },
   { to: "/ari",              icon: BookOpen,        label: "ARI Programs" },
   { to: "/converge",         icon: Target,          label: "Program Converge" },
+  { to: "/banking",          icon: CreditCard,      label: "Banking & Payments" },
+  { to: "/fellowship",       icon: GraduationCap,   label: "Fellowship Framework" },
+  { to: "/city-readiness",   icon: Globe,           label: "City Readiness" },
   { to: "/doc-control",      icon: GitCompare,      label: "Doc Version Control" },
   { to: "/evidence",         icon: Shield,          label: "Evidence Ledger" },
   { to: "/claims",           icon: ClipboardList,   label: "Claims Register" },
