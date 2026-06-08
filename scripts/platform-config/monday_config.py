@@ -50,13 +50,23 @@ def gql(token, query, variables=None, dry_run=False, label=""):
     payload = {"query": query}
     if variables:
         payload["variables"] = variables
-    resp = requests.post(
-        API_URL,
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json", "API-Version": "2024-01"},
-        json=payload,
-        timeout=30,
-    )
-    time.sleep(0.3)
+    for attempt in range(4):
+        try:
+            resp = requests.post(
+                API_URL,
+                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json", "API-Version": "2024-01"},
+                json=payload,
+                timeout=60,
+            )
+            break
+        except requests.exceptions.ReadTimeout:
+            wait = 2 ** attempt
+            print(f"  Timeout on '{label}', retrying in {wait}s...")
+            time.sleep(wait)
+    else:
+        print(f"  FAILED after 4 attempts: {label}")
+        return None
+    time.sleep(0.5)
     if resp.status_code != 200:
         print(f"  ERROR {resp.status_code}: {resp.text[:200]}")
         return None
