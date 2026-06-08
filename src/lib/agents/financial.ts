@@ -39,9 +39,13 @@ export class FinancialAgent extends ForgeAgent {
   ): Promise<AgentResult> {
     const startTime = Date.now();
 
+    const context = await this.withKnowledge(
+      `financial ${(input.actionType as string) ?? ""} contract terms invoicing`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Process financial action: ${JSON.stringify(input)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

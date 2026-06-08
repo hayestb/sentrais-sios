@@ -37,9 +37,13 @@ export class PortfolioAgent extends ForgeAgent {
 
   async execute(input: Record<string, unknown>, engagementId?: string): Promise<AgentResult> {
     const startTime = Date.now();
+    const context = await this.withKnowledge(
+      `portfolio intelligence ${(input.vertical as string) ?? ""} ${(input.clientName as string) ?? ""}`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Generate portfolio intelligence report:\n${JSON.stringify(input, null, 2)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

@@ -9,7 +9,21 @@ import {
   pgEnum,
   uuid,
   index,
+  customType,
 } from "drizzle-orm/pg-core";
+
+// pgvector support — stored as vector(512) for Voyage AI voyage-3-lite
+const vector = customType<{ data: number[]; driverData: string }>({
+  dataType(config) {
+    return `vector(${(config as { dimensions?: number })?.dimensions ?? 1536})`;
+  },
+  toDriver(value: number[]): string {
+    return `[${value.join(",")}]`;
+  },
+  fromDriver(value: string): number[] {
+    return value.slice(1, -1).split(",").map(Number);
+  },
+});
 import { relations } from "drizzle-orm";
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
@@ -744,3 +758,77 @@ export const calendarTokens = pgTable(
 
 export type AuditLog = typeof auditLog.$inferSelect;
 export type CalendarToken = typeof calendarTokens.$inferSelect;
+
+// ─── Document Knowledge Base ──────────────────────────────────────────────────
+
+export const docCategoryEnum = pgEnum("doc_category", [
+  "sentrais-core",
+  "nfl",
+  "evergame",
+  "spectra-civigrid",
+  "legal-contracts",
+  "operations",
+  "personal",
+  "other",
+]);
+
+export const docStatusEnum = pgEnum("doc_status", [
+  "pending",
+  "processing",
+  "indexed",
+  "failed",
+]);
+
+export const documents = pgTable(
+  "documents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    filename: text("filename").notNull(),
+    originalPath: text("original_path").notNull(),
+    category: docCategoryEnum("category").notNull().default("other"),
+    mimeType: text("mime_type").notNull(),
+    fileSizeBytes: integer("file_size_bytes"),
+    status: docStatusEnum("status").notNull().default("pending"),
+    extractedText: text("extracted_text"),
+    pageCount: integer("page_count"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("doc_category_idx").on(t.category),
+    index("doc_status_idx").on(t.status),
+    index("doc_filename_idx").on(t.filename),
+  ]
+);
+
+export const documentChunks = pgTable(
+  "document_chunks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id").notNull().references(() => documents.id, { onDelete: "cascade" }),
+    chunkIndex: integer("chunk_index").notNull(),
+    content: text("content").notNull(),
+    tokenCount: integer("token_count"),
+    embedding: vector("embedding", { dimensions: 512 }),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("chunk_doc_idx").on(t.documentId),
+    index("chunk_doc_order_idx").on(t.documentId, t.chunkIndex),
+  ]
+);
+
+export const documentsRelations = relations(documents, ({ many }) => ({
+  chunks: many(documentChunks),
+}));
+
+export const documentChunksRelations = relations(documentChunks, ({ one }) => ({
+  document: one(documents, { fields: [documentChunks.documentId], references: [documents.id] }),
+}));
+
+export type Document = typeof documents.$inferSelect;
+export type DocumentChunk = typeof documentChunks.$inferSelect;
+export type NewDocument = typeof documents.$inferInsert;
+export type NewDocumentChunk = typeof documentChunks.$inferInsert;

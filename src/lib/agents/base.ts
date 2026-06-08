@@ -3,6 +3,7 @@ import type { AgentName, AgentResult } from "@/lib/workflow/types";
 import { db } from "@/lib/db/client";
 import { agentTasks } from "@/lib/db/schema";
 import { writeToLedger } from "@/lib/ledger/evidence";
+import { searchKnowledge, type KnowledgeSearchOptions } from "@/lib/knowledge/search";
 import { eq } from "drizzle-orm";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -182,6 +183,30 @@ export abstract class ForgeAgent {
         escalationRequired: true,
         escalationReason: `Task failed: ${errorMessage}`,
       };
+    }
+  }
+
+  // Retrieve relevant knowledge chunks and merge into context
+  protected async withKnowledge(
+    query: string,
+    context: Record<string, unknown> = {},
+    options?: KnowledgeSearchOptions
+  ): Promise<Record<string, unknown>> {
+    try {
+      const chunks = await searchKnowledge(query, { topK: 4, ...options });
+      if (chunks.length === 0) return context;
+      return {
+        ...context,
+        knowledge: chunks.map((c) => ({
+          source: c.filename,
+          category: c.category,
+          excerpt: c.content,
+          relevance: Math.round(c.similarity * 100) / 100,
+        })),
+      };
+    } catch {
+      // Knowledge retrieval is non-fatal — agent continues without it
+      return context;
     }
   }
 
