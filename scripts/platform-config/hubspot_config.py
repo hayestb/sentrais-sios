@@ -238,7 +238,12 @@ def create_properties(token, dry_run):
             "fieldType": prop["fieldType"],
             "groupName": "contactinformation",
         }
-        if "options" in prop:
+        if prop["type"] == "bool":
+            payload["options"] = [
+                {"label": "Yes", "value": "true", "displayOrder": 0, "hidden": False},
+                {"label": "No", "value": "false", "displayOrder": 1, "hidden": False},
+            ]
+        elif "options" in prop:
             payload["options"] = [
                 {"label": o["label"], "value": o["value"], "displayOrder": i, "hidden": False}
                 for i, o in enumerate(prop["options"])
@@ -267,7 +272,12 @@ def create_properties(token, dry_run):
             "fieldType": prop["fieldType"],
             "groupName": "dealinformation",
         }
-        if "options" in prop:
+        if prop["type"] == "bool":
+            payload["options"] = [
+                {"label": "Yes", "value": "true", "displayOrder": 0, "hidden": False},
+                {"label": "No", "value": "false", "displayOrder": 1, "hidden": False},
+            ]
+        elif "options" in prop:
             payload["options"] = [
                 {"label": o["label"], "value": o["value"], "displayOrder": i, "hidden": False}
                 for i, o in enumerate(prop["options"])
@@ -351,9 +361,12 @@ LISTS = [
     {
         "name": "Sentrais — Commercial contacts (A/B/C/E)",
         "dynamic": True,
-        "filters": [[
-            {"operator": "IN", "property": "gtm_module", "value": "A;B;C;E"},
-        ]],
+        "filters": [
+            [{"operator": "EQ", "property": "gtm_module", "value": "A"}],
+            [{"operator": "EQ", "property": "gtm_module", "value": "B"}],
+            [{"operator": "EQ", "property": "gtm_module", "value": "C"}],
+            [{"operator": "EQ", "property": "gtm_module", "value": "E"}],
+        ],
     },
     {
         "name": "Sentrais — Aviation contacts (Module E)",
