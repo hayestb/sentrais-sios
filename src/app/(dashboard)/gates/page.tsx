@@ -5,7 +5,6 @@ import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GATE_DEFINITIONS } from "@/lib/workflow/golden-path";
-import { formatCurrency, truncateHash } from "@/lib/utils";
 import { Shield, Lock, CheckCircle2, AlertTriangle, DollarSign } from "lucide-react";
 import type { GateNumber } from "@/lib/workflow/types";
 
