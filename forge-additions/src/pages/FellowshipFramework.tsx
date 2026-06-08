@@ -4,6 +4,7 @@ import {
   GraduationCap, Users, Calendar, ClipboardList, Star, BookOpen,
   CheckCircle2, Clock, AlertCircle, ChevronDown, ChevronUp, Building2
 } from "lucide-react";
+import { ForgePage, ForgeHeader, ForgeTabs, ForgeContent } from "../components/ui/forge";
 
 const TRACKS = [
   {
@@ -145,58 +146,19 @@ export default function FellowshipFramework() {
   const activeSeats = totalSeats - blockedSeats;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a1628", color: "#e2e8f0", fontFamily: "system-ui, sans-serif" }}>
-      {/* Header */}
-      <div style={{ padding: "24px 32px", borderBottom: "1px solid #1e3a5f" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              <GraduationCap size={22} color="#0EA5E9" />
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#f1f5f9" }}>
-                Summer Fellowship & Internship Framework
-              </h1>
-            </div>
-            <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>
-              ARI workforce pipeline · 4 program tracks · Cohort 1 kickoff Jul 7
-            </p>
-          </div>
-          <div style={{ display: "flex", gap: 12 }}>
-            {[
-              { label: "Total Seats", value: totalSeats, color: "#0EA5E9" },
-              { label: "Active Seats", value: activeSeats, color: "#10b981" },
-              { label: "Pending EIN", value: blockedSeats, color: "#f59e0b" },
-            ].map((s) => (
-              <div key={s.label} style={{ textAlign: "center", padding: "10px 16px", background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 8 }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
-                <div style={{ fontSize: 11, color: "#64748b" }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div style={{ display: "flex", gap: 4, marginTop: 20 }}>
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id)}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "7px 14px", borderRadius: 6, border: "none",
-                cursor: "pointer", fontSize: 13, fontWeight: 500,
-                background: activeTab === t.id ? "#0EA5E9" : "#0d1f3c",
-                color: activeTab === t.id ? "#fff" : "#94a3b8",
-                transition: "all 0.15s",
-              }}
-            >
-              <t.icon size={14} />
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ padding: "24px 32px" }}>
+    <ForgePage>
+      <ForgeHeader
+        icon={GraduationCap}
+        title="Summer Fellowship & Internship Framework"
+        subtitle="ARI workforce pipeline · 4 program tracks · Cohort 1 kickoff Jul 7"
+        stats={[
+          { label: "Total Seats", value: totalSeats },
+          { label: "Active Seats", value: activeSeats, color: "#10b981" },
+          { label: "Pending EIN", value: blockedSeats, color: "#f59e0b" },
+        ]}
+      />
+      <ForgeTabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
+      <ForgeContent>
 
         {/* OVERVIEW */}
         {activeTab === "overview" && (
@@ -460,7 +422,7 @@ export default function FellowshipFramework() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </ForgeContent>
+    </ForgePage>
   );
 }

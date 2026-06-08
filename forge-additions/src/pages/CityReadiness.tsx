@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState } from "react";
 import { MapPin, Building2, CheckCircle2, AlertCircle, Clock, Zap, Users, Globe, TrendingUp, ArrowRight } from "lucide-react";
+import { ForgePage, ForgeHeader, ForgeTabs, ForgeContent } from "../components/ui/forge";
 
 const CITIES = [
   {
@@ -187,58 +188,26 @@ export default function CityReadiness() {
   const totalPipeline = CITIES.reduce((s, c) => s + c.revenue.contractValue, 0);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a1628", color: "#e2e8f0", fontFamily: "system-ui, sans-serif" }}>
-      {/* Header */}
-      <div style={{ padding: "24px 32px", borderBottom: "1px solid #1e3a5f" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              <Globe size={22} color="#0EA5E9" />
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#f1f5f9" }}>City Readiness Portfolio</h1>
-            </div>
-            <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>
-              Multi-city deployment map · Standard platform vs local ecosystem differentiation
-            </p>
-          </div>
-          <div style={{ display: "flex", gap: 12 }}>
-            {[
-              { label: "Cities Tracked", value: CITIES.length, color: "#0EA5E9" },
-              { label: "Active Markets", value: CITIES.filter((c) => c.status === "active").length, color: "#10b981" },
-              { label: "Pipeline Value", value: `$${(totalPipeline / 1000000).toFixed(1)}M`, color: "#f59e0b" },
-            ].map((s) => (
-              <div key={s.label} style={{ textAlign: "center", padding: "10px 16px", background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 8 }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
-                <div style={{ fontSize: 11, color: "#64748b" }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tab Nav */}
-        <div style={{ display: "flex", gap: 4, marginTop: 20 }}>
-          {[
-            { id: "portfolio", label: "Portfolio Map", icon: MapPin },
-            { id: "comparison", label: "Platform Comparison", icon: Building2 },
-          ].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id)}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "7px 14px", borderRadius: 6, border: "none", cursor: "pointer",
-                fontSize: 13, fontWeight: 500,
-                background: activeTab === t.id ? "#0EA5E9" : "#0d1f3c",
-                color: activeTab === t.id ? "#fff" : "#94a3b8",
-              }}
-            >
-              <t.icon size={14} />
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ padding: "24px 32px" }}>
+    <ForgePage>
+      <ForgeHeader
+        icon={Globe}
+        title="City Readiness Portfolio"
+        subtitle="Multi-city deployment map · Standard platform vs local ecosystem differentiation"
+        stats={[
+          { label: "Cities Tracked", value: CITIES.length },
+          { label: "Active Markets", value: CITIES.filter((c) => c.status === "active").length, color: "#10b981" },
+          { label: "Pipeline Value", value: `$${(totalPipeline / 1000000).toFixed(1)}M`, color: "#f59e0b" },
+        ]}
+      />
+      <ForgeTabs
+        tabs={[
+          { id: "portfolio", label: "Portfolio Map", icon: MapPin },
+          { id: "comparison", label: "Platform Comparison", icon: Building2 },
+        ]}
+        active={activeTab}
+        onChange={setActiveTab}
+      />
+      <ForgeContent>
 
         {/* PORTFOLIO MAP */}
         {activeTab === "portfolio" && (
@@ -474,7 +443,7 @@ export default function CityReadiness() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </ForgeContent>
+    </ForgePage>
   );
 }
