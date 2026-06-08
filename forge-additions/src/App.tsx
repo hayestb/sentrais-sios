@@ -11,6 +11,7 @@ import EvidenceLedger from "./pages/EvidenceLedger";
 import MasterCalendar from "./pages/MasterCalendar";
 import MasterCalendarLight from "./pages/MasterCalendarLight";
 import DocVersionControl from "./pages/DocVersionControl";
+import ProgramConverge from "./pages/ProgramConverge";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="calendar" element={<MasterCalendar />} />
           <Route path="calendar-light" element={<MasterCalendarLight />} />
           <Route path="doc-control" element={<DocVersionControl />} />
+          <Route path="converge" element={<ProgramConverge />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>

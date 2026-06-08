@@ -14,6 +14,7 @@ import {
   SunMedium,
   GitCompare,
   FileText,
+  Target,
   LogOut,
 } from "lucide-react";
 
@@ -25,6 +26,7 @@ const NAV = [
   { to: "/financial-ops",    icon: FileText,        label: "Financial Ops" },
   { to: "/ari-map",          icon: MapPin,          label: "ARI Program Map" },
   { to: "/ari",              icon: BookOpen,        label: "ARI Programs" },
+  { to: "/converge",         icon: Target,          label: "Program Converge" },
   { to: "/doc-control",      icon: GitCompare,      label: "Doc Version Control" },
   { to: "/evidence",         icon: Shield,          label: "Evidence Ledger" },
   { to: "/claims",           icon: ClipboardList,   label: "Claims Register" },
