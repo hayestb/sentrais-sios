@@ -71,7 +71,7 @@ def get_existing_workflows(token):
 # ---------------------------------------------------------------------------
 
 CONTACT_PROPS = [
-    {"name": "GTM_module", "label": "GTM Module", "type": "enumeration", "fieldType": "select",
+    {"name": "gtm_module", "label": "GTM Module", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "A — League/Sports", "value": "A"},
          {"label": "B — Venue/Facility", "value": "B"},
@@ -80,7 +80,7 @@ CONTACT_PROPS = [
          {"label": "E — Aviation/Airport", "value": "E"},
          {"label": "F — Federal/NCICC", "value": "F"},
      ]},
-    {"name": "Entry_route", "label": "Entry Route", "type": "enumeration", "fieldType": "select",
+    {"name": "entry_route", "label": "Entry Route", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Sentrais", "value": "Sentrais"},
          {"label": "Barbara Geter Institute", "value": "BGI"},
@@ -88,7 +88,7 @@ CONTACT_PROPS = [
          {"label": "Sentrais Ventures", "value": "Ventures"},
          {"label": "SEG Subcontract", "value": "SEG"},
      ]},
-    {"name": "Vertical", "label": "Vertical", "type": "enumeration", "fieldType": "select",
+    {"name": "vertical", "label": "Vertical", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "League", "value": "League"},
          {"label": "Venue", "value": "Venue"},
@@ -97,7 +97,7 @@ CONTACT_PROPS = [
          {"label": "Aviation/Airport", "value": "Aviation"},
          {"label": "Federal", "value": "Federal"},
      ]},
-    {"name": "Buyer_persona", "label": "Buyer Persona", "type": "enumeration", "fieldType": "select",
+    {"name": "buyer_persona", "label": "Buyer Persona", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Director of Ops", "value": "director_ops"},
          {"label": "VP Campus Safety", "value": "vp_campus_safety"},
@@ -107,7 +107,7 @@ CONTACT_PROPS = [
          {"label": "VP Operations", "value": "vp_ops"},
          {"label": "League/Franchise Ops", "value": "league_ops"},
      ]},
-    {"name": "Register_status", "label": "Register Status", "type": "enumeration", "fieldType": "select",
+    {"name": "register_status", "label": "Register Status", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Confirmed", "value": "Confirmed"},
          {"label": "Pilot/POC", "value": "PilotPOC"},
@@ -115,7 +115,7 @@ CONTACT_PROPS = [
          {"label": "In conversation", "value": "InConversation"},
          {"label": "Aspirational", "value": "Aspirational"},
      ]},
-    {"name": "Entity", "label": "Entity", "type": "enumeration", "fieldType": "select",
+    {"name": "entity", "label": "Entity", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Sentrais Corp", "value": "SentraisCorp"},
          {"label": "SRI", "value": "SRI"},
@@ -124,8 +124,8 @@ CONTACT_PROPS = [
          {"label": "SEG (Subcontractor)", "value": "SEG"},
      ]},
     # Suppression flag — set by automation, read by sequence enrollment checks
-    {"name": "Sequence_suppressed", "label": "Sequence Suppressed (research/federal)", "type": "bool", "fieldType": "booleancheckbox"},
-    {"name": "GTM_alignment_status", "label": "GTM Alignment Status", "type": "enumeration", "fieldType": "select",
+    {"name": "sequence_suppressed", "label": "Sequence Suppressed (research/federal)", "type": "bool", "fieldType": "booleancheckbox"},
+    {"name": "gtm_alignment_status", "label": "GTM Alignment Status", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Aligned — current version", "value": "Aligned"},
          {"label": "Pending review", "value": "PendingReview"},
@@ -134,7 +134,7 @@ CONTACT_PROPS = [
 ]
 
 DEAL_PROPS = [
-    {"name": "Gate_stage", "label": "Gate Stage", "type": "enumeration", "fieldType": "select",
+    {"name": "gate_stage", "label": "Gate Stage", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "G0", "value": "G0"}, {"label": "G1", "value": "G1"},
          {"label": "G2", "value": "G2"}, {"label": "G3", "value": "G3"},
@@ -149,8 +149,8 @@ DEAL_PROPS = [
          {"label": "NC-G4", "value": "NC-G4"}, {"label": "NC-G5", "value": "NC-G5"},
          {"label": "NC-G6", "value": "NC-G6"},
      ]},
-    {"name": "Hard_block_flag", "label": "Hard Block Flag", "type": "bool", "fieldType": "booleancheckbox"},
-    {"name": "NIN_phase", "label": "NIN Phase", "type": "enumeration", "fieldType": "select",
+    {"name": "hard_block_flag", "label": "Hard Block Flag", "type": "bool", "fieldType": "booleancheckbox"},
+    {"name": "nin_phase", "label": "NIN Phase", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "D1 Discover", "value": "D1"},
          {"label": "D2 Diagnose", "value": "D2"},
@@ -158,7 +158,7 @@ DEAL_PROPS = [
          {"label": "D4 Deploy", "value": "D4"},
          {"label": "D5 Debrief", "value": "D5"},
      ]},
-    {"name": "Doctrine_mode", "label": "Doctrine Mode", "type": "enumeration", "fieldType": "select",
+    {"name": "doctrine_mode", "label": "Doctrine Mode", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Steady State", "value": "SteadyState"},
          {"label": "Surge/Event", "value": "Surge"},
@@ -168,7 +168,7 @@ DEAL_PROPS = [
          {"label": "Active Threat (UN)", "value": "ActiveThreat"},
          {"label": "Super-Cycle Watch (NC)", "value": "SuperCycleWatch"},
      ]},
-    {"name": "Advisor_class", "label": "Advisor Class", "type": "enumeration", "fieldType": "checkbox",
+    {"name": "advisor_class", "label": "Advisor Class", "type": "enumeration", "fieldType": "checkbox",
      "options": [
          {"label": "Class 1 — GTM Strategic", "value": "C1"},
          {"label": "Class 2 — Domain Validator", "value": "C2"},
@@ -176,9 +176,9 @@ DEAL_PROPS = [
          {"label": "Class 4 — Academic Research", "value": "C4"},
          {"label": "Class 5 — Legal/Tax", "value": "C5"},
      ]},
-    {"name": "Claims_confirmed", "label": "Claims Confirmed (§3 gate)", "type": "bool", "fieldType": "booleancheckbox"},
-    {"name": "Monday_board_ID", "label": "Monday Board ID", "type": "string", "fieldType": "text"},
-    {"name": "Revenue_type", "label": "Revenue Type", "type": "enumeration", "fieldType": "select",
+    {"name": "claims_confirmed", "label": "Claims Confirmed (§3 gate)", "type": "bool", "fieldType": "booleancheckbox"},
+    {"name": "monday_board_id", "label": "Monday Board ID", "type": "string", "fieldType": "text"},
+    {"name": "revenue_type", "label": "Revenue Type", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Training fee", "value": "TrainingFee"},
          {"label": "License royalty", "value": "LicenseRoyalty"},
@@ -188,28 +188,28 @@ DEAL_PROPS = [
          {"label": "Federal contract", "value": "FederalContract"},
          {"label": "PPP", "value": "PPP"},
      ]},
-    {"name": "FedRAMP_status", "label": "FedRAMP Status", "type": "enumeration", "fieldType": "select",
+    {"name": "fedramp_status", "label": "FedRAMP Status", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Not started", "value": "NotStarted"},
          {"label": "In progress", "value": "InProgress"},
          {"label": "FedRAMP Ready", "value": "FedRAMPReady"},
          {"label": "FedRAMP Authorized", "value": "FedRAMPAuthorized"},
      ]},
-    {"name": "Delivery_status", "label": "Delivery Status", "type": "enumeration", "fieldType": "select",
+    {"name": "delivery_status", "label": "Delivery Status", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Not started", "value": "NotStarted"},
          {"label": "D1 Discover", "value": "D1"},
          {"label": "Debrief", "value": "Debrief"},
          {"label": "Onboard complete", "value": "OnboardComplete"},
      ]},
-    {"name": "Intercompany", "label": "Intercompany (SRI)", "type": "bool", "fieldType": "booleancheckbox"},
+    {"name": "intercompany", "label": "Intercompany (SRI)", "type": "bool", "fieldType": "booleancheckbox"},
     # SEG subcontract tracking
-    {"name": "Subcontractor_entity", "label": "Subcontractor Entity", "type": "enumeration", "fieldType": "select",
+    {"name": "subcontractor_entity", "label": "Subcontractor Entity", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "None", "value": "None"},
          {"label": "SEG — Serendipity Equity Group", "value": "SEG"},
      ]},
-    {"name": "Subcontract_status", "label": "Subcontract Status", "type": "enumeration", "fieldType": "select",
+    {"name": "subcontract_status", "label": "Subcontract Status", "type": "enumeration", "fieldType": "select",
      "options": [
          {"label": "Not applicable", "value": "NA"},
          {"label": "Term sheet in drafting", "value": "TermSheetDrafting"},
@@ -219,9 +219,9 @@ DEAL_PROPS = [
          {"label": "Active", "value": "Active"},
          {"label": "Terminated", "value": "Terminated"},
      ]},
-    {"name": "Revenue_share_pct", "label": "Subcontractor Revenue Share %", "type": "number", "fieldType": "number"},
-    {"name": "GDA_golive_date", "label": "GDA Go-Live Date", "type": "date", "fieldType": "date"},
-    {"name": "NFL_MSA_ref", "label": "NFL MSA Reference", "type": "string", "fieldType": "text"},
+    {"name": "revenue_share_pct", "label": "Subcontractor Revenue Share %", "type": "number", "fieldType": "number"},
+    {"name": "gda_golive_date", "label": "GDA Go-Live Date", "type": "date", "fieldType": "date"},
+    {"name": "nfl_msa_ref", "label": "NFL MSA Reference", "type": "string", "fieldType": "text"},
 ]
 
 
@@ -248,8 +248,9 @@ def create_properties(token, dry_run):
         else:
             print(f"  SKIP (exists): {prop['name']} on contacts")
 
+        company_payload = {**payload, "groupName": "companyinformation"}
         if prop["name"] not in existing_company:
-            req("POST", "/crm/v3/properties/companies", token, payload, dry_run, label=f"{prop['name']} on companies")
+            req("POST", "/crm/v3/properties/companies", token, company_payload, dry_run, label=f"{prop['name']} on companies")
         else:
             print(f"  SKIP (exists): {prop['name']} on companies")
 
@@ -330,49 +331,49 @@ LISTS = [
         "name": "Sentrais — Research contacts (suppress sequences)",
         "dynamic": True,
         "filters": [[
-            {"operator": "EQ", "property": "Entry_route", "value": "NOVATELabs"},
+            {"operator": "EQ", "property": "entry_route", "value": "NOVATELabs"},
         ]],
     },
     {
         "name": "Sentrais — Federal contacts Pipeline F",
         "dynamic": True,
         "filters": [[
-            {"operator": "EQ", "property": "GTM_module", "value": "F"},
+            {"operator": "EQ", "property": "gtm_module", "value": "F"},
         ]],
     },
     {
         "name": "Sentrais — CampusGrid Module D contacts",
         "dynamic": True,
         "filters": [[
-            {"operator": "EQ", "property": "GTM_module", "value": "D"},
+            {"operator": "EQ", "property": "gtm_module", "value": "D"},
         ]],
     },
     {
         "name": "Sentrais — Commercial contacts (A/B/C/E)",
         "dynamic": True,
         "filters": [[
-            {"operator": "IN", "property": "GTM_module", "value": "A;B;C;E"},
+            {"operator": "IN", "property": "gtm_module", "value": "A;B;C;E"},
         ]],
     },
     {
         "name": "Sentrais — Aviation contacts (Module E)",
         "dynamic": True,
         "filters": [[
-            {"operator": "EQ", "property": "GTM_module", "value": "E"},
+            {"operator": "EQ", "property": "gtm_module", "value": "E"},
         ]],
     },
     {
         "name": "Sentrais — Blueprint360 POC contacts",
         "dynamic": True,
         "filters": [[
-            {"operator": "EQ", "property": "Entry_route", "value": "Blueprint360"},
+            {"operator": "EQ", "property": "entry_route", "value": "Blueprint360"},
         ]],
     },
     {
         "name": "Sentrais — SEG subcontract contacts",
         "dynamic": True,
         "filters": [[
-            {"operator": "EQ", "property": "Entry_route", "value": "SEG"},
+            {"operator": "EQ", "property": "entry_route", "value": "SEG"},
         ]],
     },
 ]
@@ -486,7 +487,7 @@ def create_workflows(token, dry_run):
             "actions": [
                 {
                     "type": "SET_CONTACT_PROPERTY",
-                    "propertyName": "Claims_confirmed",
+                    "propertyName": "claims_confirmed",
                     "propertyValue": "false",
                     "actionDescription": "Block: revert stage — configured via UI (requires deal stage revert action)",
                 }
@@ -502,7 +503,7 @@ def create_workflows(token, dry_run):
             "actions": [
                 {
                     "type": "SET_CONTACT_PROPERTY",
-                    "propertyName": "Sequence_suppressed",
+                    "propertyName": "sequence_suppressed",
                     "propertyValue": "true",
                     "actionDescription": "Flag contact as suppressed",
                 }
@@ -518,7 +519,7 @@ def create_workflows(token, dry_run):
             "actions": [
                 {
                     "type": "SET_CONTACT_PROPERTY",
-                    "propertyName": "Sequence_suppressed",
+                    "propertyName": "sequence_suppressed",
                     "propertyValue": "true",
                 },
                 {
@@ -556,7 +557,7 @@ def create_workflows(token, dry_run):
             "actions": [
                 {
                     "type": "SET_CONTACT_PROPERTY",
-                    "propertyName": "Intercompany",
+                    "propertyName": "intercompany",
                     "propertyValue": "true",
                 },
             ],
@@ -589,7 +590,7 @@ def create_workflows(token, dry_run):
             "actions": [
                 {
                     "type": "SET_CONTACT_PROPERTY",
-                    "propertyName": "GTM_alignment_status",
+                    "propertyName": "gtm_alignment_status",
                     "propertyValue": "PendingReview",
                 },
             ],
@@ -613,7 +614,7 @@ def create_workflows(token, dry_run):
             "actions": [
                 {
                     "type": "SET_CONTACT_PROPERTY",
-                    "propertyName": "Subcontract_status",
+                    "propertyName": "subcontract_status",
                     "propertyValue": "Active",
                     "actionDescription": "Mark subcontract active on deal close",
                 },
