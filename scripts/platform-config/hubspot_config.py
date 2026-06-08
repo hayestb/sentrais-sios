@@ -644,30 +644,14 @@ def create_workflows(token, dry_run):
         },
     ]
 
+    # HubSpot automation/v3 API only supports DRIP_DELAY/STATIC_ANCHOR/PROPERTY_ANCHOR types
+    # and cannot express deal/contact-based triggers or complex branch logic via API.
+    # All 12 workflows must be created manually in the HubSpot UI.
+    print("\n  All workflows require manual creation in HubSpot UI (Automation → Workflows).")
+    print("  Workflow names and specs (see HANDOFF.md for full config):")
     for wf in workflows:
-        if wf["name"] in existing:
-            print(f"  SKIP (exists): {wf['name']}")
-            continue
-
-        # v3 workflow payload
-        payload = {
-            "name": wf["name"],
-            "type": wf["type"],
-            "enabled": wf["enabled"],
-            "actions": wf.get("actions", []),
-            "settings": {
-                "createdAt": None,
-                "updatedAt": None,
-                "description": wf.get("description", ""),
-            },
-        }
-
-        result = req("POST", "/automation/v3/workflows", token, payload, dry_run, label=wf["name"])
-        state = "ENABLED" if wf["enabled"] else "DISABLED — configure triggers in UI"
-        if result and not dry_run:
-            print(f"  Created ({state}): {wf['name']}")
-        elif dry_run:
-            print(f"  [DRY RUN] Would create ({state}): {wf['name']}")
+        obj = "Deal-based" if "DEAL" in wf["type"] else "Contact-based"
+        print(f"    • [{obj}] {wf['name']}")
 
     print("\n  Workflows requiring UI trigger + action configuration (see handoff doc):")
     ui_only = [
@@ -679,7 +663,7 @@ def create_workflows(token, dry_run):
         "Workflow 8 — Claims gate clear: association-based trigger",
         "Workflow 10 — Claims age: date-based enrollment trigger",
         "Workflow 11 — SEG revenue share: add Finance task + NFL deal filter",
-        "Workflow 12 — SEG delivery warranty: date-based trigger on GDA_golive_date",
+        "Workflow 12 — SEG delivery warranty: date-based trigger on gda_golive_date",
     ]
     for item in ui_only:
         print(f"    • {item}")
