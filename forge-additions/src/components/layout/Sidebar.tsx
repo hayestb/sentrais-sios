@@ -1,50 +1,36 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import {
-  LayoutDashboard,
-  DollarSign,
-  BookOpen,
-  MapPin,
-  Shield,
-  ClipboardList,
-  Bot,
-  FileKey,
-  Calendar,
-  SunMedium,
-  GitCompare,
-  FileText,
-  Target,
-  LogOut,
-  CreditCard,
-  GraduationCap,
-  Globe,
+  LayoutDashboard, DollarSign, BookOpen, MapPin, Shield,
+  ClipboardList, Bot, FileKey, Calendar, SunMedium, GitCompare,
+  FileText, Target, LogOut, CreditCard, GraduationCap, Globe,
 } from "lucide-react";
 
 const NAV = [
-  { to: "/dashboard",        icon: LayoutDashboard, label: "Command Center" },
-  { to: "/calendar",         icon: Calendar,        label: "Master Calendar" },
-  { to: "/calendar-light",   icon: SunMedium,       label: "Calendar (Light)" },
-  { to: "/financial-model",  icon: DollarSign,      label: "Financial Model" },
-  { to: "/financial-ops",    icon: FileText,        label: "Financial Ops" },
-  { to: "/ari-map",          icon: MapPin,          label: "ARI Program Map" },
-  { to: "/ari",              icon: BookOpen,        label: "ARI Programs" },
-  { to: "/converge",         icon: Target,          label: "Program Converge" },
-  { to: "/banking",          icon: CreditCard,      label: "Banking & Payments" },
-  { to: "/fellowship",       icon: GraduationCap,   label: "Fellowship Framework" },
-  { to: "/city-readiness",   icon: Globe,           label: "City Readiness" },
-  { to: "/doc-control",      icon: GitCompare,      label: "Doc Version Control" },
-  { to: "/evidence",         icon: Shield,          label: "Evidence Ledger" },
-  { to: "/claims",           icon: ClipboardList,   label: "Claims Register" },
-  { to: "/agents",           icon: Bot,             label: "FORGE Agents" },
-  { to: "/seg",              icon: FileKey,         label: "SEG Subcontract" },
+  { to: "/dashboard",       icon: LayoutDashboard, label: "Command Center" },
+  { to: "/calendar",        icon: Calendar,        label: "Master Calendar" },
+  { to: "/calendar-light",  icon: SunMedium,       label: "Calendar (Light)" },
+  { to: "/financial-model", icon: DollarSign,      label: "Financial Model" },
+  { to: "/financial-ops",   icon: FileText,        label: "Financial Ops" },
+  { to: "/ari-map",         icon: MapPin,          label: "ARI Program Map" },
+  { to: "/ari",             icon: BookOpen,        label: "ARI Programs" },
+  { to: "/converge",        icon: Target,          label: "Program Converge" },
+  { to: "/banking",         icon: CreditCard,      label: "Banking & Payments" },
+  { to: "/fellowship",      icon: GraduationCap,   label: "Fellowship Framework" },
+  { to: "/city-readiness",  icon: Globe,           label: "City Readiness" },
+  { to: "/doc-control",     icon: GitCompare,      label: "Doc Version Control" },
+  { to: "/evidence",        icon: Shield,          label: "Evidence Ledger" },
+  { to: "/claims",          icon: ClipboardList,   label: "Claims Register" },
+  { to: "/agents",          icon: Bot,             label: "FORGE Agents" },
+  { to: "/seg",             icon: FileKey,         label: "SEG Subcontract" },
 ];
-
-const active = "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-white/10 text-white";
-const inactive = "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-slate-200 transition-colors";
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [signOutHovered, setSignOutHovered] = useState(false);
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -52,32 +38,57 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-56 flex-shrink-0 flex flex-col" style={{ background: "#0a1628", borderRight: "1px solid #1e2d45" }}>
-      <div className="p-4 border-b" style={{ borderColor: "#1e2d45" }}>
-        <div className="text-xs tracking-widest uppercase" style={{ color: "#4a6080" }}>Sentrais</div>
-        <div className="text-lg font-bold mt-0.5" style={{ color: "#f0a500" }}>FORGE</div>
-        <div className="text-xs mt-0.5" style={{ color: "#4a6080" }}>Command Center</div>
+    <aside style={{
+      width: 220, flexShrink: 0, display: "flex", flexDirection: "column",
+      background: "#0a1628", borderRight: "1px solid #1e2d45",
+      height: "100vh", overflow: "hidden",
+    }}>
+      {/* Logo */}
+      <div style={{ padding: "16px 16px 14px", borderBottom: "1px solid #1e2d45" }}>
+        <div style={{ fontSize: 10, letterSpacing: "3px", color: "#4a6080", textTransform: "uppercase" }}>Sentrais</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#f0a500", marginTop: 2 }}>FORGE</div>
+        <div style={{ fontSize: 11, color: "#4a6080", marginTop: 1 }}>Command Center</div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
         {NAV.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
-            className={({ isActive }) => isActive ? active : inactive}
+            onMouseEnter={() => setHovered(to)}
+            onMouseLeave={() => setHovered(null)}
+            style={({ isActive }) => ({
+              display: "flex", alignItems: "center", gap: 10,
+              padding: "7px 10px", borderRadius: 7,
+              fontSize: 13, fontWeight: isActive ? 600 : 400,
+              color: isActive ? "#fff" : hovered === to ? "#c8d8e8" : "#7a9ab5",
+              background: isActive ? "rgba(255,255,255,0.1)" : hovered === to ? "rgba(255,255,255,0.05)" : "transparent",
+              textDecoration: "none", transition: "background 0.12s, color 0.12s",
+            })}
           >
-            <Icon size={15} />
+            <Icon size={14} style={{ flexShrink: 0 }} />
             <span>{label}</span>
           </NavLink>
         ))}
       </nav>
 
-      <div className="p-3 border-t" style={{ borderColor: "#1e2d45" }}>
+      {/* Sign out */}
+      <div style={{ padding: "8px", borderTop: "1px solid #1e2d45" }}>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+          onMouseEnter={() => setSignOutHovered(true)}
+          onMouseLeave={() => setSignOutHovered(false)}
+          style={{
+            display: "flex", alignItems: "center", gap: 10,
+            width: "100%", padding: "7px 10px", borderRadius: 7,
+            fontSize: 13, cursor: "pointer", border: "none",
+            background: signOutHovered ? "rgba(239,68,68,0.1)" : "transparent",
+            color: signOutHovered ? "#ef4444" : "#7a9ab5",
+            transition: "background 0.12s, color 0.12s",
+          }}
         >
-          <LogOut size={15} />
+          <LogOut size={14} />
           <span>Sign Out</span>
         </button>
       </div>
