@@ -285,6 +285,47 @@ export default function PodStructure() {
                 ))}
               </ForgeCardBody>
             </ForgeCard>
+
+            <ForgeCard accent={C.purple}>
+              <ForgeCardHeader><ForgeLabel color={C.purple}>Comp Transition Protocol — Rollout Best Practices</ForgeLabel></ForgeCardHeader>
+              <ForgeCardBody style={{ padding: 0 }}>
+                <div style={{ padding: "12px 18px", background: C.purple + "08", borderBottom: `1px solid ${C.border}` }}>
+                  <p style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>
+                    Changing comp plans creates anxiety and attrition when rolled out poorly. Follow these three principles to protect team trust during the pod transition.
+                  </p>
+                </div>
+                {[
+                  {
+                    number: "1",
+                    title: "Model it first — 90-day shadow period",
+                    body: "Run a 90-day shadow compensation period where you track data under the new pod metrics but pay out on the old model. This ensures no one is unfairly penalized while the pod stabilizes. Shadow data builds confidence before anyone's paycheck is at risk.",
+                    color: C.accent,
+                  },
+                  {
+                    number: "2",
+                    title: "Keep it simple — napkin math test",
+                    body: "If a team member cannot calculate their commission or bonus payout on a single napkin, the incentive model is too complex and will lose its motivational power. Before finalizing any comp structure, have a BDR and an AE each calculate their own payout from a sample deal. If either struggles, simplify.",
+                    color: C.teal,
+                  },
+                  {
+                    number: "3",
+                    title: "Align with finance early — pod/segment tracking",
+                    body: "Ensure your financial operations and HR tools (NetSuite, ADP, HubSpot) can actually track revenue by pod/segment rather than just by individual rep ID. Pod kicker math fails without reliable cost-center attribution. Finance must confirm ERP readiness before the first kicker pool is calculated.",
+                    color: C.green,
+                  },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", gap: 16, padding: "16px 20px", borderBottom: i < 2 ? `1px solid ${C.border}` : "none" }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: item.color + "25", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: item.color, flexShrink: 0 }}>
+                      {item.number}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#f1f5f9", marginBottom: 5 }}>{item.title}</div>
+                      <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.6 }}>{item.body}</div>
+                    </div>
+                  </div>
+                ))}
+              </ForgeCardBody>
+            </ForgeCard>
           </div>
         )}
 
