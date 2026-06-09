@@ -40,12 +40,14 @@ const ROADMAP_PHASES = [
     days: "Days 1–30",
     color: C.accent,
     milestones: [
-      "Org announcement + town hall — Why pods, what changes, what doesn't",
-      "CRM routing rules configured by regional pod assignment",
-      "ERP cost centers created per pod (pilot pod first)",
+      "Town hall — frame the shift as autonomy + eliminating departmental bottlenecks, not micromanagement. Cover: Why pods, what changes, what doesn't, what stays the same.",
+      "1-on-1 comp alignments: HR + direct manager meet individually with every AE, CSM, and Marketer to walk through their Core + Kicker structure. Zero confusion about how they get paid before Day 1 of pod operation.",
+      "CRM routing rules updated: inbound lead assignment paths configured to auto-route to correct regional pod (Atlanta, New Orleans, Boston, LA) — replace any generic round-robin assignment.",
+      "ERP cost centers created: distinct expense codes created per pod in NetSuite so localized travel, tools, and contractor spend are tracked accurately from Day 1.",
       "Pod Leader assigned; first team roster finalized",
-      "30-day dry run: track leads/deals through pod routing before full cutover",
-      "Individual comp targets translated to pod comp model",
+      "30-day dry run begins: run the month under new pod structure, but track payouts in parallel under the old system. No comp changes during dry run.",
+      "Friction audit: use the 30-day window to surface edge cases (e.g., enterprise customer HQ in Boston but implementation in Atlanta — define revenue credit owner before it hits commissions).",
+      "Individual comp targets translated to pod comp model — shadow calculations reviewed by HR + Finance before going live.",
       "All three handoff playbooks documented and distributed",
     ],
   },
@@ -297,21 +299,27 @@ export default function PodStructure() {
                 {[
                   {
                     number: "1",
-                    title: "Model it first — 90-day shadow period",
-                    body: "Run a 90-day shadow compensation period where you track data under the new pod metrics but pay out on the old model. This ensures no one is unfairly penalized while the pod stabilizes. Shadow data builds confidence before anyone's paycheck is at risk.",
+                    title: "Change Management & Staff Rollout",
+                    body: "Run a town hall framing the shift as autonomy and eliminating bottlenecks — not micromanagement. Then HR + leadership meet 1-on-1 with every AE, CSM, and Marketer to walk through their exact Core + Kicker structure. No one should leave that meeting uncertain about how they get paid. Shadow period runs 90 days: track pod metrics but pay out on the old model so no one is penalized while pods stabilize.",
                     color: C.accent,
                   },
                   {
                     number: "2",
-                    title: "Keep it simple — napkin math test",
-                    body: "If a team member cannot calculate their commission or bonus payout on a single napkin, the incentive model is too complex and will lose its motivational power. Before finalizing any comp structure, have a BDR and an AE each calculate their own payout from a sample deal. If either struggles, simplify.",
+                    title: "Technical Cut-Over — Systems Audit",
+                    body: "CRM routing rules must be updated before Day 1: inbound leads auto-route to the correct regional pod (Atlanta, Boston, New Orleans, LA) — no generic round-robin. ERP cost centers must be created per pod in NetSuite so localized travel, tools, and contractor spend are tracked accurately. Dashboard metrics are meaningless without clean cost-center attribution.",
                     color: C.teal,
                   },
                   {
                     number: "3",
-                    title: "Align with finance early — pod/segment tracking",
-                    body: "Ensure your financial operations and HR tools (NetSuite, ADP, HubSpot) can actually track revenue by pod/segment rather than just by individual rep ID. Pod kicker math fails without reliable cost-center attribution. Finance must confirm ERP readiness before the first kicker pool is calculated.",
+                    title: "30-Day Dry Run — Shadow + Friction Audit",
+                    body: "Before the new model is binding, run a full month in parallel: operate under pod structure but calculate payouts under the old system. Use this window to surface friction edge cases — e.g., enterprise customer HQ in Boston but implementation in Atlanta. Define who gets revenue credit for cross-city accounts before it impacts commissions. Document every edge case and resolve it in writing before cutover.",
                     color: C.green,
+                  },
+                  {
+                    number: "4",
+                    title: "Napkin Math Test — Simplicity Gate",
+                    body: "Before finalizing any comp structure, have a BDR and an AE each calculate their own payout from a sample deal on paper. If either one struggles, the model is too complex and will lose motivational power. Simplify until any team member can self-calculate their commission without a spreadsheet.",
+                    color: C.purple,
                   },
                 ].map((item, i) => (
                   <div key={i} style={{ display: "flex", gap: 16, padding: "16px 20px", borderBottom: i < 2 ? `1px solid ${C.border}` : "none" }}>
