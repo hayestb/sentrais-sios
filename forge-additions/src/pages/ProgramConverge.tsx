@@ -1,10 +1,14 @@
 // @ts-nocheck
 import { useState } from "react";
+import {
+  ForgePage, ForgeHeader, ForgeTabs, ForgeContent,
+  ForgeCard, ForgeCardHeader, ForgeCardBody,
+  ForgeLabel, ForgeBadge, ForgeGrid, ForgeAlert, C,
+} from "../components/ui/forge";
 
 const PILLARS = [
   {
-    num: 1, code: "P1", name: "Civic Resilience",
-    color: "#1B4F8A", light: "#EBF2FF",
+    num: 1, code: "P1", name: "Civic Resilience", color: "#1B4F8A",
     readiness: "PARTIAL",
     blocker: "Cascade360 structural split; BRIC submission not executed",
     programs: [
@@ -21,8 +25,7 @@ const PILLARS = [
     ]
   },
   {
-    num: 2, code: "P2", name: "Innovation Equity",
-    color: "#6B21A8", light: "#F5F3FF",
+    num: 2, code: "P2", name: "Innovation Equity", color: "#6B21A8",
     readiness: "PARTIAL",
     blocker: "BGI EIN; NOVATELabs sponsorship revenue stream not configured in NetSuite",
     programs: [
@@ -32,8 +35,7 @@ const PILLARS = [
     ]
   },
   {
-    num: 3, code: "P3", name: "Future Workforce",
-    color: "#065F46", light: "#ECFDF5",
+    num: 3, code: "P3", name: "Future Workforce", color: "#065F46",
     readiness: "BLOCKED",
     blocker: "BGI EIN — single gate that unlocks all of P3",
     programs: [
@@ -45,8 +47,7 @@ const PILLARS = [
     ]
   },
   {
-    num: 4, code: "P4", name: "Education",
-    color: "#92400E", light: "#FEF3C7",
+    num: 4, code: "P4", name: "Education", color: "#92400E",
     readiness: "BLOCKED",
     blocker: "BGI board formation — Handbook + Screening Matrix cannot be built without board",
     programs: [
@@ -57,8 +58,7 @@ const PILLARS = [
     ]
   },
   {
-    num: 5, code: "P5", name: "Economic Mobility",
-    color: "#B45309", light: "#FFFBEB",
+    num: 5, code: "P5", name: "Economic Mobility", color: "#B45309",
     readiness: "BLOCKED",
     blocker: "BGI Treasurer not appointed; BGI bank account cannot open until EIN received",
     programs: [
@@ -68,8 +68,7 @@ const PILLARS = [
     ]
   },
   {
-    num: 6, code: "P6", name: "Sports / Culture / Events",
-    color: "#0E7490", light: "#ECFEFF",
+    num: 6, code: "P6", name: "Sports / Culture / Events", color: "#0E7490",
     readiness: "AT-RISK",
     blocker: "SEG subcontract must be executed before NFL GDA go-live Jun 30",
     programs: [
@@ -81,8 +80,7 @@ const PILLARS = [
     ]
   },
   {
-    num: 7, code: "P7", name: "Institutional Memory / Civic Intelligence",
-    color: "#374151", light: "#F9FAFB",
+    num: 7, code: "P7", name: "Institutional Memory / Civic Intelligence", color: "#374151",
     readiness: "PARTIAL",
     blocker: "Evidence Ledger not wired to Firestore; IRC §482 docs pending",
     programs: [
@@ -96,140 +94,14 @@ const PILLARS = [
 ];
 
 const BLOCKERS = [
-  {
-    rank: 1, id: "B1", level: "CRITICAL",
-    title: "Fractional CFO Seated",
-    deadline: "This week",
-    owner: "Tye",
-    action: "Execute CFO SOW — W-9 on file before first payment. 10 hrs/wk, Net-30.",
-    unlocks: [
-      "Revenue waterfall configuration (NetSuite L4)",
-      "Cost center structure (NetSuite L3)",
-      "Payroll allocation model (ADP L5)",
-      "Vendor payment governance (L6)",
-      "AR aging tracking — $475K NFL receipt Jul 30",
-      "IRC §482 transfer pricing docs",
-      "Monthly P&L by entity (first report end of Month 1)",
-      "Tax reserve setup",
-      "T2+ approval load removed from Founder",
-    ],
-    pillars: ["ALL"],
-    color: "#DC2626",
-  },
-  {
-    rank: 2, id: "B2", level: "CRITICAL",
-    title: "SEG Subcontract Executed (Step-In Rights Active)",
-    deadline: "Before Jun 30",
-    owner: "Tye + Counsel",
-    action: "Confirm execution status with counsel today. If not executed, execute before Jun 28.",
-    unlocks: [
-      "NFL GDA go-live (Jun 30)",
-      "$475K Q1 invoice cycle",
-      "EVERGAME commercial expansion",
-      "NFL Year 2 conversation",
-      "$10K/day LD enforcement mechanism active",
-    ],
-    pillars: ["P6"],
-    color: "#DC2626",
-  },
-  {
-    rank: 3, id: "B3", level: "CRITICAL",
-    title: "83(b) Election Filed — Certified Mail",
-    deadline: "Jun 28 — IRREVOCABLE",
-    owner: "Tye + Counsel",
-    action: "File certified mail this week. Confirm tracking number in hand. No extensions exist.",
-    unlocks: [
-      "Equity grant tax treatment locked in",
-      "No downstream impact — but missing it is permanent",
-    ],
-    pillars: [],
-    color: "#DC2626",
-  },
-  {
-    rank: 4, id: "B4", level: "CRITICAL",
-    title: "BGI EIN Received",
-    deadline: "ASAP — blocks 3 pillars",
-    owner: "Counsel",
-    action: "Confirm filing status with counsel. If not filed, this is the next item after 83(b).",
-    unlocks: [
-      "P3 Future Workforce — unlocks entirely",
-      "P4 Education — unlocks entirely",
-      "P5 Economic Mobility — partially unlocks",
-      "BGI bank accounts can open",
-      "BGI Treasurer can be appointed",
-      "DOL WIOA application (Week 8 target)",
-      "NSF education grants",
-      "BGI Fellowship cohort announcement",
-      "Volunteer engagement compliance",
-    ],
-    pillars: ["P3", "P4", "P5"],
-    color: "#DC2626",
-  },
-  {
-    rank: 5, id: "B5", level: "HIGH",
-    title: "Grant Funding Lead SOW Executed",
-    deadline: "This week",
-    owner: "Tye / Zoie",
-    action: "Execute SOW — 20 hrs/wk, Net-30, W-9 first. BRIC submission is the critical first deliverable.",
-    unlocks: [
-      "BRIC submission (P1 lead program — Atlanta360)",
-      "WIOA application post-EIN (P3/P5)",
-      "NSF education grants (P4)",
-      "2 CFR Part 200 federal compliance infrastructure",
-      "Grant tracking system live in Monday.com",
-    ],
-    pillars: ["P1", "P3", "P4", "P5"],
-    color: "#D97706",
-  },
-  {
-    rank: 6, id: "B6", level: "HIGH",
-    title: "Cascade360 Structural Decision",
-    deadline: "This week",
-    owner: "Tye + Counsel",
-    action: "One decision: commercial CiviGrid deployment, Institute program, or blend? Tell counsel — they map the split.",
-    unlocks: [
-      "P1 completeness",
-      "Operational Levee validation",
-      "Demonstration firewall is real for funders/regulators",
-      "Cascade360 as proof point for §501(c)(3) compliance",
-    ],
-    pillars: ["P1"],
-    color: "#D97706",
-  },
-  {
-    rank: 7, id: "B7", level: "HIGH",
-    title: "W-9 Sweep + Vendor Master Build",
-    deadline: "This week",
-    owner: "Zoie",
-    action: "Collect W-9 from all active vendors before next payment cycle. Build vendor master in NetSuite (entity / cost center / program / approval level).",
-    unlocks: [
-      "Comms Lead payments (15 hrs/wk)",
-      "Sales Lead payments (15 hrs/wk)",
-      "CFO payments (10 hrs/wk)",
-      "Grant Lead payments (20 hrs/wk)",
-      "MetaData milestone payments",
-      "Qubika pass-through billing",
-    ],
-    pillars: ["ALL"],
-    color: "#D97706",
-  },
-  {
-    rank: 8, id: "B8", level: "MEDIUM",
-    title: "NetSuite / ADP Configuration",
-    deadline: "CFO Week 1–2 deliverable",
-    owner: "Fractional CFO",
-    action: "CFO must be seated first (B1). Deliverables: royalty split routing live, cost centers built, payroll allocation configured.",
-    unlocks: [
-      "Finance Blueprint L3–L8 fully operational",
-      "Revenue tagging by type (Advisory/Platform/Grant/Licensing)",
-      "Labor attribution by cost center",
-      "True project profitability visible",
-      "Federal indirect rates groundwork",
-      "Investor reporting capability",
-    ],
-    pillars: ["ALL"],
-    color: "#059669",
-  },
+  { rank: 1, id: "B1", level: "CRITICAL", title: "Fractional CFO Seated", deadline: "This week", owner: "Tye", action: "Execute CFO SOW — W-9 on file before first payment. 10 hrs/wk, Net-30.", unlocks: ["Revenue waterfall configuration (NetSuite L4)", "Cost center structure (NetSuite L3)", "Payroll allocation model (ADP L5)", "Vendor payment governance (L6)", "AR aging tracking — $475K NFL receipt Jul 30", "IRC §482 transfer pricing docs", "Monthly P&L by entity (first report end of Month 1)", "Tax reserve setup", "T2+ approval load removed from Founder"], pillars: ["ALL"], color: C.red },
+  { rank: 2, id: "B2", level: "CRITICAL", title: "SEG Subcontract Executed (Step-In Rights Active)", deadline: "Before Jun 30", owner: "Tye + Counsel", action: "Confirm execution status with counsel today. If not executed, execute before Jun 28.", unlocks: ["NFL GDA go-live (Jun 30)", "$475K Q1 invoice cycle", "EVERGAME commercial expansion", "NFL Year 2 conversation", "$10K/day LD enforcement mechanism active"], pillars: ["P6"], color: C.red },
+  { rank: 3, id: "B3", level: "CRITICAL", title: "83(b) Election Filed — Certified Mail", deadline: "Jun 28 — IRREVOCABLE", owner: "Tye + Counsel", action: "File certified mail this week. Confirm tracking number in hand. No extensions exist.", unlocks: ["Equity grant tax treatment locked in", "No downstream impact — but missing it is permanent"], pillars: [], color: C.red },
+  { rank: 4, id: "B4", level: "CRITICAL", title: "BGI EIN Received", deadline: "ASAP — blocks 3 pillars", owner: "Counsel", action: "Confirm filing status with counsel. If not filed, this is the next item after 83(b).", unlocks: ["P3 Future Workforce — unlocks entirely", "P4 Education — unlocks entirely", "P5 Economic Mobility — partially unlocks", "BGI bank accounts can open", "BGI Treasurer can be appointed", "DOL WIOA application (Week 8 target)", "NSF education grants", "BGI Fellowship cohort announcement", "Volunteer engagement compliance"], pillars: ["P3", "P4", "P5"], color: C.red },
+  { rank: 5, id: "B5", level: "HIGH", title: "Grant Funding Lead SOW Executed", deadline: "This week", owner: "Tye / Zoie", action: "Execute SOW — 20 hrs/wk, Net-30, W-9 first. BRIC submission is the critical first deliverable.", unlocks: ["BRIC submission (P1 lead program — Atlanta360)", "WIOA application post-EIN (P3/P5)", "NSF education grants (P4)", "2 CFR Part 200 federal compliance infrastructure", "Grant tracking system live in Monday.com"], pillars: ["P1", "P3", "P4", "P5"], color: C.amber },
+  { rank: 6, id: "B6", level: "HIGH", title: "Cascade360 Structural Decision", deadline: "This week", owner: "Tye + Counsel", action: "One decision: commercial CiviGrid deployment, Institute program, or blend? Tell counsel — they map the split.", unlocks: ["P1 completeness", "Operational Levee validation", "Demonstration firewall is real for funders/regulators", "Cascade360 as proof point for §501(c)(3) compliance"], pillars: ["P1"], color: C.amber },
+  { rank: 7, id: "B7", level: "HIGH", title: "W-9 Sweep + Vendor Master Build", deadline: "This week", owner: "Zoie", action: "Collect W-9 from all active vendors before next payment cycle. Build vendor master in NetSuite.", unlocks: ["Comms Lead payments (15 hrs/wk)", "Sales Lead payments (15 hrs/wk)", "CFO payments (10 hrs/wk)", "Grant Lead payments (20 hrs/wk)", "MetaData milestone payments", "Qubika pass-through billing"], pillars: ["ALL"], color: C.amber },
+  { rank: 8, id: "B8", level: "MEDIUM", title: "NetSuite / ADP Configuration", deadline: "CFO Week 1–2 deliverable", owner: "Fractional CFO", action: "CFO must be seated first (B1). Deliverables: royalty split routing live, cost centers built, payroll allocation configured.", unlocks: ["Finance Blueprint L3–L8 fully operational", "Revenue tagging by type (Advisory/Platform/Grant/Licensing)", "Labor attribution by cost center", "True project profitability visible", "Federal indirect rates groundwork", "Investor reporting capability"], pillars: ["ALL"], color: C.green },
 ];
 
 const EXECUTION_SEQUENCE = [
@@ -239,172 +111,114 @@ const EXECUTION_SEQUENCE = [
   { week: "Jul 1–30", items: ["First monthly P&L by entity (CFO deliverable)", "NFL Q1 invoice AR aging — $475K watch (due Jul 30)", "BGI independent director independence screens begin (pending EIN)", "DOL WIOA application package development begins (pending EIN)"] },
 ];
 
-const READINESS_STYLE = {
-  "BLOCKED": { bg: "#FEE2E2", text: "#991B1B", border: "#FCA5A5" },
-  "AT-RISK": { bg: "#FEF3C7", text: "#92400E", border: "#FDE68A" },
-  "PARTIAL": { bg: "#FFF7ED", text: "#9A3412", border: "#FDBA74" },
-  "ACTIVE": { bg: "#DCFCE7", text: "#166534", border: "#86EFAC" },
+const STATUS_COLORS = {
+  "BLOCKED": C.red, "GO-LIVE JUN 30": C.purple, "AT-RISK": C.amber,
+  "Pilot Active": C.green, "Active": C.green, "Platform Active": C.green,
+  "Built (FORGE)": C.accent, "In Pursuit": C.amber, "Needs Routing": C.amber,
+  "In Design": "#64748b", "Design": "#64748b", "Pre-launch": "#64748b",
+  "Development": "#64748b", "Not Built": C.red, "Split Required": C.red,
+  "Pursuit": C.amber, "Designed": "#64748b",
 };
 
-const LEVEL_STYLE = {
-  CRITICAL: { bg: "#FEE2E2", text: "#991B1B", border: "#FCA5A5" },
-  HIGH: { bg: "#FEF3C7", text: "#92400E", border: "#FDE68A" },
-  MEDIUM: { bg: "#DCFCE7", text: "#166534", border: "#86EFAC" },
-};
+const READINESS_VARIANT = { PARTIAL: "warning", BLOCKED: "danger", "AT-RISK": "warning", ACTIVE: "success" };
 
-const STATUS_COLOR = {
-  "BLOCKED": "#DC2626",
-  "GO-LIVE JUN 30": "#7C3AED",
-  "AT-RISK": "#D97706",
-  "Pilot Active": "#059669",
-  "Active": "#059669",
-  "Platform Active": "#059669",
-  "Built (FORGE)": "#2563EB",
-  "In Pursuit": "#D97706",
-  "Needs Routing": "#D97706",
-  "In Design": "#6B7280",
-  "Design": "#6B7280",
-  "Pre-launch": "#6B7280",
-  "Development": "#6B7280",
-  "Not Built": "#DC2626",
-  "Split Required": "#DC2626",
-};
+const TABS = ["ARI Pillar Map", "Blocker Priority Stack", "Execution Sequence"];
 
 export default function ProgramConverge() {
-  const [view, setView] = useState("pillars");
-  const [selectedPillar, setSelectedPillar] = useState(null);
-  const [expandedBlocker, setExpandedBlocker] = useState(null);
-  const [resolved, setResolved] = useState({});
+  const [tab, setTab] = useState(0);
+  const [selectedPillar, setSelectedPillar] = useState<number | null>(null);
+  const [expandedBlocker, setExpandedBlocker] = useState<string | null>(null);
+  const [resolved, setResolved] = useState<Record<string, boolean>>({});
   const [pillarFilter, setPillarFilter] = useState("ALL");
 
-  const toggleResolved = (id) => setResolved(prev => ({ ...prev, [id]: !prev[id] }));
   const resolvedCount = Object.values(resolved).filter(Boolean).length;
-
-  const filteredBlockers = pillarFilter === "ALL"
-    ? BLOCKERS
-    : BLOCKERS.filter(b => b.pillars.includes(pillarFilter) || b.pillars.includes("ALL"));
+  const filteredBlockers = pillarFilter === "ALL" ? BLOCKERS : BLOCKERS.filter(b => b.pillars.includes(pillarFilter) || b.pillars.includes("ALL"));
 
   return (
-    <div style={{ fontFamily: "'IBM Plex Mono', 'Courier New', monospace", background: "#0A0F1E", minHeight: "100vh", color: "#E2E8F0" }}>
+    <ForgePage>
+      <ForgeHeader
+        icon="🎯"
+        title="Program Converge Map"
+        subtitle="7-Pillar ARI Mapping · Blocker Priority Stack · Execution Sequence · Jun 8, 2026"
+        stats={[
+          { label: "Pillars Active", value: "2/7" },
+          { label: "Pillars Blocked", value: "3/7" },
+          { label: "Critical Blockers", value: String(BLOCKERS.filter(b => b.level === "CRITICAL").length) },
+          { label: "Resolved", value: `${resolvedCount}/${BLOCKERS.length}` },
+        ]}
+      />
 
-      {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #0F1629 0%, #1A2744 50%, #0F1629 100%)", borderBottom: "1px solid #1E3A5F", padding: "20px 28px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "12px" }}>
-          <div>
-            <div style={{ fontSize: "10px", color: "#4a6080", letterSpacing: "2px", marginBottom: "4px" }}>ARI · SENTRAIS · NOVATELABS</div>
-            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "700", color: "#F1F5F9" }}>Program Converge Map</h1>
-            <div style={{ fontSize: "11px", color: "#64748B", marginTop: "3px" }}>7-Pillar ARI Mapping · Blocker Priority Stack · Execution Sequence · Jun 8, 2026</div>
+      {/* Pillar readiness strip */}
+      <div style={{ padding: "12px 24px", background: C.surface, borderBottom: `1px solid ${C.border}`, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {PILLARS.map(p => (
+          <div key={p.code} onClick={() => { setSelectedPillar(selectedPillar === p.num ? null : p.num); setTab(0); }}
+            style={{ background: C.bg, border: `1px solid ${p.color}44`, borderTop: `2px solid ${p.color}`, borderRadius: 6, padding: "6px 10px", cursor: "pointer", minWidth: 72 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: p.color }}>{p.code}</div>
+            <div style={{ fontSize: 9, color: "#94a3b8", marginTop: 1 }}>{p.name.split(" ")[0]}</div>
+            <div style={{ marginTop: 4 }}>
+              <ForgeBadge variant={READINESS_VARIANT[p.readiness] || "neutral"} style={{ fontSize: 8, padding: "1px 5px" }}>{p.readiness}</ForgeBadge>
+            </div>
           </div>
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {[
-              { label: "Pillars Active", value: "2/7", color: "#10B981" },
-              { label: "Pillars Blocked", value: "3/7", color: "#EF4444" },
-              { label: "Critical Blockers", value: BLOCKERS.filter(b => b.level === "CRITICAL").length, color: "#EF4444" },
-              { label: "Resolved", value: `${resolvedCount}/${BLOCKERS.length}`, color: resolvedCount > 0 ? "#10B981" : "#64748B" },
-            ].map(s => (
-              <div key={s.label} style={{ background: "#0D1526", border: `1px solid ${s.color}33`, borderRadius: "8px", padding: "8px 14px", textAlign: "center" }}>
-                <div style={{ fontSize: "20px", fontWeight: "800", color: s.color, lineHeight: 1 }}>{s.value}</div>
-                <div style={{ fontSize: "9px", color: "#64748B", marginTop: "2px", letterSpacing: "0.5px" }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Pillar readiness strip */}
-        <div style={{ display: "flex", gap: "6px", marginTop: "16px", flexWrap: "wrap" }}>
-          {PILLARS.map(p => {
-            const rs = READINESS_STYLE[p.readiness] || READINESS_STYLE["PARTIAL"];
-            return (
-              <div key={p.code} onClick={() => { setSelectedPillar(selectedPillar === p.num ? null : p.num); setView("pillars"); }}
-                style={{ background: "#0D1526", border: `1px solid ${p.color}44`, borderTop: `2px solid ${p.color}`, borderRadius: "6px", padding: "6px 12px", cursor: "pointer", minWidth: "80px" }}>
-                <div style={{ fontSize: "11px", fontWeight: "700", color: p.color }}>{p.code}</div>
-                <div style={{ fontSize: "9px", color: "#94A3B8", marginTop: "1px" }}>{p.name.split(" ")[0]}</div>
-                <div style={{ marginTop: "4px", background: rs.bg, color: rs.text, fontSize: "8px", padding: "1px 5px", borderRadius: "3px", display: "inline-block", fontFamily: "inherit" }}>{p.readiness}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div style={{ borderBottom: "1px solid #1E3A5F", padding: "0 28px", display: "flex" }}>
-        {[
-          { id: "pillars", label: "ARI Pillar Map" },
-          { id: "blockers", label: "Blocker Priority Stack" },
-          { id: "sequence", label: "Execution Sequence" },
-        ].map(t => (
-          <button key={t.id} onClick={() => setView(t.id)} style={{
-            background: "none", border: "none", cursor: "pointer", padding: "12px 18px",
-            fontSize: "12px", fontFamily: "inherit", letterSpacing: "0.5px",
-            color: view === t.id ? "#60A5FA" : "#64748B",
-            borderBottom: view === t.id ? "2px solid #3B82F6" : "2px solid transparent",
-          }}>{t.label}</button>
         ))}
       </div>
 
-      <div style={{ padding: "20px 28px" }}>
+      <ForgeTabs tabs={TABS} active={tab} onChange={setTab} />
+      <ForgeContent>
 
-        {/* ── PILLAR MAP ── */}
-        {view === "pillars" && (
+        {tab === 0 && (
           <div>
             {selectedPillar === null ? (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "12px" }}>
+              <ForgeGrid cols={2}>
                 {PILLARS.map(p => {
-                  const rs = READINESS_STYLE[p.readiness] || READINESS_STYLE["PARTIAL"];
                   const active = p.programs.filter(pr => !["BLOCKED", "Not Built", "Split Required"].includes(pr.status)).length;
                   return (
-                    <div key={p.code} onClick={() => setSelectedPillar(p.num)}
-                      style={{ background: "#0D1526", border: `1px solid ${p.color}44`, borderTop: `3px solid ${p.color}`, borderRadius: "8px", padding: "14px 16px", cursor: "pointer" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-                        <div>
-                          <span style={{ fontSize: "10px", color: p.color, letterSpacing: "1px" }}>{p.code}</span>
-                          <div style={{ fontSize: "15px", fontWeight: "700", color: "#F1F5F9", marginTop: "2px" }}>{p.name}</div>
+                    <ForgeCard key={p.code} accent={p.color} style={{ cursor: "pointer" }} onClick={() => setSelectedPillar(p.num)}>
+                      <ForgeCardHeader
+                        title={`${p.code} — ${p.name}`}
+                        badge={<ForgeBadge variant={READINESS_VARIANT[p.readiness] || "neutral"}>{p.readiness}</ForgeBadge>}
+                      />
+                      <ForgeCardBody>
+                        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8 }}>{active}/{p.programs.length} programs active</div>
+                        <div style={{ fontSize: 11, color: C.red, background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 6, padding: "6px 10px" }}>
+                          ⚠ {p.blocker}
                         </div>
-                        <span style={{ background: rs.bg, color: rs.text, fontSize: "9px", padding: "2px 7px", borderRadius: "4px", fontFamily: "inherit", flexShrink: 0 }}>{p.readiness}</span>
-                      </div>
-                      <div style={{ fontSize: "11px", color: "#94A3B8", marginBottom: "8px" }}>{active}/{p.programs.length} programs active</div>
-                      <div style={{ fontSize: "10px", color: "#EF4444", background: "#1C0A0A", border: "1px solid #7F1D1D", borderRadius: "4px", padding: "5px 8px" }}>
-                        ⚠ {p.blocker}
-                      </div>
-                    </div>
+                      </ForgeCardBody>
+                    </ForgeCard>
                   );
                 })}
-              </div>
+              </ForgeGrid>
             ) : (() => {
               const p = PILLARS.find(x => x.num === selectedPillar);
               if (!p) return null;
               return (
                 <div>
-                  <button onClick={() => setSelectedPillar(null)} style={{ background: "none", border: "1px solid #1E3A5F", borderRadius: "4px", padding: "5px 12px", color: "#64748B", cursor: "pointer", fontSize: "11px", fontFamily: "inherit", marginBottom: "16px" }}>← Back to all pillars</button>
-                  <div style={{ background: "#0D1526", border: `1px solid ${p.color}44`, borderTop: `3px solid ${p.color}`, borderRadius: "10px", padding: "18px 20px", marginBottom: "16px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "10px", marginBottom: "12px" }}>
-                      <div>
-                        <span style={{ fontSize: "10px", color: p.color, letterSpacing: "2px" }}>{p.code} · ARI PILLAR</span>
-                        <div style={{ fontSize: "20px", fontWeight: "700", color: "#F1F5F9", marginTop: "4px" }}>{p.name}</div>
+                  <button onClick={() => setSelectedPillar(null)} style={{ background: "none", border: `1px solid ${C.border}`, borderRadius: 6, padding: "5px 12px", color: C.accent, cursor: "pointer", fontSize: 11, marginBottom: 16 }}>← All Pillars</button>
+                  <ForgeCard accent={p.color} style={{ marginBottom: 16 }}>
+                    <ForgeCardHeader
+                      title={`${p.code} — ${p.name}`}
+                      badge={<ForgeBadge variant={READINESS_VARIANT[p.readiness] || "neutral"}>{p.readiness}</ForgeBadge>}
+                    />
+                    <ForgeCardBody>
+                      <div style={{ fontSize: 11, color: C.red, background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 6, padding: "8px 12px" }}>
+                        PRIMARY BLOCKER: {p.blocker}
                       </div>
-                      <span style={{ background: READINESS_STYLE[p.readiness]?.bg, color: READINESS_STYLE[p.readiness]?.text, fontSize: "11px", padding: "3px 10px", borderRadius: "4px", fontFamily: "inherit" }}>{p.readiness}</span>
-                    </div>
-                    <div style={{ background: "#1C0A0A", border: "1px solid #7F1D1D", borderRadius: "5px", padding: "8px 12px", fontSize: "11px", color: "#FCA5A5" }}>
-                      PRIMARY BLOCKER: {p.blocker}
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    </ForgeCardBody>
+                  </ForgeCard>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {p.programs.map((prog, i) => {
-                      const sc = STATUS_COLOR[prog.status] || "#64748B";
-                      const isBlocked = prog.status === "BLOCKED" || prog.status === "Not Built" || prog.status === "Split Required";
+                      const sc = STATUS_COLORS[prog.status] || "#64748b";
+                      const isBlocked = ["BLOCKED", "Not Built", "Split Required"].includes(prog.status);
                       return (
-                        <div key={i} style={{ background: isBlocked ? "#110808" : "#0D1526", border: `1px solid ${isBlocked ? "#7F1D1D" : "#1E3A5F"}`, borderLeft: `3px solid ${sc}`, borderRadius: "6px", padding: "12px 14px" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "8px", marginBottom: "6px" }}>
-                            <div style={{ fontSize: "13px", fontWeight: "600", color: "#E2E8F0", flex: 1 }}>{prog.name}</div>
-                            <span style={{ background: sc + "22", color: sc, fontSize: "9px", padding: "2px 7px", borderRadius: "3px", fontFamily: "inherit", flexShrink: 0 }}>{prog.status}</span>
+                        <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${sc}`, borderRadius: 8, padding: "12px 14px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0", flex: 1 }}>{prog.name}</div>
+                            <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 3, background: `${sc}22`, color: sc, flexShrink: 0 }}>{prog.status}</span>
                           </div>
-                          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", fontSize: "10px", color: "#64748B", marginBottom: prog.gap ? "6px" : 0 }}>
-                            <span>Entity: <span style={{ color: "#94A3B8" }}>{prog.entity}</span></span>
-                            <span>Funding: <span style={{ color: "#94A3B8" }}>{prog.funding}</span></span>
+                          <div style={{ fontSize: 11, color: "#64748b", marginBottom: prog.gap ? 6 : 0 }}>
+                            Entity: {prog.entity} · Funding: {prog.funding}
                           </div>
                           {prog.gap && (
-                            <div style={{ fontSize: "10px", color: "#FCD34D", background: "#1C1106", border: "1px solid #78350F", borderRadius: "3px", padding: "4px 8px", marginTop: "4px" }}>
+                            <div style={{ fontSize: 11, color: "#fcd34d", background: "rgba(251,191,36,0.05)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 5, padding: "4px 8px", marginTop: 4 }}>
                               → {prog.gap}
                             </div>
                           )}
@@ -418,94 +232,63 @@ export default function ProgramConverge() {
           </div>
         )}
 
-        {/* ── BLOCKER STACK ── */}
-        {view === "blockers" && (
+        {tab === 1 && (
           <div>
-            {/* Filter by pillar */}
-            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "16px", alignItems: "center" }}>
-              <span style={{ fontSize: "10px", color: "#64748B", letterSpacing: "1px" }}>FILTER:</span>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16, alignItems: "center" }}>
+              <ForgeLabel>Filter:</ForgeLabel>
               {["ALL", "P1", "P2", "P3", "P4", "P5", "P6", "P7"].map(f => (
                 <button key={f} onClick={() => setPillarFilter(f)} style={{
-                  background: pillarFilter === f ? "#1D4ED8" : "#0D1526",
-                  border: `1px solid ${pillarFilter === f ? "#3B82F6" : "#1E3A5F"}`,
-                  color: pillarFilter === f ? "#DBEAFE" : "#64748B",
-                  borderRadius: "5px", padding: "4px 10px", fontSize: "10px", cursor: "pointer", fontFamily: "inherit"
+                  padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer",
+                  background: pillarFilter === f ? C.accent : C.surface,
+                  border: `1px solid ${pillarFilter === f ? C.accent : C.border}`,
+                  color: pillarFilter === f ? "#fff" : "#94a3b8",
                 }}>{f}</button>
               ))}
             </div>
 
-            {/* Progress bar */}
-            <div style={{ background: "#0D1526", border: "1px solid #1E3A5F", borderRadius: "8px", padding: "12px 16px", marginBottom: "16px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "6px" }}>
-                <span style={{ color: "#94A3B8" }}>Blocker Resolution Progress</span>
-                <span style={{ color: "#60A5FA" }}>{resolvedCount} / {BLOCKERS.length} resolved</span>
-              </div>
-              <div style={{ height: "5px", background: "#1F2937", borderRadius: "3px", overflow: "hidden" }}>
-                <div style={{ height: "100%", background: "linear-gradient(90deg, #3B82F6, #10B981)", width: `${(resolvedCount / BLOCKERS.length) * 100}%`, transition: "width 0.3s", borderRadius: "3px" }} />
-              </div>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 13, color: "#94a3b8" }}>Blocker Resolution Progress</span>
+              <span style={{ fontSize: 13, color: C.accent, fontWeight: 600 }}>{resolvedCount} / {BLOCKERS.length} resolved</span>
+            </div>
+            <div style={{ height: 5, background: C.border, borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
+              <div style={{ height: "100%", background: `linear-gradient(90deg, ${C.accent}, ${C.teal})`, width: `${(resolvedCount / BLOCKERS.length) * 100}%`, transition: "width 0.3s", borderRadius: 3 }} />
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {filteredBlockers.map(b => {
-                const ls = LEVEL_STYLE[b.level];
                 const isResolved = resolved[b.id];
                 const isExpanded = expandedBlocker === b.id;
                 return (
-                  <div key={b.id} style={{ background: isResolved ? "#071811" : "#0D1526", border: `1px solid ${isResolved ? "#10B981" : "#1E3A5F"}`, borderLeft: `3px solid ${isResolved ? "#10B981" : b.color}`, borderRadius: "8px", opacity: isResolved ? 0.75 : 1, transition: "all 0.2s" }}>
-                    <div style={{ padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}
-                      onClick={() => setExpandedBlocker(isExpanded ? null : b.id)}>
-
-                      {/* Checkbox */}
-                      <div onClick={(e) => { e.stopPropagation(); toggleResolved(b.id); }}
-                        style={{ width: "20px", height: "20px", borderRadius: "4px", flexShrink: 0, background: isResolved ? "#10B981" : "#111827", border: `1px solid ${isResolved ? "#10B981" : "#374151"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "white", cursor: "pointer" }}>
+                  <div key={b.id} style={{ background: isResolved ? "rgba(16,185,129,0.05)" : C.surface, border: `1px solid ${isResolved ? C.green : C.border}`, borderLeft: `3px solid ${isResolved ? C.green : b.color}`, borderRadius: 10, opacity: isResolved ? 0.75 : 1 }}>
+                    <div style={{ padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }} onClick={() => setExpandedBlocker(isExpanded ? null : b.id)}>
+                      <div onClick={(e) => { e.stopPropagation(); setResolved(prev => ({ ...prev, [b.id]: !prev[b.id] })); }}
+                        style={{ width: 20, height: 20, borderRadius: 4, flexShrink: 0, background: isResolved ? C.green : C.bg, border: `1px solid ${isResolved ? C.green : "#374151"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "white", cursor: "pointer" }}>
                         {isResolved ? "✓" : ""}
                       </div>
-
-                      {/* Rank */}
-                      <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: b.color + "22", color: b.color, fontSize: "11px", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{b.rank}</div>
-
-                      {/* Level badge */}
-                      <span style={{ background: ls.bg, color: ls.text, fontSize: "9px", padding: "2px 7px", borderRadius: "3px", fontFamily: "inherit", flexShrink: 0, textDecoration: isResolved ? "line-through" : "none" }}>{b.level}</span>
-
-                      {/* Title */}
-                      <div style={{ flex: 1, fontSize: "13px", fontWeight: "600", color: isResolved ? "#6B7280" : "#E2E8F0", textDecoration: isResolved ? "line-through" : "none" }}>{b.title}</div>
-
-                      {/* Deadline */}
-                      <span style={{ fontSize: "10px", color: b.deadline.includes("Jun 28") || b.deadline.includes("Jun 30") ? "#EF4444" : "#94A3B8", flexShrink: 0 }}>{b.deadline}</span>
-
-                      {/* Unlock count */}
-                      <span style={{ background: "#1F2937", color: "#60A5FA", fontSize: "9px", padding: "2px 7px", borderRadius: "3px", flexShrink: 0 }}>{b.unlocks.length} unlocks</span>
-
-                      <span style={{ color: "#374151", fontSize: "10px" }}>{isExpanded ? "▲" : "▼"}</span>
+                      <div style={{ width: 24, height: 24, borderRadius: "50%", background: `${b.color}22`, color: b.color, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{b.rank}</div>
+                      <ForgeBadge variant={b.level === "CRITICAL" ? "danger" : b.level === "HIGH" ? "warning" : "success"}>{b.level}</ForgeBadge>
+                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: isResolved ? "#64748b" : "#e2e8f0", textDecoration: isResolved ? "line-through" : "none" }}>{b.title}</div>
+                      <span style={{ fontSize: 11, color: b.deadline.includes("Jun 28") || b.deadline.includes("Jun 30") ? C.red : "#94a3b8", flexShrink: 0 }}>{b.deadline}</span>
+                      <span style={{ background: "rgba(14,165,233,0.1)", color: C.accent, fontSize: 10, padding: "2px 7px", borderRadius: 3, flexShrink: 0 }}>{b.unlocks.length} unlocks</span>
+                      <span style={{ color: "#4a6080", fontSize: 11 }}>{isExpanded ? "▲" : "▼"}</span>
                     </div>
-
                     {isExpanded && (
-                      <div style={{ borderTop: "1px solid #1E3A5F", padding: "14px 16px" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                      <div style={{ borderTop: `1px solid ${C.border}`, padding: "14px 16px" }}>
+                        <ForgeGrid cols={2}>
                           <div>
-                            <div style={{ fontSize: "9px", color: "#64748B", letterSpacing: "1px", marginBottom: "6px" }}>ACTION REQUIRED</div>
-                            <div style={{ fontSize: "12px", color: "#CBD5E1", background: "#111827", borderRadius: "5px", padding: "8px 10px", border: "1px solid #1E3A5F" }}>{b.action}</div>
-                            <div style={{ marginTop: "8px", fontSize: "10px", color: "#64748B" }}>Owner: <span style={{ color: "#94A3B8" }}>{b.owner}</span></div>
-                            {b.pillars.length > 0 && b.pillars[0] !== "ALL" && (
-                              <div style={{ marginTop: "6px", display: "flex", gap: "4px", flexWrap: "wrap" }}>
-                                {b.pillars.map(p => {
-                                  const pillar = PILLARS.find(x => x.code === p);
-                                  return pillar ? <span key={p} style={{ background: pillar.color + "22", color: pillar.color, fontSize: "9px", padding: "1px 6px", borderRadius: "3px", fontFamily: "inherit" }}>{p}</span> : null;
-                                })}
+                            <ForgeLabel style={{ marginBottom: 6 }}>Action Required</ForgeLabel>
+                            <div style={{ fontSize: 12, color: "#cbd5e1", background: C.bg, borderRadius: 6, padding: "8px 10px", border: `1px solid ${C.border}`, marginBottom: 8 }}>{b.action}</div>
+                            <div style={{ fontSize: 11, color: "#64748b" }}>Owner: <span style={{ color: "#94a3b8" }}>{b.owner}</span></div>
+                          </div>
+                          <div>
+                            <ForgeLabel style={{ marginBottom: 6 }}>What This Unlocks ({b.unlocks.length})</ForgeLabel>
+                            {b.unlocks.map((u, i) => (
+                              <div key={i} style={{ fontSize: 11, color: "#94a3b8", display: "flex", gap: 6, padding: "3px 0", borderBottom: `1px solid ${C.bg}` }}>
+                                <span style={{ color: C.green, flexShrink: 0 }}>→</span>{u}
                               </div>
-                            )}
+                            ))}
                           </div>
-                          <div>
-                            <div style={{ fontSize: "9px", color: "#64748B", letterSpacing: "1px", marginBottom: "6px" }}>WHAT THIS UNLOCKS ({b.unlocks.length})</div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                              {b.unlocks.map((u, i) => (
-                                <div key={i} style={{ fontSize: "10px", color: "#94A3B8", display: "flex", gap: "6px", padding: "2px 0", borderBottom: "1px solid #111827" }}>
-                                  <span style={{ color: "#10B981", flexShrink: 0 }}>→</span>{u}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
+                        </ForgeGrid>
                       </div>
                     )}
                   </div>
@@ -515,44 +298,39 @@ export default function ProgramConverge() {
           </div>
         )}
 
-        {/* ── EXECUTION SEQUENCE ── */}
-        {view === "sequence" && (
-          <div style={{ maxWidth: "800px" }}>
-            <div style={{ background: "#0D1526", border: "1px solid #1E3A5F", borderRadius: "8px", padding: "12px 16px", marginBottom: "20px", fontSize: "11px", color: "#60A5FA" }}>
-              Items are ordered by deadline and dependency chain. Critical items in red must be resolved before go-live Jun 30.
-            </div>
-            {EXECUTION_SEQUENCE.map((week, wi) => (
-              <div key={wi} style={{ display: "flex", gap: "16px", marginBottom: "20px" }}>
-                {/* Timeline connector */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
-                  <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: wi === 0 ? "#EF4444" : wi === 2 ? "#7C3AED" : "#3B82F6", marginTop: "2px" }} />
-                  {wi < EXECUTION_SEQUENCE.length - 1 && <div style={{ width: "1px", flex: 1, background: "#1E3A5F", marginTop: "4px" }} />}
-                </div>
-                <div style={{ flex: 1, paddingBottom: "8px" }}>
-                  <div style={{ fontSize: "11px", fontWeight: "700", color: wi === 2 ? "#A78BFA" : "#60A5FA", letterSpacing: "1px", marginBottom: "10px" }}>{week.week}</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    {week.items.map((item, ii) => {
-                      const isCritical = item.toLowerCase().includes("83(b)") || item.toLowerCase().includes("seg") || item.toLowerCase().includes("go-live") || item.toLowerCase().includes("cutover");
-                      return (
-                        <div key={ii} style={{ background: isCritical ? "#110808" : "#0D1526", border: `1px solid ${isCritical ? "#7F1D1D" : "#1E3A5F"}`, borderLeft: `2px solid ${isCritical ? "#EF4444" : "#374151"}`, borderRadius: "5px", padding: "7px 10px", fontSize: "11px", color: isCritical ? "#FCA5A5" : "#CBD5E1", display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                          <span style={{ color: isCritical ? "#EF4444" : "#374151", flexShrink: 0, marginTop: "1px" }}>{isCritical ? "⚑" : "◦"}</span>
-                          {item}
-                        </div>
-                      );
-                    })}
+        {tab === 2 && (
+          <div style={{ maxWidth: 800 }}>
+            <ForgeAlert level="info" title="Execution Order">
+              Items are ordered by deadline and dependency chain. Critical items must be resolved before go-live Jun 30.
+            </ForgeAlert>
+            <div style={{ marginTop: 20 }}>
+              {EXECUTION_SEQUENCE.map((wk, wi) => (
+                <div key={wi} style={{ display: "flex", gap: 16, marginBottom: 20 }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: wi === 0 ? C.red : wi === 2 ? C.purple : C.accent, marginTop: 2 }} />
+                    {wi < EXECUTION_SEQUENCE.length - 1 && <div style={{ width: 1, flex: 1, background: C.border, marginTop: 4 }} />}
+                  </div>
+                  <div style={{ flex: 1, paddingBottom: 8 }}>
+                    <ForgeLabel style={{ marginBottom: 10, color: wi === 2 ? C.purple : C.accent }}>{wk.week}</ForgeLabel>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                      {wk.items.map((item, ii) => {
+                        const isCritical = item.toLowerCase().includes("83(b)") || item.toLowerCase().includes("seg") || item.toLowerCase().includes("go-live") || item.toLowerCase().includes("cutover");
+                        return (
+                          <div key={ii} style={{ background: isCritical ? "rgba(239,68,68,0.05)" : C.surface, border: `1px solid ${isCritical ? "rgba(239,68,68,0.3)" : C.border}`, borderLeft: `2px solid ${isCritical ? C.red : "#374151"}`, borderRadius: 6, padding: "7px 10px", fontSize: 12, color: isCritical ? "#fca5a5" : "#cbd5e1", display: "flex", gap: 8 }}>
+                            <span style={{ color: isCritical ? C.red : "#374151", flexShrink: 0 }}>{isCritical ? "⚑" : "◦"}</span>
+                            {item}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Footer */}
-      <div style={{ borderTop: "1px solid #1E3A5F", padding: "12px 28px", display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#374151", flexWrap: "wrap", gap: "8px" }}>
-        <span>ARI Program Converge · 7 pillars · {BLOCKERS.length} blockers · {PILLARS.reduce((s, p) => s + p.programs.length, 0)} programs mapped</span>
-        <span style={{ color: "#EF4444" }}>⚠ 83(b) Jun 28 · SEG + NFL go-live Jun 30 · BGI EIN blocks P3/P4/P5</span>
-      </div>
-    </div>
+      </ForgeContent>
+    </ForgePage>
   );
 }

@@ -8,6 +8,7 @@ import FinancialOperatingSystem from "./pages/FinancialOperatingSystem";
 import { ARIPrograms } from "./pages/ARIPrograms";
 import ARIProgramMap from "./pages/ARIProgramMap";
 import { EvidenceLedger } from "./pages/EvidenceLedger";
+import { Dashboard } from "./pages/Dashboard";
 import MasterCalendar from "./pages/MasterCalendar";
 import MasterCalendarLight from "./pages/MasterCalendarLight";
 import DocVersionControl from "./pages/DocVersionControl";
