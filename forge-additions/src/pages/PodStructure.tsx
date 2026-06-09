@@ -9,11 +9,48 @@ import {
 
 const POD_COMPOSITION = {
   roles: [
-    { title: "Pod Leader", count: 1, color: C.accent, responsibility: "Owns pod P&L, unblocks team, runs weekly pod sync, reports executive dashboard quadrant" },
-    { title: "Growth Marketer", count: 1, color: C.teal, responsibility: "Pipeline generation, content, field events; variable comp tied to pod pipeline + revenue" },
-    { title: "Business Development Rep (BDR)", count: "1–2", color: C.purple, responsibility: "Qualified meeting generation; 30-min speed-to-lead SLA on all MQL handoffs from marketing" },
-    { title: "Account Executive (AE)", count: 2, color: C.green, responsibility: "Closes deals, owns ARR quota; 80% individual ARR + 20% pod NRR" },
-    { title: "Customer Success Manager (CSM)", count: 1, color: C.amber, responsibility: "Retention, expansion signals, post-handoff ownership; 70% retention + 30% expansion" },
+    {
+      title: "Pod Leader",
+      subtitle: "Product Marketer / Growth Director",
+      count: 1, color: C.accent,
+      responsibility: "Strategic direction, positioning, and market alignment for the pod's specific segment. Ensures the pod has the messaging, collateral, and strategic insights needed to win.",
+      keyTasks: ["Developing buyer personas and segment-specific positioning", "Managing the pod's budget and spend authority (<$5K self-approve)", "Coordinating launch schedules and GTM calendar", "Unblocking cross-functional friction between demand gen, sales, and CS"],
+    },
+    {
+      title: "Demand Generation / Growth Specialist",
+      subtitle: "Growth Marketer",
+      count: 1, color: C.teal,
+      responsibility: "Fills the top of the funnel with high-intent pipeline specifically for this pod's target market segment.",
+      keyTasks: ["Running targeted Account-Based Marketing (ABM) campaigns", "Managing paid acquisition for the pod's segment", "Optimizing segment-specific landing pages and conversion flows", "Creating lead-generation workflows and BDR handoff sequences"],
+    },
+    {
+      title: "Business Development Rep (BDR)",
+      subtitle: "Outbound & Inbound Sales",
+      count: "1–2", color: C.purple,
+      responsibility: "Converts marketing-generated pipeline and outbound sequences into qualified opportunities. 30-min speed-to-lead SLA on all inbound MQLs during business hours.",
+      keyTasks: ["Qualifying inbound leads from demand gen campaigns", "Running outbound sequences tailored to the pod's segment", "Booking discovery calls for AEs", "Logging all activity in CRM within same business day"],
+    },
+    {
+      title: "Account Executive (AE)",
+      subtitle: "Closing & Revenue",
+      count: 2, color: C.green,
+      responsibility: "Converts qualified pipeline into closed-won revenue. Owns ARR quota. 24-hr CRM handover brief required at close.",
+      keyTasks: ["Running discovery calls and deep-dive demos", "Managing negotiations and deal structuring", "Completing internal CRM handover brief within 24 hrs of close", "Collaborating with CSM on expansion opportunities"],
+    },
+    {
+      title: "Customer Success Manager (CSM)",
+      subtitle: "Retention, TTV & Expansion",
+      count: 1, color: C.amber,
+      responsibility: "Onboards new clients, drives time-to-value, retains accounts, and generates expansion revenue. 48-hr kickoff scheduling SLA from warm intro.",
+      keyTasks: ["Guiding new clients through onboarding and implementation", "Monitoring product/service adoption and usage metrics", "Running quarterly business reviews (QBRs)", "Identifying and surfacing upsell/cross-sell signals to AE"],
+    },
+    {
+      title: "RevOps / Data Support",
+      subtitle: "Shared Operational Runway",
+      count: "Shared", color: "#64748b",
+      responsibility: "Cross-pod operational infrastructure. Maintains CRM hygiene, routing rules, reporting dashboards, and attribution integrity. Not pod-exclusive — shared across all pods.",
+      keyTasks: ["CRM routing rule maintenance and regional pod assignment", "Pod dashboard reporting (pipeline, velocity, NRR, attainment)", "ERP cost-center reconciliation per pod", "Win/loss data analysis and quarterly insight distribution"],
+    },
   ],
   podKicker: {
     description: "Shared quarterly pool unlocked at 100% collective target. Accelerator kicks in at 115%.",
@@ -170,20 +207,57 @@ const EXEC_DASHBOARD = [
   },
 ];
 
+const SHARED_KPIS = [
+  {
+    category: "Pipeline Health",
+    metric: "Net New Pipeline Created",
+    measures: "Total dollar value of qualified opportunities generated this period",
+    whyItMatters: "Keeps demand gen and BDRs focused on high-value, realistic deals — not raw lead volume.",
+    color: C.accent,
+    owner: "Demand Gen + BDR",
+  },
+  {
+    category: "Velocity",
+    metric: "Win Rate & Sales Velocity",
+    measures: "Percentage of deals won and average days to close",
+    whyItMatters: "Encourages AEs and Marketers to refine targeting and messaging together to shorten cycles.",
+    color: C.teal,
+    owner: "AE + Demand Gen",
+  },
+  {
+    category: "Growth & Scale",
+    metric: "Net New ARR / Revenue",
+    measures: "Total closed-won ARR or booked revenue inside the pod's segment",
+    whyItMatters: "The North Star. The entire pod wins or loses together based on this number.",
+    color: C.green,
+    owner: "Full Pod",
+  },
+  {
+    category: "LTV / Retention",
+    metric: "Net Revenue Retention (NRR)",
+    measures: "Revenue retained from existing customers including upgrades, minus churn",
+    whyItMatters: "Forces AEs and Marketers to bring in the right customers — and ensures CSMs are set up for expansion success.",
+    color: C.amber,
+    owner: "CSM + AE",
+  },
+];
+
 const ASYNC_SYNC = [
-  { type: "Daily Async", cadence: "Every business day", format: "Slack pod channel — 3-question standup bot", content: "Yesterday, today, blockers" },
-  { type: "Weekly Pod Sync", cadence: "Every Monday", format: "30-min live call (pod members only)", content: "Pipeline review, handoff status, blocker resolution" },
-  { type: "Bi-Weekly Exec Review", cadence: "Every other Thursday", format: "60-min Pod Leader → Exec GTM", content: "Dashboard quadrants, kicker status, escalations" },
-  { type: "Monthly All-Pods", cadence: "Last Friday of month", format: "60-min all pods + Founder", content: "Cross-pod wins, learnings, market signals" },
-  { type: "Quarterly Calibration", cadence: "First week of new quarter", format: "Half-day working session", content: "Kicker pool distribution, target setting, pod adjustments" },
+  { type: "Daily Async", cadence: "Every business day", format: "Slack pod channel — 3-question standup bot", content: "Yesterday, today, blockers", highlight: false },
+  { type: "Monday Sync", cadence: "Every Monday", format: "30-min live call — Pipeline & Forecast Check", content: "Review active deals closing this week, pipeline health, and immediate blockers. Every pod member attends.", highlight: true },
+  { type: "Wednesday Standup", cadence: "Every Wednesday", format: "15-min live call — Tactical Alignment", content: "Demand Gen + BDRs/AEs only. Campaign ground-truth check: what feedback are we getting from the market? Does outbound copy need adjustment based on what AEs are hearing in discovery?", highlight: true },
+  { type: "Bi-Weekly Exec Review", cadence: "Every other Thursday", format: "60-min Pod Leader → Exec GTM", content: "Dashboard quadrants, kicker status, escalations", highlight: false },
+  { type: "Monthly Retrospective", cadence: "Last week of month", format: "1-hour — Strategy Pivot", content: "Pod Leader runs: analyze NRR, churn reasons, and win/loss data. Adjust positioning, reallocate budget, or update GTM playbook based on real-world feedback. Output: one documented change to strategy or messaging.", highlight: true },
+  { type: "Quarterly Calibration", cadence: "First week of new quarter", format: "Half-day working session", content: "Kicker pool distribution, target setting, pod adjustments", highlight: false },
 ];
 
 const TABS = [
   { id: "composition", label: "Pod Composition", icon: Users },
-  { id: "comp", label: "Comp Model", icon: BarChart2 },
+  { id: "kpis", label: "Shared KPIs", icon: BarChart2 },
+  { id: "comp", label: "Comp Model", icon: Zap },
   { id: "roadmap", label: "90-Day Roadmap", icon: Clock },
   { id: "handoffs", label: "3-Handoff Playbook", icon: ArrowRight },
-  { id: "comms", label: "Communication Protocol", icon: MessageSquare },
+  { id: "comms", label: "Operating Rhythm", icon: MessageSquare },
 ];
 
 export default function PodStructure() {
@@ -207,25 +281,65 @@ export default function PodStructure() {
 
         {tab === "composition" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Architecture visual */}
             <ForgeCard>
-              <ForgeCardHeader><ForgeLabel color={C.accent}>Cross-Functional Pod Structure</ForgeLabel></ForgeCardHeader>
-              <ForgeCardBody style={{ padding: 0 }}>
-                {POD_COMPOSITION.roles.map((r, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: "14px 20px", borderBottom: i < POD_COMPOSITION.roles.length - 1 ? `1px solid ${C.border}` : "none" }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: r.color + "20", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Users size={14} color={r.color} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#f1f5f9" }}>{r.title}</span>
-                        <ForgeBadge variant="neutral">×{r.count}</ForgeBadge>
-                      </div>
-                      <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{r.responsibility}</div>
-                    </div>
+              <ForgeCardBody style={{ padding: "20px 24px" }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 16 }}>Pod Architecture</div>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 0 }}>
+                  <div style={{ background: C.accent + "20", border: `1px solid ${C.accent}50`, borderRadius: 10, padding: "10px 28px", textAlign: "center" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.accent }}>Pod Leader</div>
+                    <div style={{ fontSize: 11, color: "#64748b" }}>Product Marketer / Growth Director</div>
                   </div>
-                ))}
+                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}><div style={{ width: 2, height: 20, background: C.border }} /></div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 0 }}>
+                  {[
+                    { label: "Demand Gen / Growth Specialist", color: C.teal },
+                    { label: "Account Execs & BDRs", color: C.green },
+                    { label: "Customer Success / Account Mgr", color: C.amber },
+                  ].map((col, i) => (
+                    <div key={i}>
+                      <div style={{ display: "flex", justifyContent: "center" }}><div style={{ width: 2, height: 20, background: C.border }} /></div>
+                      <div style={{ background: col.color + "18", border: `1px solid ${col.color}40`, borderRadius: 8, padding: "10px 14px", textAlign: "center" }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: col.color }}>{col.label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}><div style={{ width: 2, height: 20, background: C.border }} /></div>
+                <div style={{ background: "#64748b18", border: "1px solid #33415520", borderRadius: 8, padding: "10px 14px", textAlign: "center" }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b" }}>Shared Operational Runway</div>
+                  <div style={{ fontSize: 10, color: "#475569" }}>RevOps / Data Support — cross-pod CRM hygiene, routing, dashboards, attribution</div>
+                </div>
               </ForgeCardBody>
             </ForgeCard>
+
+            {/* Role detail cards */}
+            {POD_COMPOSITION.roles.map((r, i) => (
+              <ForgeCard key={i} accent={r.color}>
+                <ForgeCardBody>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10 }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: r.color }}>{r.title}</span>
+                        <ForgeBadge variant="neutral">×{r.count}</ForgeBadge>
+                      </div>
+                      <div style={{ fontSize: 11, color: "#64748b" }}>{r.subtitle}</div>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.6, margin: "0 0 12px" }}>{r.responsibility}</p>
+                  {r.keyTasks && (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                      {r.keyTasks.map((t, j) => (
+                        <div key={j} style={{ display: "flex", gap: 7, fontSize: 11, color: "#94a3b8" }}>
+                          <div style={{ width: 4, height: 4, borderRadius: "50%", background: r.color, flexShrink: 0, marginTop: 4 }} />{t}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ForgeCardBody>
+              </ForgeCard>
+            ))}
 
             <ForgeCard>
               <ForgeCardHeader><ForgeLabel color={C.green}>Pod Kicker — Shared Pool Mechanics</ForgeLabel></ForgeCardHeader>
@@ -238,6 +352,34 @@ export default function PodStructure() {
                 ))}
               </ForgeCardBody>
             </ForgeCard>
+          </div>
+        )}
+
+        {tab === "kpis" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <ForgeAlert level="info">
+              The secret to making pods work is shared accountability. If marketing is only judged on leads and sales is only judged on revenue, the model breaks. Every pod member is measured on all four categories below.
+            </ForgeAlert>
+            {SHARED_KPIS.map((kpi, i) => (
+              <ForgeCard key={i} accent={kpi.color}>
+                <ForgeCardBody>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                    <div style={{ width: 44, flexShrink: 0, textAlign: "center" }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: kpi.color, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{kpi.category}</div>
+                      <div style={{ width: "100%", height: 3, background: kpi.color, borderRadius: 2 }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 5 }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>{kpi.metric}</span>
+                        <ForgeBadge variant="neutral">{kpi.owner}</ForgeBadge>
+                      </div>
+                      <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 6 }}><span style={{ color: "#64748b" }}>Measures: </span>{kpi.measures}</div>
+                      <div style={{ fontSize: 12, color: kpi.color, fontStyle: "italic" }}>{kpi.whyItMatters}</div>
+                    </div>
+                  </div>
+                </ForgeCardBody>
+              </ForgeCard>
+            ))}
           </div>
         )}
 
@@ -468,14 +610,22 @@ export default function PodStructure() {
         {tab === "comms" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <ForgeCard>
-              <ForgeCardHeader><ForgeLabel color={C.accent}>Async / Sync Communication Cadence</ForgeLabel></ForgeCardHeader>
+              <ForgeCardHeader><ForgeLabel color={C.accent}>Weekly Operating Rhythm</ForgeLabel></ForgeCardHeader>
               <ForgeCardBody style={{ padding: 0 }}>
                 {ASYNC_SYNC.map((row, i) => (
-                  <div key={i} style={{ display: "grid", gridTemplateColumns: "160px 160px 1fr 1fr", gap: 16, alignItems: "start", padding: "14px 20px", borderBottom: i < ASYNC_SYNC.length - 1 ? `1px solid ${C.border}` : "none" }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#f1f5f9" }}>{row.type}</div>
-                    <div style={{ fontSize: 12, color: C.teal }}>{row.cadence}</div>
-                    <div style={{ fontSize: 12, color: "#94a3b8" }}>{row.format}</div>
-                    <div style={{ fontSize: 12, color: "#94a3b8" }}>{row.content}</div>
+                  <div key={i} style={{
+                    display: "grid", gridTemplateColumns: "160px 180px 1fr", gap: 14, alignItems: "start",
+                    padding: "14px 20px",
+                    borderBottom: i < ASYNC_SYNC.length - 1 ? `1px solid ${C.border}` : "none",
+                    background: row.highlight ? C.accent + "08" : "transparent",
+                    borderLeft: row.highlight ? `3px solid ${C.accent}` : "3px solid transparent",
+                  }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: row.highlight ? "#f1f5f9" : "#94a3b8" }}>{row.type}</div>
+                      <div style={{ fontSize: 11, color: C.teal, marginTop: 2 }}>{row.cadence}</div>
+                    </div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", fontStyle: "italic" }}>{row.format}</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{row.content}</div>
                   </div>
                 ))}
               </ForgeCardBody>
