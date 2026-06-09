@@ -5,7 +5,7 @@ import { auth } from "../../lib/firebase";
 import {
   LayoutDashboard, DollarSign, BookOpen, MapPin, Shield,
   ClipboardList, Bot, FileKey, Calendar, SunMedium, GitCompare,
-  FileText, Target, LogOut, CreditCard, GraduationCap, Globe,
+  FileText, Target, LogOut, CreditCard, GraduationCap, Globe, Network, Building2,
 } from "lucide-react";
 
 const NAV = [
@@ -20,6 +20,8 @@ const NAV = [
   { to: "/banking",         icon: CreditCard,      label: "Banking & Payments" },
   { to: "/fellowship",      icon: GraduationCap,   label: "Fellowship Framework" },
   { to: "/city-readiness",  icon: Globe,           label: "City Readiness" },
+  { to: "/atlanta360",      icon: Building2,       label: "Atlanta 360" },
+  { to: "/national-network",icon: Network,         label: "National Network" },
   { to: "/doc-control",     icon: GitCompare,      label: "Doc Version Control" },
   { to: "/evidence",        icon: Shield,          label: "Evidence Ledger" },
   { to: "/claims",          icon: ClipboardList,   label: "Claims Register" },

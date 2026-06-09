@@ -15,6 +15,8 @@ import ProgramConverge from "./pages/ProgramConverge";
 import BankingGovernance from "./pages/BankingGovernance";
 import FellowshipFramework from "./pages/FellowshipFramework";
 import CityReadiness from "./pages/CityReadiness";
+import Atlanta360 from "./pages/Atlanta360";
+import NationalNetwork from "./pages/NationalNetwork";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -50,6 +52,8 @@ export default function App() {
           <Route path="banking" element={<BankingGovernance />} />
           <Route path="fellowship" element={<FellowshipFramework />} />
           <Route path="city-readiness" element={<CityReadiness />} />
+          <Route path="atlanta360" element={<Atlanta360 />} />
+          <Route path="national-network" element={<NationalNetwork />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
