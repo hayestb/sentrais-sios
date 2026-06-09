@@ -11,7 +11,7 @@ const POD_COMPOSITION = {
   roles: [
     { title: "Pod Leader", count: 1, color: C.accent, responsibility: "Owns pod P&L, unblocks team, runs weekly pod sync, reports executive dashboard quadrant" },
     { title: "Growth Marketer", count: 1, color: C.teal, responsibility: "Pipeline generation, content, field events; variable comp tied to pod pipeline + revenue" },
-    { title: "Business Development Rep (BDR)", count: "1–2", color: C.purple, responsibility: "Qualified meeting generation; 15-min speed-to-lead SLA on all MQL handoffs from marketing" },
+    { title: "Business Development Rep (BDR)", count: "1–2", color: C.purple, responsibility: "Qualified meeting generation; 30-min speed-to-lead SLA on all MQL handoffs from marketing" },
     { title: "Account Executive (AE)", count: 2, color: C.green, responsibility: "Closes deals, owns ARR quota; 80% individual ARR + 20% pod NRR" },
     { title: "Customer Success Manager (CSM)", count: 1, color: C.amber, responsibility: "Retention, expansion signals, post-handoff ownership; 70% retention + 30% expansion" },
   ],
@@ -61,7 +61,7 @@ const ROADMAP_PHASES = [
       "Pod kicker mechanics validated with Finance — pool math confirmed",
       "First pod sync cadence running (weekly async + bi-weekly live)",
       "Executive dashboard quadrants reviewed by CEO — pipeline / velocity / retention / pod leader",
-      "BDR 15-min speed-to-lead SLA tracked; violations flagged",
+      "BDR 30-min speed-to-lead SLA tracked; violations flagged",
       "AE→CSM 24-hr handoff brief compliance tracked in CRM",
     ],
   },
@@ -85,17 +85,17 @@ const HANDOFFS = [
   {
     title: "Handoff 1: Marketing → BDR / AE",
     trigger: "MQL threshold reached in HubSpot",
-    sla: "15-minute speed-to-lead",
+    sla: "30 minutes — business hours only",
     color: C.accent,
     steps: [
       { step: "Marketing scores lead at MQL threshold", owner: "Marketer", time: "T=0" },
       { step: "HubSpot routing assigns to pod BDR/AE by region", owner: "System", time: "T=auto" },
       { step: "BDR receives Slack notification + CRM task", owner: "BDR", time: "T=0" },
-      { step: "BDR makes first outreach attempt", owner: "BDR", time: "T≤15 min" },
-      { step: "BDR logs outcome in CRM — if no answer, auto-sequence activates", owner: "BDR", time: "T=15 min" },
+      { step: "BDR makes first outreach attempt", owner: "BDR", time: "T≤30 min" },
+      { step: "BDR logs outcome in CRM — if no answer, auto-sequence activates", owner: "BDR", time: "T=30 min" },
       { step: "Pod Leader reviews stale MQLs (>24 hrs uncontacted) weekly", owner: "Pod Leader", time: "Weekly" },
     ],
-    failureMode: "No outreach within 15 min = Pod Leader notified; repeat violations escalated to Exec GTM",
+    failureMode: "No outreach within 30 min = Pod Leader notified; repeat violations escalated to Exec GTM",
   },
   {
     title: "Handoff 2: AE → CSM (At Close)",
@@ -105,8 +105,8 @@ const HANDOFFS = [
     steps: [
       { step: "AE marks deal Closed Won; triggers CSM assignment task", owner: "AE", time: "T=0" },
       { step: "AE completes 24-hr CRM handoff brief (context, stakeholders, risks, expansion signals)", owner: "AE", time: "T≤24 hr" },
-      { step: "CSM reviews brief; schedules warm intro call with client", owner: "CSM", time: "T≤48 hr" },
-      { step: "AE leads warm intro call; formally introduces CSM as account owner", owner: "AE + CSM", time: "T≤48 hr" },
+      { step: "CSM reviews brief; reaches out to client to schedule onboarding kickoff meeting", owner: "CSM", time: "T≤48 hr" },
+      { step: "AE sends warm email introduction; CSM takes ownership — kickoff must be scheduled within 48 hrs of this email", owner: "AE + CSM", time: "T≤48 hr" },
       { step: "CSM owns account — AE still available for expansion opportunities", owner: "CSM", time: "Ongoing" },
     ],
     failureMode: "CRM brief not completed in 24 hrs = AE comp risk flag. Warm intro >48 hrs = Pod Leader must intervene.",
@@ -384,6 +384,54 @@ export default function PodStructure() {
 
         {tab === "handoffs" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+            {/* 3 Pod Commitments */}
+            <ForgeCard accent={C.accent}>
+              <ForgeCardHeader><ForgeLabel color={C.accent}>The 3 Pod Accountability Numbers</ForgeLabel></ForgeCardHeader>
+              <ForgeCardBody style={{ padding: 0 }}>
+                {[
+                  {
+                    number: "1",
+                    owner: "BDR",
+                    metric: "Inbound Lead Speed-to-Lead",
+                    sla: "30 minutes",
+                    detail: "BDRs must follow up with high-intent inbound leads within 30 minutes during business hours. First outreach attempt logged in CRM. After-hours leads must be contacted by 9:30 AM next business day.",
+                    color: C.accent,
+                  },
+                  {
+                    number: "2",
+                    owner: "AE",
+                    metric: "Internal CRM Hygiene — Handover Brief",
+                    sla: "24 hours",
+                    detail: "AEs must complete the internal CRM handover brief within 24 hours of a deal closing. Brief covers: client context, key stakeholders, known risks, expansion signals, and open commitments. Incomplete briefs = comp risk flag.",
+                    color: C.teal,
+                  },
+                  {
+                    number: "3",
+                    owner: "CSM",
+                    metric: "Onboarding Kickoff Outreach",
+                    sla: "48 hours",
+                    detail: "CSMs must reach out to coordinate the onboarding kickoff meeting within 48 hours of the warm email introduction from the AE. The kickoff must be scheduled — not just contacted. Unscheduled accounts >48 hrs trigger Pod Leader review.",
+                    color: C.green,
+                  },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: "16px 20px", borderBottom: i < 2 ? `1px solid ${C.border}` : "none" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: item.color + "25", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: item.color, flexShrink: 0 }}>
+                      {item.number}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 5 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#f1f5f9" }}>{item.metric}</span>
+                        <ForgeBadge variant="neutral">{item.owner}</ForgeBadge>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: item.color }}>≤ {item.sla}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.6 }}>{item.detail}</div>
+                    </div>
+                  </div>
+                ))}
+              </ForgeCardBody>
+            </ForgeCard>
+
             {HANDOFFS.map((h, hi) => (
               <ForgeCard key={hi} accent={h.color}>
                 <ForgeCardBody>
@@ -457,7 +505,7 @@ export default function PodStructure() {
                 <ForgeCardBody>
                   {[
                     "Blocker unresolved 24 hrs → Pod Leader escalates to Exec GTM",
-                    "SLA breach (15-min speed-to-lead, 24/48-hr handoff) → Pod Leader notified immediately",
+                    "SLA breach (30-min speed-to-lead, 24/48-hr handoff) → Pod Leader notified immediately",
                     "Deal at risk (churn signal, competitor mention) → Pod Leader + CSM within 2 hrs",
                     "Spend decision >$5K → route to approval matrix before commitment",
                     "New city expansion request → CEO + Exec GTM before any external commitment",
