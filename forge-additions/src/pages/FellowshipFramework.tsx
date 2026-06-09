@@ -136,6 +136,7 @@ export default function FellowshipFramework() {
 
   const tabs = [
     { id: "overview", label: "Program Tracks", icon: GraduationCap },
+    { id: "pod", label: "Pod Placement", icon: Users },
     { id: "schedule", label: "Cohort Schedule", icon: Calendar },
     { id: "evaluation", label: "Evaluation Rubric", icon: Star },
     { id: "compliance", label: "Compliance Checklist", icon: ClipboardList },
@@ -269,6 +270,76 @@ export default function FellowshipFramework() {
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* POD PLACEMENT */}
+        {activeTab === "pod" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ background: "#0d1f3c", border: "1px solid #0EA5E920", borderRadius: 12, padding: "16px 20px" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#f1f5f9", marginBottom: 8 }}>GTM Pod Embedding Model</div>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>
+                Fellows and interns in the Civic Tech and Resilience Ops tracks are embedded directly into active GTM pods for 8–12 weeks. This gives them real-world exposure to the pod operating model while contributing meaningful work to the team's pipeline and delivery goals.
+              </p>
+            </div>
+
+            {/* Pod Placement Structure */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 12, padding: "16px 20px" }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#0EA5E9", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>Program Structure</div>
+                {[
+                  { week: "Weeks 1–2", task: "Onboarding — pod orientation, CRM shadow, stakeholder intros. Localized ecosystem market analysis assigned." },
+                  { week: "Week 2", task: "Localized ecosystem market analysis submitted — required deliverable before any client-facing work." },
+                  { week: "Weeks 3–5", task: "Shadow pod AE or CSM on calls. Draft support materials, prep meeting notes, support PM tasks." },
+                  { week: "Weeks 6–8", task: "Own one defined work stream (research brief, competitive analysis, market map, or tool prototype)." },
+                  { week: "Weeks 9–10", task: "Documentation sprint — SOP contributions, playbook updates, internal wiki." },
+                  { week: "Weeks 11–12", task: "Capstone: present work to Pod Leader + CEO. Dual-sided evaluation completed." },
+                ].map((d, i) => (
+                  <div key={i} style={{ display: "flex", gap: 12, marginBottom: 10, padding: "8px 0", borderBottom: i < 5 ? "1px solid #1e3a5f" : "none" }}>
+                    <div style={{ width: 80, flexShrink: 0, fontSize: 11, fontWeight: 600, color: "#0EA5E9" }}>{d.week}</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{d.task}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 12, padding: "16px 20px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#14B8A6", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Mentor Requirement</div>
+                  {[
+                    "Mentor must be a senior pod member: AE, CSM, or Pod Leader",
+                    "Mandatory weekly 1-on-1 (30 min minimum) — no exceptions",
+                    "Mentor completes midpoint review at Week 4–6 (dual-sided)",
+                    "Mentor completes final evaluation at program conclusion",
+                    "Mentor identifies conversion potential (return offer / full-time referral)",
+                    "Mentor may not be the same person as day-to-day supervisor",
+                  ].map((r, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, fontSize: 12, color: "#94a3b8", marginBottom: 7 }}>
+                      <CheckCircle2 size={12} color="#14B8A6" style={{ flexShrink: 0, marginTop: 2 }} />{r}
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 12, padding: "16px 20px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#8B5CF6", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Dual-Sided Evaluation</div>
+                  <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.5, marginBottom: 10 }}>
+                    Evaluation happens at <strong style={{ color: "#f1f5f9" }}>midpoint</strong> (weeks 4–6) and <strong style={{ color: "#f1f5f9" }}>conclusion</strong>. Both the mentor evaluates the fellow AND the fellow evaluates the pod experience.
+                  </div>
+                  {[
+                    { label: "Mentor → Fellow", items: ["Technical delivery quality", "Communication + initiative", "Collaboration + pod contribution", "Conversion potential (return offer eligible?)"] },
+                    { label: "Fellow → Pod", items: ["Mentor accessibility + quality of 1-on-1s", "Learning opportunity richness", "Pod culture + inclusivity", "Would recommend program to peers?"] },
+                  ].map((side, i) => (
+                    <div key={i} style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 11, color: "#8B5CF6", fontWeight: 600, marginBottom: 6 }}>{side.label}</div>
+                      {side.items.map((item, j) => (
+                        <div key={j} style={{ display: "flex", gap: 8, fontSize: 11, color: "#94a3b8", marginBottom: 5 }}>
+                          <div style={{ width: 3, height: 3, borderRadius: "50%", background: "#8B5CF6", flexShrink: 0, marginTop: 4 }} />{item}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

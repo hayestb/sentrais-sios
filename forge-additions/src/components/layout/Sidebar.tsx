@@ -6,6 +6,7 @@ import {
   LayoutDashboard, DollarSign, BookOpen, MapPin, Shield,
   ClipboardList, Bot, FileKey, Calendar, SunMedium, GitCompare,
   FileText, Target, LogOut, CreditCard, GraduationCap, Globe, Network, Building2,
+  Layers, UserSquare2,
 } from "lucide-react";
 
 const NAV = [
@@ -14,10 +15,12 @@ const NAV = [
   { to: "/calendar-light",  icon: SunMedium,       label: "Calendar (Light)" },
   { to: "/financial-model", icon: DollarSign,      label: "Financial Model" },
   { to: "/financial-ops",   icon: FileText,        label: "Financial Ops" },
+  { to: "/pod-structure",   icon: Layers,          label: "GTM Pod Structure" },
   { to: "/ari-map",         icon: MapPin,          label: "ARI Program Map" },
   { to: "/ari",             icon: BookOpen,        label: "ARI Programs" },
   { to: "/converge",        icon: Target,          label: "Program Converge" },
   { to: "/banking",         icon: CreditCard,      label: "Banking & Payments" },
+  { to: "/workforce",       icon: UserSquare2,     label: "Workforce Matrix" },
   { to: "/fellowship",      icon: GraduationCap,   label: "Fellowship Framework" },
   { to: "/city-readiness",  icon: Globe,           label: "City Readiness" },
   { to: "/atlanta360",      icon: Building2,       label: "Atlanta 360" },

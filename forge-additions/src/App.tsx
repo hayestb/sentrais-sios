@@ -8,7 +8,6 @@ import FinancialOperatingSystem from "./pages/FinancialOperatingSystem";
 import { ARIPrograms } from "./pages/ARIPrograms";
 import ARIProgramMap from "./pages/ARIProgramMap";
 import { EvidenceLedger } from "./pages/EvidenceLedger";
-import { Dashboard } from "./pages/Dashboard";
 import MasterCalendar from "./pages/MasterCalendar";
 import MasterCalendarLight from "./pages/MasterCalendarLight";
 import DocVersionControl from "./pages/DocVersionControl";
@@ -18,6 +17,8 @@ import FellowshipFramework from "./pages/FellowshipFramework";
 import CityReadiness from "./pages/CityReadiness";
 import Atlanta360 from "./pages/Atlanta360";
 import NationalNetwork from "./pages/NationalNetwork";
+import WorkforceMatrix from "./pages/WorkforceMatrix";
+import PodStructure from "./pages/PodStructure";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -55,6 +56,8 @@ export default function App() {
           <Route path="city-readiness" element={<CityReadiness />} />
           <Route path="atlanta360" element={<Atlanta360 />} />
           <Route path="national-network" element={<NationalNetwork />} />
+          <Route path="workforce" element={<WorkforceMatrix />} />
+          <Route path="pod-structure" element={<PodStructure />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>

@@ -600,7 +600,7 @@ export default function FinancialOperatingModel() {
             {[
               ["personas","Personas"],["fractional","Fractional Roles"],
               ["approvals","Approval Engine"],["risks","Risk Register"],["onboarding","Onboarding"],
-              ["revenue","Revenue Segments"]
+              ["revenue","Revenue Segments"],["pods","Pod Revenue Model"]
             ].map(([v,l]) => (
               <button key={v} onClick={() => setView(v)} style={{
                 background: view===v?"#1E3A8A":"white", border:`1.5px solid ${view===v?"#1E3A8A":"#D1D5DB"}`,
@@ -1099,6 +1099,98 @@ export default function FinancialOperatingModel() {
                   <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>{w.step}</div>
                   <div style={{ fontSize: "18px", fontWeight: "700", color: w.color }}>{w.amount}</div>
                   <div style={{ fontSize: "10px", color: "#9CA3AF", marginTop: "2px" }}>{w.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* POD REVENUE MODEL */}
+      {view === "pods" && (
+        <div style={{ padding: "24px 28px", fontFamily: "Arial, sans-serif" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: "700", color: "#1E3A8A", marginBottom: "4px" }}>Pod Revenue Model</h2>
+          <p style={{ fontSize: "12px", color: "#6B7280", marginBottom: "20px" }}>
+            Revenue and expense attribution by GTM pod cost-center. Each pod owns its own P&L contribution. Core + Kicker comp model drives collective attainment.
+          </p>
+
+          {/* Revenue Streams by Pod */}
+          <div style={{ background: "white", border: "1.5px solid #E5E7EB", borderRadius: "10px", padding: "16px 20px", marginBottom: "16px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "700", color: "#1E3A8A", marginBottom: "12px" }}>Revenue Streams — Pod Attribution</div>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+                <thead>
+                  <tr style={{ background: "#F9FAFB", borderBottom: "1.5px solid #E5E7EB" }}>
+                    {["Revenue Stream", "Attribution", "Pod Cost-Center", "ERP Code", "Collection Cycle"].map((h, i) => (
+                      <th key={i} style={{ padding: "8px 12px", textAlign: "left", color: "#6B7280", fontSize: "11px", fontWeight: "600", textTransform: "uppercase" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { stream: "Subscription (SaaS licenses)", attr: "Shared across pods proportional to ACV closed", costCenter: "Pod CC-XXX", erpCode: "REV-SUB", cycle: "Monthly/annual ARR" },
+                    { stream: "Expansion Revenue (Upsell/Cross-sell)", attr: "CSM pod — 30% of CSM variable comp tied here", costCenter: "Pod CC-XXX (originating)", erpCode: "REV-EXP", cycle: "At renewal / add-on close" },
+                    { stream: "Professional Services", attr: "AE pod at close; CSM pod at delivery", costCenter: "Engagement-specific CC", erpCode: "REV-SVC", cycle: "Milestone-triggered Net-30" },
+                    { stream: "City Deployment Fees", attr: "City pod (ATL/NO/BOS/LA specific)", costCenter: "City pod CC", erpCode: "REV-CITY", cycle: "Per deployment gate" },
+                    { stream: "Partner / Referral Revenue", attr: "Originating pod BDR/AE", costCenter: "Pod CC-XXX", erpCode: "REV-PART", cycle: "At contract execution" },
+                  ].map((row, i) => (
+                    <tr key={i} style={{ borderBottom: "1px solid #F3F4F6" }}>
+                      <td style={{ padding: "10px 12px", fontWeight: "600", color: "#111827" }}>{row.stream}</td>
+                      <td style={{ padding: "10px 12px", color: "#374151" }}>{row.attr}</td>
+                      <td style={{ padding: "10px 12px", color: "#6B7280", fontFamily: "monospace", fontSize: "11px" }}>{row.costCenter}</td>
+                      <td style={{ padding: "10px 12px", color: "#0EA5E9", fontFamily: "monospace", fontSize: "11px" }}>{row.erpCode}</td>
+                      <td style={{ padding: "10px 12px", color: "#6B7280" }}>{row.cycle}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Expense Streams */}
+          <div style={{ background: "white", border: "1.5px solid #E5E7EB", borderRadius: "10px", padding: "16px 20px", marginBottom: "16px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "700", color: "#1E3A8A", marginBottom: "12px" }}>Expense Streams — Pod Cost-Centers</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              {[
+                { category: "Sales & Marketing", items: ["AE + BDR salaries + variable", "Growth Marketer base + variable", "Pod smart card (Brex/Ramp) charges", "Client entertainment (Pod Leader approval)"], cac: "CAC tracked per pod — closed-won ÷ sales+marketing spend" },
+                { category: "Customer Success", items: ["CSM salary + variable", "Travel for onsite QBRs (CSM + AE)", "Platform provisioning for new accounts", "Churn risk intervention budget"], cac: "Net Revenue Retention (NRR) is primary CSM cost efficiency metric" },
+                { category: "Pod Operations", items: ["Pod Leader salary + management comp", "Pod team building ($50/person/quarter)", "Tools + software (per-seat SaaS)", "Training + enablement budget"], cac: "Overhead allocated proportional to pod headcount" },
+                { category: "City Deployments", items: ["Local embedded team (min 1 FTE per local-ecosystem city)", "Field events and market entry costs", "Local partner onboarding (3–6 month co-design)", "Compliance + legal for new markets"], cac: "City-specific CAC amortized over contract lifetime value" },
+              ].map((block, i) => (
+                <div key={i} style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: "8px", padding: "12px 14px" }}>
+                  <div style={{ fontSize: "12px", fontWeight: "700", color: "#1E3A8A", marginBottom: "8px" }}>{block.category}</div>
+                  {block.items.map((item, j) => (
+                    <div key={j} style={{ display: "flex", gap: "6px", fontSize: "11px", color: "#374151", marginBottom: "5px" }}>
+                      <span style={{ color: "#9CA3AF" }}>·</span>{item}
+                    </div>
+                  ))}
+                  <div style={{ marginTop: "8px", padding: "6px 8px", background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: "4px", fontSize: "10px", color: "#1D4ED8", fontStyle: "italic" }}>
+                    {block.cac}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Approval Matrix */}
+          <div style={{ background: "white", border: "1.5px solid #E5E7EB", borderRadius: "10px", padding: "16px 20px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "700", color: "#1E3A8A", marginBottom: "12px" }}>Pod Spend Approval Matrix</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {[
+                { tier: "Pod Leader", range: "Up to $4,999", approver: "Pod Leader self-approves", erpStep: "Log to pod cost-center; receipt via Brex/Ramp", color: "#10B981", bg: "#F0FDF4", border: "#BBF7D0" },
+                { tier: "Exec GTM", range: "$5,000 – $24,999", approver: "Exec GTM (GTM leadership)", erpStep: "PO raised; Finance Lead notified; 3-way match", color: "#0EA5E9", bg: "#F0F9FF", border: "#BAE6FD" },
+                { tier: "CFO", range: "$25,000 and above", approver: "CFO sign-off required", erpStep: "Board notification if recurring; dual-signature for >$50K", color: "#F59E0B", bg: "#FFFBEB", border: "#FDE68A" },
+                { tier: "Related Party", range: "Any amount", approver: "Independent board member required — no self-approval", erpStep: "Conflict of interest disclosure on file before any approval", color: "#DC2626", bg: "#FEF2F2", border: "#FECACA" },
+              ].map((row, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "14px", padding: "12px 14px", background: row.bg, border: `1px solid ${row.border}`, borderRadius: "8px" }}>
+                  <div style={{ minWidth: "120px" }}>
+                    <div style={{ fontSize: "13px", fontWeight: "700", color: row.color }}>{row.tier}</div>
+                    <div style={{ fontSize: "12px", color: "#6B7280", marginTop: "2px" }}>{row.range}</div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: "12px", fontWeight: "600", color: "#111827", marginBottom: "3px" }}>{row.approver}</div>
+                    <div style={{ fontSize: "11px", color: "#6B7280" }}>{row.erpStep}</div>
+                  </div>
                 </div>
               ))}
             </div>
