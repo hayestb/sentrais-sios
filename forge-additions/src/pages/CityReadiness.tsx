@@ -18,6 +18,11 @@ const CITIES = [
     primaryContact: "Knox Phillips",
     goLiveTarget: "Jul 1, 2026",
     verticals: ["Civic Infrastructure", "Workforce", "Education", "Economic Mobility"],
+    localFocusAnchors: [
+      { label: "Regional Technology Clusters", detail: "Align with Atlanta Tech Village, Ponce City Market innovation corridor, and Georgia Tech commercialization pipeline as deployment anchors." },
+      { label: "Enterprise Headquarters", detail: "Delta, Coca-Cola, UPS, Home Depot, NCR — major HQs create enterprise sales and civic partnership opportunities for SIOS platform modules." },
+      { label: "Specialized Workforce Pipelines", detail: "HBCU network (Spelman, Morehouse, Clark Atlanta), APS pathways, and ARI P3 Future Workforce track as talent pipeline infrastructure." },
+    ],
     gates: [
       { label: "Stakeholder MOU", status: "passed" },
       { label: "Data Partnership", status: "passed" },
@@ -45,10 +50,15 @@ const CITIES = [
     population: "383K city / 1.3M metro",
     readinessScore: 41,
     platformType: "local-ecosystem",
-    anchor: "Prospect — Cultural Resilience angle",
+    anchor: "Cultural Resilience & Living Lab",
     primaryContact: "TBD — intro via Emerald Cities",
     goLiveTarget: "Q1 2027",
     verticals: ["Climate Resilience", "Culture & Events", "Economic Mobility"],
+    localFocusAnchors: [
+      { label: "Cultural Networks", detail: "Jazz & Heritage data layer, Mardi Gras / Essence / Jazz Fest event infrastructure, and cultural economy as the primary GTM entry point and differentiation." },
+      { label: "Municipal Networks", detail: "City of New Orleans Office of Resilience, FEMA flood risk coordination, and NOLA Ready emergency preparedness infrastructure as civic platform anchors." },
+      { label: "Specialized Logistical Networks", detail: "Port of New Orleans (3rd largest US port by tonnage), intermodal logistics corridor, and post-hurricane supply chain resilience as distinct B2G value drivers." },
+    ],
     gates: [
       { label: "Stakeholder MOU", status: "active" },
       { label: "Data Partnership", status: "locked" },
@@ -61,7 +71,7 @@ const CITIES = [
       { text: "Local data ecosystem mapping incomplete", severity: "medium" },
     ],
     ecosystem: {
-      partners: ["City of New Orleans (prospect)", "Xavier University", "Gulf South Funders Network"],
+      partners: ["City of New Orleans (prospect)", "Xavier University", "Dillard University", "Gulf South Funders Network"],
       funders: ["W.K. Kellogg Foundation (Gulf South program)", "JPMorgan PRO Neighborhoods (prospect)"],
     },
     localDiff: "Requires heavy local ecosystem customization — Jazz & Heritage cultural data layer, FEMA flood risk module, HBCU partnership track (Xavier, Dillard, Southern). Standard CiviGrid modules insufficient alone.",
@@ -77,10 +87,15 @@ const CITIES = [
     population: "675K city / 4.9M metro",
     readinessScore: 55,
     platformType: "standard",
-    anchor: "MIT Media Lab / Kendall Square ecosystem",
+    anchor: "MIT / Kendall Square — Higher Ed & Biotech Corridor",
     primaryContact: "TBD — Kevin McCann intro",
     goLiveTarget: "Q2 2027",
-    verticals: ["Innovation Equity", "Workforce", "Education"],
+    verticals: ["Higher Education", "Biotech / Life Sciences", "Institutional Venture"],
+    localFocusAnchors: [
+      { label: "Higher Education Networks", detail: "MIT, Harvard, Boston University, Northeastern — deep academic partnership channel for ResearchBridge module, workforce development, and innovation equity programs." },
+      { label: "Biotechnology Sector", detail: "Kendall Square biotech cluster (Pfizer, Novartis, Biogen HQs), Mass General Brigham health system — civic data infrastructure and workforce pipeline play for life sciences corridor." },
+      { label: "Institutional Venture Networks", detail: "Harvard Management Company, MIT Investment Management, Pillar VC, General Catalyst — institutional capital alignment for BGI endowment model and NOVATELabs research funding." },
+    ],
     gates: [
       { label: "Stakeholder MOU", status: "active" },
       { label: "Data Partnership", status: "locked" },
@@ -96,7 +111,7 @@ const CITIES = [
       partners: ["City of Boston (prospect)", "MIT Media Lab (prospect)", "Boston Public Schools", "Commonwealth Corporation"],
       funders: ["JPMorgan Chase AdvancingCities", "Barr Foundation", "Eastern Bank Foundation"],
     },
-    localDiff: "Standard platform modules applicable. Local differentiation through university innovation corridor angle — ResearchBridge module extension recommended for Kendall Square data partnerships.",
+    localDiff: "Standard platform modules applicable. Local differentiation through university innovation corridor — GTM messaging aligned to higher education, biotech, and institutional venture rather than civic resilience lead.",
     revenue: { contractValue: 0, invoiced: 0, collected: 0 },
   },
   {
@@ -109,10 +124,15 @@ const CITIES = [
     population: "3.9M city / 13.2M metro",
     readinessScore: 28,
     platformType: "local-ecosystem",
-    anchor: "LA28 Olympics — Sports, Culture & Events pillar",
+    anchor: "LA28 Olympics — Entertainment, Media & Decentralized Logistics",
     primaryContact: "TBD — sports/events lead required",
     goLiveTarget: "2028 (Olympics alignment)",
-    verticals: ["Sports / Culture / Events", "Civic Infrastructure", "Economic Mobility"],
+    verticals: ["Entertainment / Digital Media", "Decentralized Logistics", "Civic Infrastructure"],
+    localFocusAnchors: [
+      { label: "Entertainment & Digital Media", detail: "Hollywood studios, streaming platforms (Netflix, Disney+, Apple TV+), live events (SoFi Stadium, Crypto.com Arena, Hollywood Bowl) — SpectraGrid™ and EntertainmentOS™ deployment opportunity anchored to LA28 Olympics." },
+      { label: "Decentralized Logistics Corridors", detail: "Port of LA + Port of Long Beach (largest US port complex), 88 municipalities in LA County, LACCD 9-campus network, and LAUSD 600K-student system — multi-tenant architecture required for full coverage." },
+      { label: "Digital Media Infrastructure", detail: "Silicon Beach (Venice/Santa Monica tech cluster), NBCU, Warner Bros., Snap Inc., Hulu — digital infrastructure and civic data layer play targeting content economy workforce and community resilience." },
+    ],
     gates: [
       { label: "Stakeholder MOU", status: "locked" },
       { label: "Data Partnership", status: "locked" },
@@ -295,6 +315,26 @@ export default function CityReadiness() {
                   </div>
                 </div>
 
+                {/* Local Focus Anchors — full width */}
+                {city.localFocusAnchors && (
+                  <div style={{ background: "#0d1f3c", border: `1px solid ${city.color}30`, borderRadius: 12, padding: "16px 20px" }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: city.color, textTransform: "uppercase", letterSpacing: 1, marginBottom: 14 }}>
+                      Local Focus Anchors
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                      {city.localFocusAnchors.map((anchor, i) => (
+                        <div key={i} style={{ background: "#0a1628", border: `1px solid ${city.color}20`, borderRadius: 8, padding: "12px 14px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: "50%", background: city.color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 12, fontWeight: 700, color: city.color }}>{anchor.label}</span>
+                          </div>
+                          <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.55 }}>{anchor.detail}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                   {/* Anchor & Verticals */}
                   <div style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 12, padding: "16px 20px" }}>
@@ -309,8 +349,8 @@ export default function CityReadiness() {
                       {city.verticals.map((v, i) => (
                         <span key={i} style={{
                           fontSize: 11, padding: "3px 8px", borderRadius: 4,
-                          background: "#0a1628", color: "#94a3b8",
-                          border: "1px solid #1e3a5f",
+                          background: "#0a1628", color: city.color,
+                          border: `1px solid ${city.color}30`,
                         }}>{v}</span>
                       ))}
                     </div>
@@ -403,6 +443,42 @@ export default function CityReadiness() {
         {/* PLATFORM COMPARISON */}
         {activeTab === "comparison" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+            {/* Architecture Diagram */}
+            <div style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 12, padding: "20px 24px" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 18 }}>Platform Architecture</div>
+              {/* Core */}
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 0 }}>
+                <div style={{ background: "#0a1628", border: "2px solid #0EA5E9", borderRadius: 10, padding: "12px 32px", textAlign: "center", minWidth: 280 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#f1f5f9" }}>Standard Platform Core</div>
+                  <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>Unified Tech Stack · CiviGrid · Legal Compliance · Centralized Billing · Brand</div>
+                </div>
+              </div>
+              {/* Connector line */}
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <div style={{ width: 2, height: 24, background: "#1e3a5f" }} />
+              </div>
+              {/* Hubs */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                {[
+                  { name: "Atlanta Hub", color: "#0EA5E9", type: "Standard", focus: "Tech clusters · Enterprise HQs · Workforce pipelines" },
+                  { name: "New Orleans Hub", color: "#14B8A6", type: "Local Ecosystem", focus: "Cultural networks · Municipal networks · Logistics corridors" },
+                  { name: "Boston / LA Hubs", color: "#8B5CF6", type: "Standard + Local", focus: "Higher ed & biotech (BOS) · Entertainment & media (LA)" },
+                ].map((hub, i) => (
+                  <div key={i}>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 0 }}>
+                      <div style={{ width: 2, height: 20, background: "#1e3a5f" }} />
+                    </div>
+                    <div style={{ background: "#0a1628", border: `1px solid ${hub.color}40`, borderRadius: 10, padding: "12px 14px", textAlign: "center" }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: hub.color, marginBottom: 4 }}>{hub.name}</div>
+                      <div style={{ fontSize: 10, padding: "2px 8px", background: hub.color + "20", color: hub.color, borderRadius: 3, display: "inline-block", marginBottom: 6 }}>{hub.type}</div>
+                      <div style={{ fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>{hub.focus}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               {[
                 { type: "standard", label: "Standard Platform Deployment", color: "#10b981", cities: CITIES.filter((c) => c.platformType === "standard").map((c) => c.name) },
