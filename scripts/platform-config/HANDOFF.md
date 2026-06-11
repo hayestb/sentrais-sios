@@ -24,7 +24,7 @@ Create these five teams exactly as named:
 | Academy/Corp | Pipeline A (League), Pipeline B (Venue) | sales@sentrais.com |
 | SRI Partnerships | Pipeline B (SRI curriculum side) | partnerships@sentrais.com |
 | Federal BD | Pipeline C (Gov/EM), Pipeline E (AeroGrid) | gov@sentrais.com, aviation@sentrais.com |
-| NovateUS Programs | Pipeline D (Academic/CampusGrid) | research@novatelabs.org, campus@novatelabs.org |
+| BGI Programs | Pipeline D (Academic/CampusGrid) | research@novatelabs.org (BGI inbox), campus@novatelabs.org (BGI inbox) |
 | Ventures/NCICC | Pipeline F (Federal Apex) | ventures@sentrais.com (group alias) |
 
 ### 1.2 Assign teams to pipelines
@@ -38,7 +38,7 @@ For each pipeline, click the pipeline name → Settings → assign the owning te
 | Pipeline A — League/Sports | Academy/Corp |
 | Pipeline B — Venue/Facility | Academy/Corp + SRI Partnerships |
 | Pipeline C — Gov/EM | Federal BD |
-| Pipeline D — Academic/CampusGrid | NovateUS Programs |
+| Pipeline D — Academic/CampusGrid | BGI Programs |
 | Pipeline E — Aviation/AeroGrid | Federal BD |
 | Pipeline F — NCICC/Federal Apex | Ventures/NCICC |
 
@@ -46,7 +46,7 @@ For each pipeline, click the pipeline name → Settings → assign the owning te
 
 Go to: **Settings → General → Email → Connect inbox**
 
-Connect each inbox to the corresponding team. Then for **Federal BD**, **NovateUS Programs**, and **Ventures/NCICC** inboxes:
+Connect each inbox to the corresponding team. Then for **Federal BD**, **BGI Programs**, and **Ventures/NCICC** inboxes:
 - Settings → Sequences → disable "Allow sequences to send from connected inboxes" at the team level
 - This prevents any automated sequence from touching research/federal contacts
 
@@ -59,8 +59,8 @@ Inboxes to connect:
 | pocs@sentrais.com | Academy/Corp | Yes |
 | aviation@sentrais.com | Federal BD | Yes |
 | gov@sentrais.com | Federal BD | Yes |
-| research@novatelabs.org | NovateUS Programs | **NO** |
-| campus@novatelabs.org | NovateUS Programs | **NO** |
+| research@novatelabs.org | BGI Programs (BGI inbox) | **NO** |
+| campus@novatelabs.org | BGI Programs (BGI inbox) | **NO** |
 | ventures@sentrais.com | Ventures/NCICC | **NO** |
 
 ### 1.4 Configure workflow triggers and actions
@@ -96,7 +96,7 @@ All 10 workflows are already created. Configure triggers and actions as follows:
 **Workflow 3 — Research contact: suppress all sequences** *(ENABLED — property actions already set)*
 
 - **Trigger:** Contact is created or updated
-- **Condition (branch 1):** `Entry_route` is `NOVATELabs`
+- **Condition (branch 1):** `Entry_route` is `BGI`
 - **Condition (branch 2):** `GTM_module` is `D` or `F`
 - **Actions already set:** `Sequence_suppressed = true`, `hs_email_optout = true`
 - **Add:** Enroll in suppression list "Sentrais — Research contacts (suppress sequences)"
@@ -112,7 +112,7 @@ All 10 workflows are already created. Configure triggers and actions as follows:
 | If `Vertical` equals | Then |
 |---|---|
 | `Aviation` | Assign to Pipeline E, Team = Federal BD |
-| `Academic` | Assign to Pipeline D, set `Entry_route = NOVATELabs`, Team = NovateUS Programs |
+| `Academic` | Assign to Pipeline D, set `Entry_route = BGI`, Team = BGI Programs |
 | `GovEM` or `Federal` | Assign to Pipeline C, Team = Federal BD |
 | `GTM_module = F` | Assign to Pipeline F, send founder alert |
 | Default | Assign to Pipeline A, Team = Academy/Corp |
@@ -199,16 +199,29 @@ Go to: **CRM → Deals** → open each deal → scroll to "Associated Objects" �
 
 The `Claims_confirmed` deal property auto-calculates once rows are associated. Do this for every active deal before enabling Workflow 1.
 
+### 1.7 SIOS Custom Objects — associate and configure
+
+Three custom objects created by script: `sios_engagement`, `sios_gate`, `sios_invoice`.
+
+Go to: **CRM → Settings → Objects → Custom Objects**
+
+For each object:
+1. Create associations to Contacts and Deals
+2. Add to deal and contact record sidebars (Settings → Objects → [object] → Record Customization)
+3. `sios_engagement` → associate with Pipeline A–F contacts
+4. `sios_gate` → associate with active deal records (mirrors Monday gate status)
+5. `sios_invoice` → associate with Closed/Won deals for Finance tracking
+
 ---
 
 ## Part 2 — Monday.com
 
 ### 2.1 Workspace access restrictions
 
-**NOVATELabs.org — Research & Program Converge workspace:**
+**Barbara Geter Institute — Research & Program Converge workspace:**
 - Go to: Workspace settings → Members → set to "Invite only"
 - Remove any Sentrais Corp team members
-- Permitted members: research leads, NovateUS Programs team, legal counsel only
+- Permitted members: research leads, BGI Programs team, legal counsel only
 
 **Sentrais Ventures — Federal PPP & NCICC workspace:**
 - Go to: Workspace settings → Members → set to "Invite only"
@@ -261,12 +274,12 @@ AND any item in "Integration Feeds" group has Status = "In progress" or "Not sta
 ---
 
 **Automation 14 — NovateUS inurement guard**  
-Board: Any board in NOVATELabs.org workspace
+Board: Any board in Barbara Geter Institute workspace
 
 ```
 When a new member is added to this workspace
 → If member belongs to Sentrais Corp team: block addition, notify workspace admin
-→ Log: "Inurement guard triggered — Sentrais Corp member blocked from NovateUS workspace"
+→ Log: "Inurement guard triggered — Sentrais Corp member blocked from Barbara Geter Institute workspace"
 ```
 
 *Monday.com does not have a native "block member" automation — implement this as: notify admin immediately, admin manually removes the member. Document this as a compliance alert, not a hard technical block.*
@@ -295,6 +308,17 @@ Configure these 5 sync pairs after installing:
 | Program Converge Engagements | Pipeline D contact created | Monday-led | Contact ID only (no commercial deal stages) |
 | NCICC Partnership Tracker | Pipeline F contact updated | Monday-led | Contact ID, Register_status |
 | Active Deployments (return) | Monday NIN phase → D5 Debrief | Monday → HubSpot | Set Delivery_status = Debrief |
+
+### 2.6 SENTRAIS_Operations workspace — SIOS Sprint 1
+
+Board: `SENTRAIS_Operations` workspace (created by script)
+
+Manual steps:
+- Add 8 core seats to workspace (Settings → Members → Invite)
+- Enforce underscores-only naming convention in `#sios-sprint1` Slack channel (channel settings)
+- Connect Google Calendar: Board → Integrations → Google Calendar
+- Connect Slack: Board → Integrations → Slack → link `#sios-sprint1`
+- Configure automated reminders on Daily Standup board (daily 9am, all owners)
 
 ### 2.5 Playbook Change Control board — approval workflow
 
@@ -390,10 +414,11 @@ Once all above is complete:
 - [ ] Configure Workflow 10 date-based trigger
 - [ ] Set up Business Units for SRI/Corp separation (Marketing Hub Enterprise)
 - [ ] Associate Claims Register rows with active deal records
+- [ ] Configure sios_engagement, sios_gate, sios_invoice associations in HubSpot UI
 - [ ] Enable Workflow 1 — platform is now live for buyer conversations
 
 ### Monday.com
-- [ ] Restrict NOVATELabs.org workspace access (research team only)
+- [ ] Restrict Barbara Geter Institute workspace access (research team only)
 - [ ] Restrict Sentrais Ventures workspace access (leadership + legal only)
 - [ ] Configure Automation 10 (SEAR hard-block propagation + Slack)
 - [ ] Configure Automation 11 (NC-G3 SIPE alert)
@@ -402,6 +427,8 @@ Once all above is complete:
 - [ ] Install HubSpot CRM app from marketplace + configure 5 sync pairs
 - [ ] Set Days to T-0 formula on SEAR Master Tracker
 - [ ] Set up Playbook Change Control approval workflow (3-step for §1/§3/§4)
+- [ ] Add 8 core seats to SENTRAIS_Operations workspace
+- [ ] Configure Google Calendar + Slack integrations on SIOS boards
 
 ### Google Workspace / Email
 - [ ] Add novatelabs.org as secondary domain

@@ -50,13 +50,23 @@ def gql(token, query, variables=None, dry_run=False, label=""):
     payload = {"query": query}
     if variables:
         payload["variables"] = variables
-    resp = requests.post(
-        API_URL,
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json", "API-Version": "2024-01"},
-        json=payload,
-        timeout=30,
-    )
-    time.sleep(0.3)
+    for attempt in range(4):
+        try:
+            resp = requests.post(
+                API_URL,
+                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json", "API-Version": "2024-01"},
+                json=payload,
+                timeout=60,
+            )
+            break
+        except requests.exceptions.ReadTimeout:
+            wait = 2 ** attempt
+            print(f"  Timeout on '{label}', retrying in {wait}s...")
+            time.sleep(wait)
+    else:
+        print(f"  FAILED after 4 attempts: {label}")
+        return None
+    time.sleep(0.5)
     if resp.status_code != 200:
         print(f"  ERROR {resp.status_code}: {resp.text[:200]}")
         return None
@@ -183,6 +193,59 @@ def setup_corp_workspace(token, ws_id, dry_run):
     print("  Creating: Module E AeroGrid Pipeline")
     create_board(token, "Module E AeroGrid Pipeline", ws_id, dry_run)
 
+    # --- NFL GDA Delivery Tracker ---
+    print("  Creating: NFL GDA Delivery Tracker")
+    nfl_board = existing.get("NFL GDA Delivery Tracker") or \
+        create_board(token, "NFL GDA Delivery Tracker", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Workstream", "dropdown"),
+        ("Owner", "people"),
+        ("SEG Owner", "text"),
+        ("Due Date", "date"),
+        ("GDA Go-Live", "date"),
+        ("Blocker?", "checkbox"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, nfl_board, col_name, col_type, dry_run)
+    nfl_groups = ["Workstream 1 — Game Day Automation", "Workstream 2 — Stadium Certification",
+                  "Workstream 3 — Qubika Build", "SEG Delivery Milestones", "NFL MSA Obligations"]
+    nfl_group_ids = {}
+    for grp in nfl_groups:
+        nfl_group_ids[grp] = add_group(token, nfl_board, grp, dry_run)
+    for item in ["GDA Go-Live — June 30", "Q1 Invoice — June 30", "Preseason POC — August",
+                 "AWS GenAIIC Sprint — July 3"]:
+        add_item(token, nfl_board, nfl_group_ids["SEG Delivery Milestones"], item, dry_run)
+
+    # --- SEG Subcontract Tracker ---
+    print("  Creating: SEG Subcontract Tracker")
+    seg_board = existing.get("SEG Subcontract Tracker") or \
+        create_board(token, "SEG Subcontract Tracker", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Document", "dropdown"),
+        ("Owner", "people"),
+        ("Counsel", "text"),
+        ("Due Date", "date"),
+        ("Executed?", "checkbox"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, seg_board, col_name, col_type, dry_run)
+    seg_groups = ["Term Sheet", "Master Subcontractor Agreement", "Hub Challenge Release",
+                  "Revenue Share Tracking", "Delivery Warranties"]
+    seg_group_ids = {}
+    for grp in seg_groups:
+        seg_group_ids[grp] = add_group(token, seg_board, grp, dry_run)
+    for item, grp in [
+        ("Term sheet to counsel — June 9", "Term Sheet"),
+        ("Term sheet signed — June 16", "Term Sheet"),
+        ("Subcontract executed — June 20", "Master Subcontractor Agreement"),
+        ("Hub Challenge release scope confirmed", "Hub Challenge Release"),
+        ("Q1 NFL revenue — SEG 70% / Sentrais 30%", "Revenue Share Tracking"),
+        ("GDA Go-Live warranty — June 30", "Delivery Warranties"),
+    ]:
+        add_item(token, seg_board, seg_group_ids[grp], item, dry_run)
+
     # --- 11 City Node Detail boards ---
     print("  Creating: 11 City Node Detail boards...")
     for city in FIFA_CITIES:
@@ -280,10 +343,10 @@ def setup_sri_workspace(token, ws_id, dry_run):
 
 
 # ---------------------------------------------------------------------------
-# WORKSPACE 3: NOVATELabs.org — Research & Program Converge
+# WORKSPACE 3: Barbara Geter Institute — Research & Program Converge
 # ---------------------------------------------------------------------------
 
-def setup_novatorg_workspace(token, ws_id, dry_run):
+def setup_bgi_workspace(token, ws_id, dry_run):
     print("  Creating: Program Converge Engagements")
     create_board(token, "Program Converge Engagements", ws_id, dry_run)
 
@@ -305,7 +368,123 @@ def setup_novatorg_workspace(token, ws_id, dry_run):
     print("  Creating: Grant Applications")
     create_board(token, "Grant Applications", ws_id, dry_run)
 
-    print("  NOTE: Zero commercial deal items permitted on this workspace. Restrict access to NovateUS/Research teams only.")
+    # --- Evidence Ledger & SEAROS ---
+    print("  Creating: Evidence Ledger & SEAROS")
+    ev_board = create_board(token, "Evidence Ledger & SEAROS", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Claim Slot", "dropdown"),
+        ("Evidence File Link", "text"),
+        ("Last Verified", "date"),
+        ("Verified By", "people"),
+        ("External Use Approved?", "checkbox"),
+        ("Change Control Ref", "text"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, ev_board, col_name, col_type, dry_run)
+    ev_groups = ["Active Claims — NFL", "Active Claims — BRIC/Federal", "SEAROS Feeds",
+                 "n8n Workflow Logs", "NFL Cooperation Log", "Archive"]
+    for grp in ev_groups:
+        add_group(token, ev_board, grp, dry_run)
+
+    print("  Creating: Contractor Roster (BGI)")
+    contractor_board = create_board(token, "Contractor Roster (BGI)", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Role", "dropdown"),
+        ("ICA Executed?", "checkbox"),
+        ("Jurisdiction", "text"),
+        ("Rate (USD annualized)", "numbers"),
+        ("Start Date", "date"),
+        ("End Date", "date"),
+        ("Workspace Access", "dropdown"),
+    ]:
+        add_column(token, contractor_board, col_name, col_type, dry_run)
+
+    print("  NOTE: Zero commercial deal items permitted on this workspace. Restrict access to BGI/Research teams only.")
+
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 5: SENTRAIS_Operations — SIOS Sprint 1
+# ---------------------------------------------------------------------------
+
+def setup_sios_workspace(token, ws_id, dry_run):
+    existing = get_existing_boards(token, ws_id) if not dry_run else {}
+
+    print("  Creating: Daily Standup")
+    ds_board = existing.get("Daily Standup") or \
+        create_board(token, "Daily Standup", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Owner", "people"),
+        ("Today's Focus", "long_text"),
+        ("Blockers", "long_text"),
+        ("Date", "date"),
+    ]:
+        add_column(token, ds_board, col_name, col_type, dry_run)
+
+    print("  Creating: Partnership Pipeline")
+    pp_board = existing.get("Partnership Pipeline") or \
+        create_board(token, "Partnership Pipeline", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Stage", "status"),
+        ("Partner Name", "text"),
+        ("Vertical", "dropdown"),
+        ("Owner", "people"),
+        ("Next Action", "long_text"),
+        ("Close Date", "date"),
+    ]:
+        add_column(token, pp_board, col_name, col_type, dry_run)
+
+    print("  Creating: Revenue Pipeline")
+    rp_board = existing.get("Revenue Pipeline") or \
+        create_board(token, "Revenue Pipeline", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Stage", "status"),
+        ("Deal Name", "text"),
+        ("Revenue Type", "dropdown"),
+        ("Amount", "numbers"),
+        ("Owner", "people"),
+        ("Close Date", "date"),
+        ("HubSpot Deal ID", "text"),
+    ]:
+        add_column(token, rp_board, col_name, col_type, dry_run)
+
+    print("  Creating: Community Impact")
+    ci_board = existing.get("Community Impact") or \
+        create_board(token, "Community Impact", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Status", "status"),
+        ("Program Name", "text"),
+        ("Impact Area", "dropdown"),
+        ("Lead", "people"),
+        ("Target Date", "date"),
+        ("Notes", "long_text"),
+    ]:
+        add_column(token, ci_board, col_name, col_type, dry_run)
+
+    print("  Creating: Founder Decisions")
+    fd_board = existing.get("Founder Decisions") or \
+        create_board(token, "Founder Decisions", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Priority", "status"),
+        ("Decision", "long_text"),
+        ("Owner", "people"),
+        ("Due Date", "date"),
+        ("Status", "status"),
+    ]:
+        add_column(token, fd_board, col_name, col_type, dry_run)
+
+    print("  Creating: Founder Dashboard")
+    fdb_board = existing.get("Founder Dashboard") or \
+        create_board(token, "Founder Dashboard", ws_id, dry_run)
+    for col_name, col_type in [
+        ("Metric", "text"),
+        ("Value", "numbers"),
+        ("Status", "status"),
+        ("Last Updated", "date"),
+    ]:
+        add_column(token, fdb_board, col_name, col_type, dry_run)
 
 
 # ---------------------------------------------------------------------------
@@ -424,8 +603,9 @@ def main():
 
     corp_ws = get_or_create_ws("Sentrais Corp — Commercial Delivery")
     sri_ws = get_or_create_ws("SRI — IP & Curriculum")
-    nova_ws = get_or_create_ws("NOVATELabs.org — Research & Program Converge")
+    nova_ws = get_or_create_ws("Barbara Geter Institute — Research & Program Converge")
     ventures_ws = get_or_create_ws("Sentrais Ventures — Federal PPP & NCICC")
+    sios_ws = get_or_create_ws("SENTRAIS_Operations")
 
     print("\n[Day 4–5] Configuring Sentrais Corp workspace (commercial delivery + 11 city nodes)...")
     setup_corp_workspace(args.token, corp_ws, args.dry_run)
@@ -433,16 +613,19 @@ def main():
     print("\n[Day 4] Configuring SRI workspace (IP & curriculum)...")
     setup_sri_workspace(args.token, sri_ws, args.dry_run)
 
-    print("\n[Day 4] Configuring NOVATELabs.org workspace (research)...")
-    setup_novatorg_workspace(args.token, nova_ws, args.dry_run)
+    print("\n[Day 4] Configuring Barbara Geter Institute workspace (research)...")
+    setup_bgi_workspace(args.token, nova_ws, args.dry_run)
 
     print("\n[Day 5] Configuring Sentrais Ventures workspace (NCICC & federal PPP)...")
     setup_ventures_workspace(args.token, ventures_ws, args.dry_run)
 
+    print("\n[SIOS Sprint 1] Configuring SENTRAIS Operations workspace...")
+    setup_sios_workspace(args.token, sios_ws, args.dry_run)
+
     print("\n" + "=" * 60)
     print("Monday.com configuration complete.")
     print("\nManual steps required in Monday UI:")
-    print("  1. Set access restrictions on NOVATELabs.org workspace (research team only)")
+    print("  1. Set access restrictions on Barbara Geter Institute workspace (research team only)")
     print("  2. Set access restrictions on Sentrais Ventures workspace (leadership + legal)")
     print("  3. Configure Automation 10 (SEAR hard-block propagation) via Automations tab")
     print("  4. Configure Automation 11 (NC-G3 SIPE alert) via Automations tab")
@@ -450,6 +633,12 @@ def main():
     print("  6. Configure Automation 14 (NovateUS inurement guard) via Automations tab")
     print("  7. Connect HubSpot ↔ Monday via Monday marketplace app (HubSpot CRM)")
     print("  8. Set SEAR 2026 Master Tracker formula: Days to T-0 = DATIF(TODAY(), DATE(2026,6,11), 'D')")
+    print("  9. Add 8 core seats to SENTRAIS_Operations workspace")
+    print("  10. Enforce underscores-only naming convention in #sios-sprint1 Slack channel")
+    print("  11. Configure Google Calendar and Slack integrations for automated reminders")
+    print("  12. Assign Zoie to Evidence Ledger & SEAROS board (BGI workspace) — contractor seat")
+    print("  13. SEG Subcontract Tracker — restrict to CEO + legal counsel only")
+    print("  14. NFL GDA Delivery Tracker — assign Erin as GDA audit owner, SEG as delivery owner")
     print("=" * 60)
 
 

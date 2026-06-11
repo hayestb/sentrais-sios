@@ -5,14 +5,12 @@ import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GATE_DEFINITIONS } from "@/lib/workflow/golden-path";
 import { formatCurrency } from "@/lib/utils";
 import {
   TrendingUp, DollarSign, Briefcase, GitBranch, FileText, CheckCircle2,
   AlertTriangle, Clock, ArrowRight, Zap,
 } from "lucide-react";
 import Link from "next/link";
-import type { GateNumber } from "@/lib/workflow/types";
 import { ReportTrigger } from "@/components/dashboard/report-trigger";
 
 export const dynamic = "force-dynamic";
