@@ -19,6 +19,7 @@ import Atlanta360 from "./pages/Atlanta360";
 import NationalNetwork from "./pages/NationalNetwork";
 import WorkforceMatrix from "./pages/WorkforceMatrix";
 import PodStructure from "./pages/PodStructure";
+import Sports360 from "./pages/Sports360";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="national-network" element={<NationalNetwork />} />
           <Route path="workforce" element={<WorkforceMatrix />} />
           <Route path="pod-structure" element={<PodStructure />} />
+          <Route path="sports360" element={<Sports360 />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
