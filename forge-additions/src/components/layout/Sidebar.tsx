@@ -6,7 +6,7 @@ import {
   LayoutDashboard, DollarSign, BookOpen, MapPin, Shield,
   ClipboardList, Bot, FileKey, Calendar, SunMedium, GitCompare,
   FileText, Target, LogOut, CreditCard, GraduationCap, Globe, Network, Building2,
-  Layers, UserSquare2, Trophy, BadgeDollarSign, GitBranch,
+  Layers, UserSquare2, Trophy, BadgeDollarSign, GitBranch, Music2,
 } from "lucide-react";
 
 const NAV = [
@@ -19,6 +19,7 @@ const NAV = [
   { to: "/financial-ops",   icon: FileText,        label: "Financial Ops" },
   { to: "/pod-structure",   icon: Layers,          label: "GTM Pod Structure" },
   { to: "/sports360",       icon: Trophy,          label: "SPORTS360" },
+  { to: "/live-nation",     icon: Music2,          label: "Live Nation Intel" },
   { to: "/ari-map",         icon: MapPin,          label: "ARI Program Map" },
   { to: "/ari",             icon: BookOpen,        label: "ARI Programs" },
   { to: "/converge",        icon: Target,          label: "Program Converge" },
