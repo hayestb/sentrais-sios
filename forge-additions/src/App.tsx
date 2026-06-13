@@ -20,6 +20,7 @@ import NationalNetwork from "./pages/NationalNetwork";
 import WorkforceMatrix from "./pages/WorkforceMatrix";
 import PodStructure from "./pages/PodStructure";
 import Sports360 from "./pages/Sports360";
+import ExecCompensation from "./pages/ExecCompensation";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="workforce" element={<WorkforceMatrix />} />
           <Route path="pod-structure" element={<PodStructure />} />
           <Route path="sports360" element={<Sports360 />} />
+          <Route path="exec-comp" element={<ExecCompensation />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
