@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "if [ -n \"$DATABASE_URL_UNPOOLED\" ]; then npm run db:baseline && npm run db:migrate; fi && npm run build",
+  "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "outputDirectory": ".next",
   "regions": ["iad1"],
