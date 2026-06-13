@@ -129,6 +129,104 @@ const WEEKS = [
     { id:"w12-5", track:"GTM", title:"Converge Atlanta — first anchor sponsor commitment secured", type:"MILESTONE", urgency:"HIGH", roles:["MIKALINA","TYE"], leadDays:0, sla:"FIFA 2026 activation Q2 2027; anchor sponsor needed 6 months prior", earlyWarn:"" },
     { id:"w12-6", track:"PEOPLE", title:"90-day team retrospective — all roles; founder dependency score", type:"RECURRING", urgency:"HIGH", roles:["TYE"], leadDays:0, sla:"Quarterly cadence; update Program Inventory Workbook Tab 9 (Founder Dependency)", earlyWarn:"" },
   ]},
+  { wk: 13, phase: 4, phaseName: "Scale", dates: "Sep 1–7", events: [
+    { id:"w13-1", track:"FINANCIAL", title:"Q3 close prep — P&L by entity, AR aging all three entities", type:"RECURRING", urgency:"HIGH", roles:["FINANCE","TYE"], leadDays:21, sla:"Q3 close Sep 30 — 3-week prep window starts now", earlyWarn:"" },
+    { id:"w13-2", track:"COMMERCIAL", title:"NFL Q2 invoice prep — $475K quarterly license", type:"ACTION", urgency:"CRITICAL", roles:["FINANCE","TYE"], leadDays:14, sla:"Invoice due Sep 30; Net 30 = Oct 30 cash", earlyWarn:"Prep 2 weeks early to resolve any issues before due date" },
+    { id:"w13-3", track:"GTM", title:"Converge Atlanta — anchor sponsor secured or CRITICAL", type:"MILESTONE", urgency:"CRITICAL", roles:["MIKALINA","TYE"], leadDays:0, sla:"FIFA 2026 Q2 2027 activation; anchor sponsor 6-month lead = Nov deadline", earlyWarn:"6 weeks to Nov deadline — no anchor sponsor confirmed yet" },
+    { id:"w13-4", track:"NONPROFIT", title:"BGI IRS Form 1023 — status check (filed ~Aug 18, week 6 of review)", type:"ACTION", urgency:"HIGH", roles:["COUNSEL"], leadDays:0, sla:"IRS review 3–6 months; provisional status active; respond to any IRS requests within 30 days", earlyWarn:"" },
+    { id:"w13-5", track:"PEOPLE", title:"Executive Director (ARI/BGI) — search firm brief due", type:"GATE", urgency:"HIGH", roles:["TYE","BGI_DIRS"], leadDays:120, sla:"Most critical 2027 hire; 4–6 month search; needed Q1 2027", earlyWarn:"" },
+  ]},
+  { wk: 14, phase: 4, phaseName: "Scale", dates: "Sep 8–14", events: [
+    { id:"w14-1", track:"GTM", title:"Series A fundraising — outreach acceleration to target list", type:"ACTION", urgency:"CRITICAL", roles:["TYE"], leadDays:0, sla:"Series A close gates CEO comp band ($275K) + first $150K milestone bonus", earlyWarn:"Gate Date Dec 1 — Series A must close before or concurrent for CEO band to activate" },
+    { id:"w14-2", track:"COMMERCIAL", title:"NFL Q2 SLA review — 99.5% uptime compliance check", type:"RECURRING", urgency:"HIGH", roles:["ERIN","MIKALINA"], leadDays:0, sla:"Quarterly SLA report to NFL; uptime below 99.5% triggers remediation", earlyWarn:"" },
+    { id:"w14-3", track:"NONPROFIT", title:"BGI Fellowship Handbook — pre-cohort announcement final checks", type:"ACTION", urgency:"HIGH", roles:["BGI_DIRS","COUNSEL"], leadDays:0, sla:"Cohort announcement requires: EIN received, Handbook approved, 1023 filed", earlyWarn:"" },
+    { id:"w14-4", track:"GTM", title:"Live Nation MSA outreach — anchor partner activation pre-FIFA", type:"ACTION", urgency:"HIGH", roles:["FREE","TYE"], leadDays:180, sla:"FIFA 2026 deployment requires 6-month MSA lead time; start now", earlyWarn:"Super Cycle press release gated on MSA signature" },
+    { id:"w14-5", track:"FINANCIAL", title:"Q3 budget vs. actual — all entities; capital pool allocation", type:"RECURRING", urgency:"HIGH", roles:["FINANCE","TYE"], leadDays:0, sla:"Quarterly cadence — adjust burn rate + runway projections", earlyWarn:"" },
+  ]},
+  { wk: 15, phase: 4, phaseName: "Scale", dates: "Sep 15–21", events: [
+    { id:"w15-1", track:"GOVERNANCE", title:"GTM Pod 90-day dry run — shadow tracking review", type:"MILESTONE", urgency:"HIGH", roles:["TYE","FINANCE"], leadDays:0, sla:"30-day dry run closes; friction audit results reviewed with pod leads", earlyWarn:"" },
+    { id:"w15-2", track:"PEOPLE", title:"Learning Mode — 4-month mark; performance data review", type:"RECURRING", urgency:"HIGH", roles:["TYE","FINANCE"], leadDays:60, sla:"Gate Date Dec 1 — post-gate comp bands activate in 10 weeks", earlyWarn:"Begin 1-on-1 comp alignment scheduling 6 weeks before Gate Date" },
+    { id:"w15-3", track:"NONPROFIT", title:"Barbara Geter Fellowship — cohort announcement ready", type:"MILESTONE", urgency:"HIGH", roles:["BGI_DIRS","TYE"], leadDays:0, sla:"Public announcement after: EIN received + Handbook approved + 1023 filed", earlyWarn:"" },
+    { id:"w15-4", track:"GTM", title:"SPORTS360 — second venue deployment scoped", type:"ACTION", urgency:"MEDIUM", roles:["ERIN","MIKALINA"], leadDays:0, sla:"Pipeline: 2nd EVERGAME deployment target Q4 2026", earlyWarn:"" },
+    { id:"w15-5", track:"FINANCIAL", title:"Year-end tax planning kickoff — QSBS, §482, BGI §4958 true-up", type:"ACTION", urgency:"HIGH", roles:["FINANCE","COUNSEL"], leadDays:120, sla:"Dec 31 deadline; 4-month lead time required — start this week", earlyWarn:"Complex multi-entity: QSBS qualification, IRC §482 royalty true-up, BGI §4958 compliance" },
+  ]},
+  { wk: 16, phase: 4, phaseName: "Scale", dates: "Sep 22–28", events: [
+    { id:"w16-1", track:"FINANCIAL", title:"NFL Q2 invoice submitted — $475K", type:"ACTION", urgency:"CRITICAL", roles:["TYE","FINANCE"], leadDays:0, sla:"Net 30 = Oct 30 cash; invoice must be clean before submission", earlyWarn:"" },
+    { id:"w16-2", track:"FINANCIAL", title:"Q3 financial reporting — P&L, cash position, burn, AR aging", type:"RECURRING", urgency:"HIGH", roles:["FINANCE","TYE"], leadDays:0, sla:"Monthly to CEO; quarterly board-level report", earlyWarn:"" },
+    { id:"w16-3", track:"GTM", title:"Q3 QBR — NFL + all active clients; pipeline review", type:"RECURRING", urgency:"HIGH", roles:["TYE","ERIN","VAL"], leadDays:0, sla:"End of Q3 = Sep 30; QBR 2 weeks prep", earlyWarn:"" },
+    { id:"w16-4", track:"GTM", title:"Pod retrospective — Month 3; win-loss analysis, NRR review", type:"RECURRING", urgency:"HIGH", roles:["TYE"], leadDays:0, sla:"Monthly retrospective — pod leader runs NRR/churn/win-loss", earlyWarn:"" },
+    { id:"w16-5", track:"PEOPLE", title:"1-on-1 comp alignment prep — schedule all AE/CSM/Marketer meetings", type:"ACTION", urgency:"HIGH", roles:["TYE","FINANCE"], leadDays:0, sla:"Gate Date Dec 1 — 1-on-1s must complete 4 weeks prior = deadline Oct 31", earlyWarn:"Each 1-on-1 reviews shadow period data and post-gate variable structure" },
+  ]},
+  { wk: 17, phase: 4, phaseName: "Scale", dates: "Sep 29–Oct 5", events: [
+    { id:"w17-1", track:"FINANCIAL", title:"Q3 close — all entity P&Ls reconciled and filed", type:"MILESTONE", urgency:"CRITICAL", roles:["FINANCE","TYE"], leadDays:0, sla:"Hard close Sep 30 — no deferrals", earlyWarn:"" },
+    { id:"w17-2", track:"COMMERCIAL", title:"NFL Q3 deployment — SPORTS360 recertification cycle begins", type:"ACTION", urgency:"HIGH", roles:["ERIN","MIKALINA"], leadDays:90, sla:"Year 2 renewal Jan 1 2027; recertification program 3-month lead", earlyWarn:"" },
+    { id:"w17-3", track:"GTM", title:"Series A — term sheet target window opens", type:"MILESTONE", urgency:"CRITICAL", roles:["TYE"], leadDays:0, sla:"Term sheet before Gate Date Dec 1 activates CEO comp band upgrade", earlyWarn:"Gate Date is 9 weeks away — Series A process must be in final stages" },
+    { id:"w17-4", track:"NONPROFIT", title:"BGI 1023 — IRS review mid-point (if filed Aug 18)", type:"ACTION", urgency:"HIGH", roles:["COUNSEL"], leadDays:0, sla:"3–6 month window; mid-point check for any IRS correspondence", earlyWarn:"" },
+    { id:"w17-5", track:"GTM", title:"Converge Atlanta — venue contract signed", type:"GATE", urgency:"HIGH", roles:["MIKALINA","FREE"], leadDays:180, sla:"FIFA Q2 2027 activation; venue contract 6 months prior", earlyWarn:"" },
+  ]},
+  { wk: 18, phase: 4, phaseName: "Scale", dates: "Oct 6–12", events: [
+    { id:"w18-1", track:"FINANCIAL", title:"NFL Q2 payment received — $475K cash (Net 30 from Sep 30)", type:"MILESTONE", urgency:"HIGH", roles:["FINANCE","TYE"], leadDays:0, sla:"Net 30 from Sep 30 invoice = Oct 30; watch AR aging", earlyWarn:"If not received by Oct 31, escalate to NFL AP" },
+    { id:"w18-2", track:"PEOPLE", title:"1-on-1 comp alignments — all AE/CSM/Marketers complete", type:"GATE", urgency:"CRITICAL", roles:["TYE","FINANCE"], leadDays:0, sla:"All 1-on-1s must be done before Nov 1 to allow 30-day prep before Gate Date", earlyWarn:"Gate Date is Dec 1 — this is the last week to complete all alignments" },
+    { id:"w18-3", track:"GOVERNANCE", title:"Annual director independence re-certification — all entities", type:"RECURRING", urgency:"HIGH", roles:["COUNSEL","BGI_DIRS"], leadDays:0, sla:"Annual cycle — Oct 2026 is first BGI re-cert", earlyWarn:"" },
+    { id:"w18-4", track:"GTM", title:"FIFA 2026 — host committee engagement deepened", type:"ACTION", urgency:"HIGH", roles:["MIKALINA","TYE"], leadDays:0, sla:"Q2 2027 FIFA deployment; 6-month operational lead time", earlyWarn:"" },
+    { id:"w18-5", track:"COMMERCIAL", title:"CiviGrid — second city deployment scoped (NOLA or Boston)", type:"ACTION", urgency:"MEDIUM", roles:["TYE","DARRYL"], leadDays:0, sla:"City readiness score must reach 70+ VRI before deployment authorization", earlyWarn:"" },
+  ]},
+  { wk: 19, phase: 4, phaseName: "Scale", dates: "Oct 13–19", events: [
+    { id:"w19-1", track:"GTM", title:"Series A — investor roadshow active", type:"ACTION", urgency:"CRITICAL", roles:["TYE"], leadDays:0, sla:"Gate Date Dec 1 — term sheet must precede Gate Date for CEO band", earlyWarn:"7 weeks to Gate Date — roadshow must be in final meetings" },
+    { id:"w19-2", track:"PEOPLE", title:"Post-gate CRM routing rules — pod assignments updated in HubSpot", type:"ACTION", urgency:"HIGH", roles:["ZOIE","FINANCE"], leadDays:0, sla:"Must be live before Gate Date Dec 1; technical cut-over per pod playbook", earlyWarn:"" },
+    { id:"w19-3", track:"FINANCIAL", title:"ERP cost center configuration — NetSuite pod cost centers final", type:"ACTION", urgency:"HIGH", roles:["FINANCE","ZOIE"], leadDays:0, sla:"All 5 ERP codes (SNTR-EG/CG/AG/SG/IG) fully live with pod-level attribution", earlyWarn:"" },
+    { id:"w19-4", track:"NONPROFIT", title:"BGI §25M Founding Campaign — donor prospectus ready", type:"MILESTONE", urgency:"MEDIUM", roles:["TYE","BGI_DIRS"], leadDays:0, sla:"Prospectus required before formal fundraising; 1023 must be filed first", earlyWarn:"" },
+    { id:"w19-5", track:"COMMERCIAL", title:"SPORTS360 — GDA model accuracy review after 4 deployments", type:"RECURRING", urgency:"HIGH", roles:["ERIN","MIKALINA"], leadDays:0, sla:"Quarterly NIN intelligence review — VRI delta analysis across all deployments", earlyWarn:"" },
+  ]},
+  { wk: 20, phase: 4, phaseName: "Scale", dates: "Oct 20–26", events: [
+    { id:"w20-1", track:"GTM", title:"FIFA pre-deployment planning — NIN baseline establishment", type:"ACTION", urgency:"HIGH", roles:["FREE","ERIN","MIKALINA"], leadDays:0, sla:"FIFA 2026 Atlanta deployment Q2 2027; operational lead time = 6 months", earlyWarn:"" },
+    { id:"w20-2", track:"PEOPLE", title:"Learning Mode — 5-month mark; final shadow comp review", type:"ACTION", urgency:"HIGH", roles:["TYE","FINANCE"], leadDays:42, sla:"Gate Date Dec 1 — 6 weeks away; finalize post-gate band confirmations", earlyWarn:"Shadow data must be locked Nov 30 — data integrity check this week" },
+    { id:"w20-3", track:"GOVERNANCE", title:"Exec comp — equity ratchet performance data compiled", type:"ACTION", urgency:"HIGH", roles:["FINANCE","COUNSEL"], leadDays:0, sla:"Ratchet triggers at 100% metrics at Gate Date; data must be ready Nov 30", earlyWarn:"" },
+    { id:"w20-4", track:"FINANCIAL", title:"NFL Q3 invoice prep — $475K quarterly license", type:"ACTION", urgency:"HIGH", roles:["FINANCE","TYE"], leadDays:14, sla:"Invoice due Dec 31; Net 30 = Jan 30 2027 cash", earlyWarn:"" },
+    { id:"w20-5", track:"GTM", title:"EntertainmentOS — Live Nation MSA status update", type:"ACTION", urgency:"HIGH", roles:["FREE","TYE"], leadDays:0, sla:"Super Cycle activation gated on MSA; press release follows MSA signature", earlyWarn:"" },
+  ]},
+  { wk: 21, phase: 4, phaseName: "Scale", dates: "Oct 27–Nov 2", events: [
+    { id:"w21-1", track:"NONPROFIT", title:"BGI 1023 — expected IRS determination letter window opens", type:"MILESTONE", urgency:"HIGH", roles:["COUNSEL","BGI_DIRS"], leadDays:0, sla:"3–6 month window from Aug 18 filing; earliest expected Nov 2026", earlyWarn:"Monitor USPS tracking; respond to any IRS correspondence within 30 days" },
+    { id:"w21-2", track:"GOVERNANCE", title:"Gate Date prep — final comp structure confirmed for all roles", type:"ACTION", urgency:"CRITICAL", roles:["TYE","FINANCE","COUNSEL"], leadDays:30, sla:"Gate Date Dec 1 — post-gate bands, equity ratchet, deal-close tiers must be finalized", earlyWarn:"5 weeks to Gate Date — no changes to comp structure after Nov 15" },
+    { id:"w21-3", track:"COMMERCIAL", title:"NFL Year 2 renewal scope — GDA recertification program confirmed", type:"GATE", urgency:"HIGH", roles:["TYE","ERIN","MIKALINA"], leadDays:60, sla:"Year 2 begins Jan 1 2027; scope must be locked 2 months prior", earlyWarn:"" },
+    { id:"w21-4", track:"GTM", title:"Pod retrospective — Month 5; win-loss, NRR, Series A narrative update", type:"RECURRING", urgency:"HIGH", roles:["TYE"], leadDays:0, sla:"Monthly — pod leader runs NRR/churn/win-loss", earlyWarn:"" },
+    { id:"w21-5", track:"FINANCIAL", title:"IRC §482 transfer pricing — Q3 true-up and year-end documentation", type:"RECURRING", urgency:"HIGH", roles:["FINANCE","COUNSEL"], leadDays:0, sla:"Contemporaneous documentation before year-end; RRH → Sentrais royalty rate confirmed", earlyWarn:"" },
+  ]},
+  { wk: 22, phase: 4, phaseName: "Scale", dates: "Nov 3–9", events: [
+    { id:"w22-1", track:"GOVERNANCE", title:"Learning Mode — FINAL MONTH BEGINS", type:"MILESTONE", urgency:"CRITICAL", roles:["TYE","FINANCE"], leadDays:28, sla:"Gate Date Dec 1 — 28 days remaining; post-gate bands activate in 4 weeks", earlyWarn:"All 1-on-1 comp alignments must be complete by this week" },
+    { id:"w22-2", track:"PEOPLE", title:"Post-gate technical cut-over — CRM routing, ERP cost centers final check", type:"ACTION", urgency:"CRITICAL", roles:["ZOIE","FINANCE"], leadDays:0, sla:"Systems must be fully configured before Dec 1 go-live", earlyWarn:"" },
+    { id:"w22-3", track:"GTM", title:"Series A — final investor presentations; term sheet imminent", type:"ACTION", urgency:"CRITICAL", roles:["TYE"], leadDays:0, sla:"Term sheet before Dec 1 activates CEO band upgrade to $275K", earlyWarn:"3 weeks to Gate Date — Series A close must be visible on the horizon" },
+    { id:"w22-4", track:"NONPROFIT", title:"BGI Fellowship — Q4 2026 cohort applications open", type:"MILESTONE", urgency:"HIGH", roles:["BGI_DIRS","TYE"], leadDays:0, sla:"Applications open after: announcement made + EIN confirmed + Handbook approved", earlyWarn:"" },
+    { id:"w22-5", track:"COMMERCIAL", title:"EVERGAME — Q4 2026 pipeline review; new venue opportunities", type:"ACTION", urgency:"MEDIUM", roles:["ERIN","MIKALINA"], leadDays:0, sla:"Q4 deployment pipeline scoping", earlyWarn:"" },
+  ]},
+  { wk: 23, phase: 4, phaseName: "Scale", dates: "Nov 10–16", events: [
+    { id:"w23-1", track:"GOVERNANCE", title:"Post-gate comp transition — 'Why' briefing to all pod leads", type:"ACTION", urgency:"CRITICAL", roles:["TYE"], leadDays:0, sla:"Town hall format; autonomy framing per comp transition protocol", earlyWarn:"Gate Date Dec 1 — 3 weeks out; team communication cannot wait" },
+    { id:"w23-2", track:"FINANCIAL", title:"Shadow comp final review — all roles; 90-day data locked", type:"ACTION", urgency:"CRITICAL", roles:["FINANCE","TYE"], leadDays:0, sla:"Shadow data locked Nov 30; post-gate actuals begin Dec 1", earlyWarn:"Any data discrepancies must be resolved before Nov 30" },
+    { id:"w23-3", track:"GTM", title:"Converge Atlanta — Q2 2027 event fully confirmed and ticketing live", type:"MILESTONE", urgency:"HIGH", roles:["MIKALINA","FREE"], leadDays:0, sla:"FIFA 2026 co-activation; venue confirmed, anchor sponsor signed", earlyWarn:"" },
+    { id:"w23-4", track:"PEOPLE", title:"NFL Year 2 team plan — staffing model for recertification program", type:"ACTION", urgency:"HIGH", roles:["ERIN","MIKALINA"], leadDays:0, sla:"Year 2 begins Jan 1 2027; team model due Nov 30", earlyWarn:"" },
+    { id:"w23-5", track:"FINANCIAL", title:"Year-end tax planning — final entity strategy confirmed", type:"ACTION", urgency:"HIGH", roles:["FINANCE","COUNSEL"], leadDays:0, sla:"Dec 31 deadline; all strategies (QSBS, §482, §4958) locked by Nov 30", earlyWarn:"" },
+  ]},
+  { wk: 24, phase: 4, phaseName: "Scale", dates: "Nov 17–23", events: [
+    { id:"w24-1", track:"GOVERNANCE", title:"Post-gate comp — individual comp letters drafted and reviewed", type:"ACTION", urgency:"CRITICAL", roles:["TYE","FINANCE","COUNSEL"], leadDays:0, sla:"Letters must be reviewed by counsel before delivery; send by Nov 28", earlyWarn:"Gate Date Dec 1 — no surprises at activation" },
+    { id:"w24-2", track:"GOVERNANCE", title:"Equity ratchet — achievement determinations final", type:"GATE", urgency:"CRITICAL", roles:["FINANCE","COUNSEL"], leadDays:0, sla:"100% metrics = +25% acceleration; 90-99% = +12.5%; below 90% = no ratchet", earlyWarn:"Written determination required before Gate Date" },
+    { id:"w24-3", track:"FINANCIAL", title:"NFL Q3 invoice submitted — $475K", type:"ACTION", urgency:"CRITICAL", roles:["TYE","FINANCE"], leadDays:0, sla:"Net 30 = Jan 30 2027 cash", earlyWarn:"" },
+    { id:"w24-4", track:"GTM", title:"Series A — term sheet under negotiation or signed", type:"MILESTONE", urgency:"CRITICAL", roles:["TYE","COUNSEL"], leadDays:0, sla:"Series A close gates CEO band ($275K) + $150K milestone bonus", earlyWarn:"Gate Date Dec 1 is 8 days away — term sheet should be in hand" },
+    { id:"w24-5", track:"PEOPLE", title:"Post-gate org chart — all role titles and band confirmations published", type:"ACTION", urgency:"HIGH", roles:["TYE"], leadDays:0, sla:"Publish before Dec 1; no ambiguity about post-gate structure", earlyWarn:"" },
+  ]},
+  { wk: 25, phase: 4, phaseName: "Scale", dates: "Nov 24–30", events: [
+    { id:"w25-1", track:"GOVERNANCE", title:"LEARNING MODE ENDS — Nov 30 HARD CUTOFF", type:"DEADLINE", urgency:"CRITICAL", roles:["TYE","FINANCE"], leadDays:0, sla:"$140K uniform base period closes. All shadow comp data locked. Post-gate bands activate Dec 1.", earlyWarn:"This is a hard date — no extension. All systems, letters, and determinations must be ready." },
+    { id:"w25-2", track:"GOVERNANCE", title:"Post-gate comp letters — delivered to all team members", type:"GATE", urgency:"CRITICAL", roles:["TYE","COUNSEL"], leadDays:0, sla:"Letters confirm: role, new base, variable structure, equity ratchet outcome", earlyWarn:"" },
+    { id:"w25-3", track:"FINANCIAL", title:"CRM routing rules — final configuration live for Dec 1", type:"ACTION", urgency:"CRITICAL", roles:["ZOIE","FINANCE"], leadDays:0, sla:"HubSpot routing to regional pod replaces round-robin; ERP cost centers in NetSuite", earlyWarn:"" },
+    { id:"w25-4", track:"GTM", title:"Q4 pipeline review — all pods; 2027 quota planning begins", type:"RECURRING", urgency:"HIGH", roles:["TYE","VAL","FINANCE"], leadDays:0, sla:"2027 quota targets set based on Q3 actuals + post-gate comp model", earlyWarn:"" },
+    { id:"w25-5", track:"PEOPLE", title:"BGI Fellowship Q4 cohort — applications close", type:"MILESTONE", urgency:"HIGH", roles:["BGI_DIRS"], leadDays:0, sla:"Cohort selection begins Dec 1; orientation Jan 2027", earlyWarn:"" },
+  ]},
+  { wk: 26, phase: 4, phaseName: "Scale", dates: "Dec 1–7", events: [
+    { id:"w26-1", track:"GOVERNANCE", title:"GATE DATE — Dec 1, 2026: Post-gate comp bands ACTIVATE", type:"MILESTONE", urgency:"CRITICAL", roles:["TYE","FINANCE","COUNSEL"], leadDays:0, sla:"C-suite $250K, Enabler $200K, Zoie $140K active. CEO $275K pending Series A close.", earlyWarn:"CEO band requires Series A term sheet or close — confirm status with counsel" },
+    { id:"w26-2", track:"GOVERNANCE", title:"Equity ratchet — +25% acceleration processed for qualifying members", type:"MILESTONE", urgency:"CRITICAL", roles:["COUNSEL","FINANCE"], leadDays:0, sla:"Ratchet applied to unvested balance per written determination. 24-month cliff on accelerated tranche.", earlyWarn:"" },
+    { id:"w26-3", track:"COMMERCIAL", title:"NFL Year 2 — renewed contract executed", type:"MILESTONE", urgency:"CRITICAL", roles:["TYE","ERIN"], leadDays:0, sla:"Year 2 begins Jan 1 2027 — contract must be executed before year-end", earlyWarn:"" },
+    { id:"w26-4", track:"FINANCIAL", title:"Deal-close clause active — all Tier 1-4 uncapped commissions live", type:"MILESTONE", urgency:"HIGH", roles:["FINANCE","TYE"], leadDays:0, sla:"Universal deal-close clause activates Dec 1 with post-gate comp bands", earlyWarn:"" },
+    { id:"w26-5", track:"GTM", title:"2027 GTM plan — vertical roadmaps, pod quotas, Series A deploy plan", type:"ACTION", urgency:"HIGH", roles:["TYE","VAL","FINANCE"], leadDays:0, sla:"2027 plan presented to board by Dec 31", earlyWarn:"" },
+  ]},
 ];
 
 const GOLDEN_ROUTES = {
@@ -143,11 +241,11 @@ const GOLDEN_ROUTES = {
 };
 
 // Week start dates for calendar mapping
-const WEEK_STARTS = { 1:new Date(2026,5,8), 2:new Date(2026,5,15), 3:new Date(2026,5,22), 4:new Date(2026,5,29), 5:new Date(2026,6,7), 6:new Date(2026,6,14), 7:new Date(2026,6,21), 8:new Date(2026,6,28), 9:new Date(2026,7,4), 10:new Date(2026,7,11), 11:new Date(2026,7,18), 12:new Date(2026,7,25) };
+const WEEK_STARTS = { 1:new Date(2026,5,8), 2:new Date(2026,5,15), 3:new Date(2026,5,22), 4:new Date(2026,5,29), 5:new Date(2026,6,7), 6:new Date(2026,6,14), 7:new Date(2026,6,21), 8:new Date(2026,6,28), 9:new Date(2026,7,4), 10:new Date(2026,7,11), 11:new Date(2026,7,18), 12:new Date(2026,7,25), 13:new Date(2026,8,1), 14:new Date(2026,8,8), 15:new Date(2026,8,15), 16:new Date(2026,8,22), 17:new Date(2026,8,29), 18:new Date(2026,9,6), 19:new Date(2026,9,13), 20:new Date(2026,9,20), 21:new Date(2026,9,27), 22:new Date(2026,10,3), 23:new Date(2026,10,10), 24:new Date(2026,10,17), 25:new Date(2026,10,24), 26:new Date(2026,11,1) };
 
 function getWeekNumForDate(d) {
   let found = null;
-  for (let wk = 12; wk >= 1; wk--) {
+  for (let wk = 26; wk >= 1; wk--) {
     if (d >= WEEK_STARTS[wk]) { found = wk; break; }
   }
   return found;
@@ -170,11 +268,11 @@ function getCalendarDays(y, m) {
   return cells;
 }
 
-const PHASE_COLORS = { 1: C.accent, 2: C.teal, 3: C.purple };
+const PHASE_COLORS = { 1: C.accent, 2: C.teal, 3: C.purple, 4: C.amber };
 const TYPE_ICON = { DEADLINE: "⏰", GATE: "🚧", MILESTONE: "🏁", ACTION: "→", RECURRING: "↻" };
 const URGENCY_VARIANT = { CRITICAL: "danger", HIGH: "warning", MEDIUM: "neutral", LOW: "success" };
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const CALENDAR_MONTHS = [[2026, 5], [2026, 6], [2026, 7]]; // Jun, Jul, Aug 2026
+const CALENDAR_MONTHS = [[2026, 5], [2026, 6], [2026, 7], [2026, 8], [2026, 9], [2026, 10], [2026, 11]];
 
 const VIEW_TABS = ["Month", "Week", "Day", "Timeline", "Critical Path", "Golden Route", "Dependencies"];
 
@@ -241,11 +339,11 @@ export default function MasterCalendar() {
       <ForgeHeader
         icon="📅"
         title="Unified Master Calendar"
-        subtitle="Sentrais · NOVATELabs · BGI — 12-Week Schedule · Jun–Aug 2026 · 9 Roles · Early Warning System"
+        subtitle="Sentrais · NOVATELabs · BGI — 26-Week Schedule · Jun–Dec 2026 · 9 Roles · Early Warning System"
         stats={[
           { label: "Total Events", value: String(WEEKS.flatMap(w => w.events).length) },
           { label: "Critical", value: String(allCritical.length) },
-          { label: "Weeks", value: "12" },
+          { label: "Weeks", value: "26" },
           { label: "Roles", value: "9" },
         ]}
       />
@@ -376,7 +474,7 @@ export default function MasterCalendar() {
               </div>
             ) : (
               <ForgeAlert level="info" title="No Events">
-                No scheduled events for this date. The calendar covers Jun 8 – Aug 31, 2026.
+                No scheduled events for this date. The calendar covers Jun 8 – Dec 7, 2026.
               </ForgeAlert>
             )}
           </div>
@@ -392,11 +490,11 @@ export default function MasterCalendar() {
               ))}
             </div>
 
-            {[1, 2, 3].map(phase => {
+            {[1, 2, 3, 4].map(phase => {
               const phaseWeeks = filteredWeeks.filter(w => w.phase === phase);
               if (!phaseWeeks.length) return null;
               const pc = PHASE_COLORS[phase];
-              const phaseNames = { 1: "Phase 1: Foundation", 2: "Phase 2: Acceleration", 3: "Phase 3: Momentum" };
+              const phaseNames = { 1: "Phase 1: Foundation", 2: "Phase 2: Acceleration", 3: "Phase 3: Momentum", 4: "Phase 4: Scale" };
               return (
                 <div key={phase} style={{ marginBottom: 28 }}>
                   <div style={{ borderLeft: `3px solid ${pc}`, paddingLeft: 12, marginBottom: 14 }}>

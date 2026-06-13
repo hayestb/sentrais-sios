@@ -6,30 +6,69 @@ import {
   LayoutDashboard, DollarSign, BookOpen, MapPin, Shield,
   ClipboardList, Bot, FileKey, Calendar, SunMedium, GitCompare,
   FileText, Target, LogOut, CreditCard, GraduationCap, Globe, Network, Building2,
-  Layers, UserSquare2,
+  Layers, UserSquare2, Trophy, BadgeDollarSign, GitBranch, Music2,
 } from "lucide-react";
 
-const NAV = [
-  { to: "/dashboard",       icon: LayoutDashboard, label: "Command Center" },
-  { to: "/calendar",        icon: Calendar,        label: "Master Calendar" },
-  { to: "/calendar-light",  icon: SunMedium,       label: "Calendar (Light)" },
-  { to: "/financial-model", icon: DollarSign,      label: "Financial Model" },
-  { to: "/financial-ops",   icon: FileText,        label: "Financial Ops" },
-  { to: "/pod-structure",   icon: Layers,          label: "GTM Pod Structure" },
-  { to: "/ari-map",         icon: MapPin,          label: "ARI Program Map" },
-  { to: "/ari",             icon: BookOpen,        label: "ARI Programs" },
-  { to: "/converge",        icon: Target,          label: "Program Converge" },
-  { to: "/banking",         icon: CreditCard,      label: "Banking & Payments" },
-  { to: "/workforce",       icon: UserSquare2,     label: "Workforce Matrix" },
-  { to: "/fellowship",      icon: GraduationCap,   label: "Fellowship Framework" },
-  { to: "/city-readiness",  icon: Globe,           label: "City Readiness" },
-  { to: "/atlanta360",      icon: Building2,       label: "Atlanta 360" },
-  { to: "/national-network",icon: Network,         label: "National Network" },
-  { to: "/doc-control",     icon: GitCompare,      label: "Doc Version Control" },
-  { to: "/evidence",        icon: Shield,          label: "Evidence Ledger" },
-  { to: "/claims",          icon: ClipboardList,   label: "Claims Register" },
-  { to: "/agents",          icon: Bot,             label: "FORGE Agents" },
-  { to: "/seg",             icon: FileKey,         label: "SEG Subcontract" },
+const NAV_GROUPS = [
+  {
+    label: "COMMAND",
+    items: [
+      { to: "/dashboard",        icon: LayoutDashboard, label: "Command Center" },
+      { to: "/calendar",         icon: Calendar,        label: "Master Calendar" },
+      { to: "/calendar-light",   icon: SunMedium,       label: "Calendar (Light)" },
+    ],
+  },
+  {
+    label: "STRATEGY",
+    items: [
+      { to: "/corp-architecture", icon: GitBranch,       label: "Corp Architecture" },
+      { to: "/financial-model",   icon: DollarSign,      label: "Financial Model" },
+      { to: "/financial-ops",     icon: FileText,        label: "Financial Ops" },
+      { to: "/exec-comp",         icon: BadgeDollarSign, label: "Exec Compensation" },
+    ],
+  },
+  {
+    label: "GTM & DELIVERY",
+    items: [
+      { to: "/pod-structure",    icon: Layers,          label: "GTM Pod Structure" },
+      { to: "/sports360",        icon: Trophy,          label: "SPORTS360" },
+      { to: "/live-nation",      icon: Music2,          label: "Live Nation Intel" },
+      { to: "/banking",          icon: CreditCard,      label: "Banking & Payments" },
+    ],
+  },
+  {
+    label: "PROGRAMS",
+    items: [
+      { to: "/ari-map",          icon: MapPin,          label: "ARI Program Map" },
+      { to: "/ari",              icon: BookOpen,        label: "ARI Programs" },
+      { to: "/converge",         icon: Target,          label: "Program Converge" },
+      { to: "/city-readiness",   icon: Globe,           label: "City Readiness" },
+      { to: "/atlanta360",       icon: Building2,       label: "Atlanta 360" },
+      { to: "/national-network", icon: Network,         label: "National Network" },
+    ],
+  },
+  {
+    label: "WORKFORCE",
+    items: [
+      { to: "/workforce",        icon: UserSquare2,     label: "Workforce Matrix" },
+      { to: "/fellowship",       icon: GraduationCap,   label: "Fellowship Framework" },
+    ],
+  },
+  {
+    label: "INTELLIGENCE",
+    items: [
+      { to: "/doc-control",      icon: GitCompare,      label: "Doc Version Control" },
+      { to: "/evidence",         icon: Shield,          label: "Evidence Ledger" },
+      { to: "/claims",           icon: ClipboardList,   label: "Claims Register" },
+      { to: "/agents",           icon: Bot,             label: "FORGE Agents" },
+    ],
+  },
+  {
+    label: "GOVERNANCE",
+    items: [
+      { to: "/seg",              icon: FileKey,         label: "SEG Subcontract" },
+    ],
+  },
 ];
 
 export default function Sidebar() {
@@ -56,25 +95,37 @@ export default function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
-        {NAV.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            onMouseEnter={() => setHovered(to)}
-            onMouseLeave={() => setHovered(null)}
-            style={({ isActive }) => ({
-              display: "flex", alignItems: "center", gap: 10,
-              padding: "7px 10px", borderRadius: 7,
-              fontSize: 13, fontWeight: isActive ? 600 : 400,
-              color: isActive ? "#fff" : hovered === to ? "#c8d8e8" : "#7a9ab5",
-              background: isActive ? "rgba(255,255,255,0.1)" : hovered === to ? "rgba(255,255,255,0.05)" : "transparent",
-              textDecoration: "none", transition: "background 0.12s, color 0.12s",
-            })}
-          >
-            <Icon size={14} style={{ flexShrink: 0 }} />
-            <span>{label}</span>
-          </NavLink>
+      <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 0 }}>
+        {NAV_GROUPS.map(({ label, items }) => (
+          <div key={label}>
+            <div style={{
+              fontSize: 9, letterSpacing: "2px", color: "#2a3f5f",
+              textTransform: "uppercase", padding: "8px 10px 4px",
+            }}>
+              {label}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {items.map(({ to, icon: Icon, label: itemLabel }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onMouseEnter={() => setHovered(to)}
+                  onMouseLeave={() => setHovered(null)}
+                  style={({ isActive }) => ({
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "7px 10px", borderRadius: 7,
+                    fontSize: 13, fontWeight: isActive ? 600 : 400,
+                    color: isActive ? "#fff" : hovered === to ? "#c8d8e8" : "#7a9ab5",
+                    background: isActive ? "rgba(255,255,255,0.1)" : hovered === to ? "rgba(255,255,255,0.05)" : "transparent",
+                    textDecoration: "none", transition: "background 0.12s, color 0.12s",
+                  })}
+                >
+                  <Icon size={14} style={{ flexShrink: 0 }} />
+                  <span>{itemLabel}</span>
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 

@@ -63,7 +63,41 @@ const SUBSTITUTIONS = [
   ["NovateUS (standalone)", "NOVATELabs Inc"],
 ];
 
-const TABS = ["Document Changes", "System Updates", "Preserved / Archived"];
+const ERP_CODES = [
+  { code: "SNTR-EG", vertical: "EVERGAME", description: "Sports & Entertainment Venue Operations — all EVERGAME revenue, costs, and deployment expenses", color: C.accent, status: "PENDING" },
+  { code: "SNTR-CG", vertical: "CiviGrid", description: "Smart Cities & Civic Infrastructure — all CiviGrid municipal contracts, ARI program costs, city deployments", color: C.teal, status: "PENDING" },
+  { code: "SNTR-AG", vertical: "EntertainmentOS / ARI", description: "EntertainmentOS touring, Live Nation, ARI program operations, and government affairs", color: C.purple, status: "PENDING" },
+  { code: "SNTR-SG", vertical: "SEARGrid / CrisisGrid", description: "Federal and emergency response contracts — FEMA, DHS, and Knox/SEG NFL revenue share", color: C.red, status: "PENDING" },
+  { code: "SNTR-IG", vertical: "Intelligence Core", description: "SentraisOS core infrastructure — platform licensing, shared technology costs, IP maintenance", color: C.amber, status: "PENDING" },
+];
+
+const HUBSPOT_REMAPPING = [
+  { object: "Company Records", field: "Entity", from: "NOVATELabs Inc (flat)", to: "Vertical taxonomy (EVERGAME / CiviGrid / EntertainmentOS / SEARGrid)", owner: "CRM Admin", priority: "HIGH" },
+  { object: "Deals", field: "Pipeline", from: "Single pipeline (all revenue)", to: "Vertical-specific pipelines mapped to ERP code", owner: "CRM Admin", priority: "HIGH" },
+  { object: "Deals", field: "Cost Center", from: "Not set", to: "SNTR-EG / SNTR-CG / SNTR-AG / SNTR-SG / SNTR-IG per deal type", owner: "CRM Admin", priority: "HIGH" },
+  { object: "Contacts", field: "Vertical Tag", from: "Not set", to: "Tag all contacts to primary vertical", owner: "CRM Admin", priority: "MED" },
+  { object: "Activities", field: "Pod Attribution", from: "Not set", to: "Tag activities to GTM pod (pod name + ERP code)", owner: "RevOps", priority: "MED" },
+  { object: "Reports", field: "Revenue Dashboard", from: "Company-level only", to: "Split by vertical ERP code + pod", owner: "RevOps", priority: "HIGH" },
+];
+
+const MONDAY_TAXONOMY = [
+  { workspace: "EVERGAME Operations", boards: ["SPORTS360 Deployments", "Venue Gate Tracker (G-01–G-18)", "GDA Staffing Plans", "League Account Management"], erpCode: "SNTR-EG", color: C.accent },
+  { workspace: "CiviGrid / ARI", boards: ["City Readiness Portfolio", "ARI Program Management", "Municipal Partner Pipeline", "BGI Fellowship Tracker"], erpCode: "SNTR-CG", color: C.teal },
+  { workspace: "EntertainmentOS", boards: ["Live Nation Intelligence", "Tour Deployment Planning", "Artist & Venue Accounts", "Event Revenue Tracking"], erpCode: "SNTR-AG", color: C.purple },
+  { workspace: "SEARGrid", boards: ["Federal Contract Pipeline", "Knox/SEG Revenue Tracking", "Crisis Response Protocols", "Compliance & Certifications"], erpCode: "SNTR-SG", color: C.red },
+  { workspace: "Core Operations", boards: ["GTM Pod Structure", "Exec Comp Milestones", "Day 1 Corporate Overhaul", "Workforce & HR"], erpCode: "SNTR-IG", color: C.amber },
+];
+
+const M365_SITES = [
+  { site: "EVERGAME", path: "/sites/sentrais-evergame", erpCode: "SNTR-EG", description: "SPORTS360 playbooks, venue ops, GDA documentation, league contracts", color: C.accent },
+  { site: "CiviGrid", path: "/sites/sentrais-civigrid", erpCode: "SNTR-CG", description: "City readiness docs, ARI program artifacts, municipal partnership agreements", color: C.teal },
+  { site: "EntertainmentOS", path: "/sites/sentrais-entertainmentos", erpCode: "SNTR-AG", description: "Live Nation architecture, tour intelligence docs, event operations", color: C.purple },
+  { site: "SEARGrid", path: "/sites/sentrais-seargrid", erpCode: "SNTR-SG", description: "Federal contracts, Knox/SEG agreement (restricted), crisis protocols", color: C.red },
+  { site: "Core — IP & Legal", path: "/sites/sentrais-core", erpCode: "SNTR-IG", description: "SentraisOS architecture, IP documentation, legal instruments, board records", color: C.amber },
+  { site: "BGI (Tenant C)", path: "/sites/bgi-programs", erpCode: "BGI", description: "Barbara Geter Institute — completely separate tenant. Zero commingling with commercial sites.", color: C.purple },
+];
+
+const TABS = ["Document Changes", "System Updates", "ERP & Systems Taxonomy", "Preserved / Archived"];
 
 export default function DocVersionControl() {
   const [tab, setTab] = useState(0);
@@ -210,6 +244,107 @@ export default function DocVersionControl() {
         )}
 
         {tab === 2 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <ForgeAlert level="warning">
+              The 5 ERP codes below must be activated in NetSuite before any vertical revenue or cost is recorded. HubSpot, Monday.com, and M365 remapping follows. The Modified Sole Director Written Consent is the legal trigger for all of these actions.
+            </ForgeAlert>
+
+            {/* ERP Codes */}
+            <ForgeCard>
+              <ForgeCardHeader title="NetSuite ERP Codes — Vertical Cost Centers" />
+              <ForgeCardBody>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {ERP_CODES.map(e => (
+                    <div key={e.code} style={{ display: "flex", gap: 16, padding: "12px 16px", borderRadius: 8, background: C.bg, border: `1px solid ${C.border}`, borderLeft: `3px solid ${e.color}` }}>
+                      <div style={{ flexShrink: 0, textAlign: "center", width: 80 }}>
+                        <div style={{ fontFamily: "monospace", fontSize: 13, fontWeight: 800, color: e.color }}>{e.code}</div>
+                        <ForgeBadge variant="warning" style={{ marginTop: 6, fontSize: 9 }}>{e.status}</ForgeBadge>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>{e.vertical}</div>
+                        <div style={{ fontSize: 12, color: C.textMuted }}>{e.description}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ForgeCardBody>
+            </ForgeCard>
+
+            {/* HubSpot Remapping */}
+            <ForgeCard>
+              <ForgeCardHeader
+                title="HubSpot — Vertical Taxonomy Remapping"
+                actions={<ForgeBadge variant="danger">{HUBSPOT_REMAPPING.filter(r => r.priority === "HIGH").length} HIGH priority</ForgeBadge>}
+              />
+              <ForgeCardBody>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {HUBSPOT_REMAPPING.map((r, i) => (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "100px 1fr 1fr 80px 60px", gap: 12, padding: "10px 14px", borderRadius: 6, background: C.bg, border: `1px solid ${C.border}`, alignItems: "start" }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: C.accent }}>{r.object}</div>
+                      <div>
+                        <div style={{ fontSize: 10, color: C.textMuted, marginBottom: 2 }}>FROM</div>
+                        <div style={{ fontSize: 12, color: C.red }}>{r.from}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: C.textMuted, marginBottom: 2 }}>TO</div>
+                        <div style={{ fontSize: 12, color: C.green }}>{r.to}</div>
+                      </div>
+                      <div style={{ fontSize: 11, color: C.textMuted }}>{r.owner}</div>
+                      <ForgeBadge variant={r.priority === "HIGH" ? "danger" : "warning"}>{r.priority}</ForgeBadge>
+                    </div>
+                  ))}
+                </div>
+              </ForgeCardBody>
+            </ForgeCard>
+
+            {/* Monday.com */}
+            <ForgeCard>
+              <ForgeCardHeader title="Monday.com — Workspace Taxonomy" />
+              <ForgeCardBody>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {MONDAY_TAXONOMY.map(ws => (
+                    <div key={ws.workspace} style={{ padding: "14px", borderRadius: 8, background: C.bg, border: `1px solid ${C.border}`, borderLeft: `3px solid ${ws.color}` }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: ws.color }}>{ws.workspace}</div>
+                        <ForgeBadge style={{ fontFamily: "monospace", background: `${ws.color}22`, color: ws.color }}>{ws.erpCode}</ForgeBadge>
+                      </div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {ws.boards.map(b => (
+                          <div key={b} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, background: C.surface, border: `1px solid ${C.border}`, color: C.textMuted }}>{b}</div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ForgeCardBody>
+            </ForgeCard>
+
+            {/* M365 SharePoint */}
+            <ForgeCard>
+              <ForgeCardHeader title="Microsoft 365 — SharePoint Site Naming" />
+              <ForgeCardBody>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {M365_SITES.map(s => (
+                    <div key={s.site} style={{ display: "flex", gap: 14, padding: "12px 14px", borderRadius: 8, background: C.bg, border: `1px solid ${C.border}`, borderLeft: `3px solid ${s.color}` }}>
+                      <div style={{ flexShrink: 0, width: 110 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: s.color }}>{s.site}</div>
+                        <div style={{ fontFamily: "monospace", fontSize: 10, color: C.textMuted, marginTop: 3 }}>{s.path}</div>
+                      </div>
+                      <div style={{ flex: 1, fontSize: 12, color: C.textMuted }}>{s.description}</div>
+                      <ForgeBadge style={{ fontFamily: "monospace", background: `${s.color}22`, color: s.color, flexShrink: 0 }}>{s.erpCode}</ForgeBadge>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 14, padding: "10px 14px", background: `${C.amber}11`, borderRadius: 8, border: `1px solid ${C.amber}33` }}>
+                  <div style={{ fontSize: 12, color: C.amber, fontWeight: 600, marginBottom: 4 }}>BGI Tenant Separation</div>
+                  <div style={{ fontSize: 12, color: C.textMuted }}>BGI (Tenant C) must be provisioned as a fully separate M365 tenant — not a SharePoint site under the commercial tenant. Zero shared permissions between Tenant B (commercial) and Tenant C (BGI).</div>
+                </div>
+              </ForgeCardBody>
+            </ForgeCard>
+          </div>
+        )}
+
+        {tab === 3 && (
           <div>
             <ForgeAlert level="info" title="Preservation Rule">
               These files contain stale entity names but must NOT be modified. They are executed legal instruments or official government filings.
