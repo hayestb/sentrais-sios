@@ -6,7 +6,7 @@ import {
   LayoutDashboard, DollarSign, BookOpen, MapPin, Shield,
   ClipboardList, Bot, FileKey, Calendar, SunMedium, GitCompare,
   FileText, Target, LogOut, CreditCard, GraduationCap, Globe, Network, Building2,
-  Layers, UserSquare2, Trophy, BadgeDollarSign,
+  Layers, UserSquare2, Trophy, BadgeDollarSign, GitBranch,
 } from "lucide-react";
 
 const NAV = [
@@ -14,7 +14,8 @@ const NAV = [
   { to: "/calendar",        icon: Calendar,        label: "Master Calendar" },
   { to: "/calendar-light",  icon: SunMedium,       label: "Calendar (Light)" },
   { to: "/financial-model", icon: DollarSign,      label: "Financial Model" },
-  { to: "/exec-comp",       icon: BadgeDollarSign, label: "Exec Compensation" },
+  { to: "/exec-comp",          icon: BadgeDollarSign, label: "Exec Compensation" },
+  { to: "/corp-architecture",  icon: GitBranch,       label: "Corp Architecture" },
   { to: "/financial-ops",   icon: FileText,        label: "Financial Ops" },
   { to: "/pod-structure",   icon: Layers,          label: "GTM Pod Structure" },
   { to: "/sports360",       icon: Trophy,          label: "SPORTS360" },
