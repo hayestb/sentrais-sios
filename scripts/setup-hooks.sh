@@ -22,3 +22,4 @@ for hook in "$HOOKS_SRC"/*; do
 done
 
 echo "Git hooks installed successfully."
+echo "Tip: run 'git commit --allow-empty -m test' to verify the hook fires."

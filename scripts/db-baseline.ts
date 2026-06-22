@@ -47,18 +47,16 @@ async function baseline() {
     hash: computeHash(migrationsDir, entry.tag),
   }));
 
-  // If there are no app tables the DB is fresh — let db:migrate create everything
   const [tablesExist] = await sql`
     SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles'
   `;
+
   if (!tablesExist) {
     process.stdout.write("No existing tables — skipping baseline, db:migrate will create them\n");
     await sql.end();
     return;
   }
 
-  // drizzle-orm stores its tracking table in the 'drizzle' schema, not 'public'.
-  // Ensure the schema and table exist so we can inspect / populate them.
   await sql`CREATE SCHEMA IF NOT EXISTS drizzle`;
   await sql`
     CREATE TABLE IF NOT EXISTS "drizzle"."__drizzle_migrations" (
@@ -68,32 +66,28 @@ async function baseline() {
     )
   `;
 
-  // drizzle-orm's migrate() skips a migration when the last row's created_at
-  // is >= the migration's folderMillis. One correctly-dated row is enough.
   const [lastEntry] = await sql<{ created_at: string }[]>`
     SELECT created_at FROM "drizzle"."__drizzle_migrations"
     ORDER BY created_at DESC LIMIT 1
   `;
 
   const maxFolderMillis = Math.max(...migrations.map((m) => m.when));
-
   if (lastEntry && Number(lastEntry.created_at) >= maxFolderMillis) {
-    process.stdout.write("drizzle.__drizzle_migrations already covers all migrations — no baseline needed\n");
+    process.stdout.write("Already baselined — no action needed\n");
     await sql.end();
     return;
   }
 
-  process.stdout.write("Existing schema detected (db:push was used). Baselining migrations...\n");
-
+  process.stdout.write("Baselining drizzle.__drizzle_migrations...\n");
   const lastCreatedAt = lastEntry ? Number(lastEntry.created_at) : 0;
   for (const m of migrations) {
     if (m.when > lastCreatedAt) {
       await sql`INSERT INTO "drizzle"."__drizzle_migrations" (hash, created_at) VALUES (${m.hash}, ${m.when})`;
-      process.stdout.write(`  ✓ ${m.tag} (${m.hash.slice(0, 8)}...)\n`);
+      process.stdout.write(`  OK ${m.tag}\n`);
     }
   }
 
-  process.stdout.write("Baseline complete. Future schema changes should use db:generate + db:migrate.\n");
+  process.stdout.write("Baseline complete.\n");
   await sql.end();
 }
 
