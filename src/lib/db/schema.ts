@@ -595,6 +595,28 @@ export const crmDeals = pgTable(
   ]
 );
 
+// ─── Agent Configs (Prompt Editor) ───────────────────────────────────────────
+
+export const agentConfigs = pgTable(
+  "agent_configs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agentName: agentNameEnum("agent_name").notNull().unique(),
+    agentEmail: text("agent_email"),
+    modelTier: text("model_tier").notNull().default("claude-sonnet-4-6"),
+    systemPrompt: text("system_prompt").notNull(),
+    version: text("version").notNull().default("1.0"),
+    isActive: boolean("is_active").notNull().default(true),
+    lastDeployedAt: timestamp("last_deployed_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("agent_configs_name_idx").on(t.agentName),
+    index("agent_configs_active_idx").on(t.isActive),
+  ]
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
