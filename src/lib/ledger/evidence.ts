@@ -19,7 +19,11 @@ export type EvidenceEntryType =
   | "hard_block"
   | "sipe_update"
   | "risk_assessment"
-  | "caas_activation";
+  | "caas_activation"
+  | "agent_run"
+  | "prompt_change"
+  | "ap_invoice_created"
+  | "ap_invoice_status";
 
 export interface LedgerEntryInput {
   engagementId?: string;

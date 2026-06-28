@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { agentConfigs, evidenceEntries } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { getCurrentProfile } from "@/lib/auth/current-user";
-import { createHash } from "crypto";
+import { writeToLedger } from "@/lib/ledger/evidence";
 import type { AgentName } from "@/lib/workflow/types";
 
-// ── Prompt must preserve both governance clauses ──────────────────────────────
 const REQUIRED_CLAUSES = [
   {
     key: "sovereign_lock",
@@ -30,10 +29,6 @@ function bumpVersion(current: string): string {
   const [major, minor] = current.split(".").map(Number);
   if (minor >= 9) return `${major + 1}.0`;
   return `${major}.${minor + 1}`;
-}
-
-function sha256(data: string): string {
-  return createHash("sha256").update(data).digest("hex");
 }
 
 export async function GET(request: NextRequest) {
@@ -62,7 +57,7 @@ export async function GET(request: NextRequest) {
     .select()
     .from(evidenceEntries)
     .where(eq(evidenceEntries.entryType, "prompt_change"))
-    .orderBy(evidenceEntries.createdAt)
+    .orderBy(desc(evidenceEntries.createdAt))
     .limit(5);
 
   return NextResponse.json({ config, history });
@@ -126,29 +121,22 @@ export async function POST(request: NextRequest) {
     .where(eq(agentConfigs.id, current.id))
     .returning();
 
-  const payload = {
-    agent_name,
-    changelog,
-    previous_version: current.version,
-    new_version: newVersion,
-    previous_prompt: current.systemPrompt,
-    new_prompt: system_prompt,
-    changed_by: profile.fullName,
-    model_tier: model_tier ?? current.modelTier,
-  };
-  const payloadHash = sha256(JSON.stringify(payload));
-
-  const [ledgerEntry] = await db
-    .insert(evidenceEntries)
-    .values({
-      entryType: "prompt_change",
-      subject: `Prompt updated for ${agent_name} → v${newVersion}`,
-      payload,
-      sha256Hash: payloadHash,
-      authorAgent: agent_name,
-      authorHuman: profile.fullName,
-    })
-    .returning();
+  const ledgerEntry = await writeToLedger({
+    entryType: "prompt_change",
+    subject: `Prompt updated for ${agent_name} → v${newVersion}`,
+    authorAgent: agent_name,
+    authorHuman: profile.fullName,
+    payload: {
+      agent_name,
+      changelog,
+      previous_version: current.version,
+      new_version: newVersion,
+      previous_prompt: current.systemPrompt,
+      new_prompt: system_prompt,
+      changed_by: profile.fullName,
+      model_tier: model_tier ?? current.modelTier,
+    },
+  });
 
   return NextResponse.json({
     agent: updated,

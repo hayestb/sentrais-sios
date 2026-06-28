@@ -1,16 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/layout/header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { AGENT_CATALOG } from "@/lib/agents/catalog";
-import {
-  Bot, Save, AlertTriangle, CheckCircle2, Loader2, Shield, BookOpen, History,
-} from "lucide-react";
 import type { AgentName } from "@/lib/workflow/types";
 
 interface AgentConfig {
@@ -32,271 +24,377 @@ interface LedgerEntry {
   payload: Record<string, unknown>;
 }
 
+interface ValidationResult {
+  sovereign_lock: boolean;
+  ledger_mandate: boolean;
+}
+
+function validatePrompt(prompt: string): ValidationResult {
+  const lower = prompt.toLowerCase();
+  return {
+    sovereign_lock:
+      lower.includes("sovereign lock") &&
+      (lower.includes("you never sign") || lower.includes("never sign")),
+    ledger_mandate:
+      lower.includes("evidence ledger") &&
+      (lower.includes("log") || lower.includes("sha-256") || lower.includes("hash")),
+  };
+}
+
 const MODEL_OPTIONS = [
-  "claude-opus-4-8",
-  "claude-sonnet-4-6",
-  "claude-haiku-4-5-20251001",
+  { value: "claude-haiku-4-5-20251001", label: "Haiku — Fast classification / high volume" },
+  { value: "claude-sonnet-4-6", label: "Sonnet — Tool use / governance / structured analysis" },
+  { value: "claude-opus-4-8", label: "Opus — Deep reasoning / stateful agents" },
 ];
 
-export default function PromptEditorPage() {
-  const [selectedAgent, setSelectedAgent] = useState<AgentName | null>(null);
+const AGENT_COLORS: Record<string, string> = {
+  governance: "text-teal-400",
+  financial: "text-blue-400",
+  qa: "text-purple-400",
+  discovery: "text-amber-400",
+  delivery: "text-green-400",
+  assessment: "text-orange-400",
+  architecture: "text-cyan-400",
+  communications: "text-pink-400",
+  learning: "text-violet-400",
+};
+
+function ValidationRow({ label, passing }: { label: string; passing: boolean }) {
+  return (
+    <div className="flex items-center gap-2 text-xs font-mono">
+      <span className={passing ? "text-green-400" : "text-red-400"}>{passing ? "✓" : "✗"}</span>
+      <span className={passing ? "text-muted-foreground" : "text-red-400"}>{label}</span>
+    </div>
+  );
+}
+
+export default function AgentPromptEditorPage() {
+  const [selectedAgent, setSelectedAgent] = useState<AgentName>("governance");
   const [config, setConfig] = useState<AgentConfig | null>(null);
   const [history, setHistory] = useState<LedgerEntry[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [prompt, setPrompt] = useState("");
-  const [modelTier, setModelTier] = useState("");
-  const [changelog, setChangelog] = useState("");
-  const [error, setError] = useState<{ message: string; clause?: string } | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [loadingConfig, setLoadingConfig] = useState(false);
 
-  async function loadAgent(name: AgentName) {
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-    setSelectedAgent(name);
+  const [draftPrompt, setDraftPrompt] = useState("");
+  const [draftModelTier, setDraftModelTier] = useState("claude-sonnet-4-6");
+  const [draftActive, setDraftActive] = useState(true);
+  const [changelog, setChangelog] = useState("");
+
+  const [saving, setSaving] = useState(false);
+  const [saveResult, setSaveResult] = useState<{ sha256: string; version: string; timestamp: string } | null>(null);
+  const [saveError, setSaveError] = useState<{ message: string; clause?: string } | null>(null);
+
+  const isDirty =
+    config !== null &&
+    (draftPrompt !== config.systemPrompt ||
+      draftModelTier !== config.modelTier ||
+      draftActive !== config.isActive);
+
+  const validation = validatePrompt(draftPrompt);
+  const validationPasses = validation.sovereign_lock && validation.ledger_mandate;
+
+  const loadConfig = useCallback(async (agentName: AgentName) => {
+    setLoadingConfig(true);
+    setSaveResult(null);
+    setSaveError(null);
     try {
-      const res = await fetch(`/api/agents/prompt?agent_name=${name}`);
+      const res = await fetch(`/api/agents/prompt?agent_name=${agentName}`);
       const data = await res.json();
       if (!res.ok) {
-        setError({ message: data.error ?? "Failed to load agent config" });
+        setSaveError({ message: data.error ?? "Failed to load config" });
         setConfig(null);
         return;
       }
       setConfig(data.config);
       setHistory(data.history ?? []);
-      setPrompt(data.config.systemPrompt);
-      setModelTier(data.config.modelTier);
+      setDraftPrompt(data.config.systemPrompt);
+      setDraftModelTier(data.config.modelTier);
+      setDraftActive(data.config.isActive);
       setChangelog("");
     } catch {
-      setError({ message: "Network error loading agent config" });
+      setSaveError({ message: "Network error loading agent config" });
     } finally {
-      setLoading(false);
+      setLoadingConfig(false);
     }
-  }
+  }, []);
 
-  async function savePrompt() {
-    if (!selectedAgent || !config) return;
+  useEffect(() => {
+    loadConfig(selectedAgent);
+  }, [selectedAgent, loadConfig]);
+
+  const handleSave = async () => {
+    if (!validationPasses || !changelog.trim() || changelog.trim().length < 10) return;
     setSaving(true);
-    setError(null);
-    setSuccess(null);
+    setSaveResult(null);
+    setSaveError(null);
+
     try {
       const res = await fetch("/api/agents/prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           agent_name: selectedAgent,
-          system_prompt: prompt,
-          model_tier: modelTier,
+          system_prompt: draftPrompt,
+          model_tier: draftModelTier,
+          is_active: draftActive,
           changelog,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError({ message: data.error, clause: data.clause });
+        setSaveError({ message: data.error, clause: data.clause });
         return;
       }
-      setConfig(data.agent);
+      setSaveResult({ sha256: data.sha256_hash, version: data.new_version, timestamp: data.timestamp });
       setChangelog("");
-      setSuccess(data.message);
-      // reload history
-      await loadAgent(selectedAgent);
+      loadConfig(selectedAgent);
     } catch {
-      setError({ message: "Network error saving prompt" });
+      setSaveError({ message: "Network error saving prompt" });
     } finally {
       setSaving(false);
     }
-  }
+  };
 
-  const sovereignOk = prompt.toLowerCase().includes("sovereign lock") &&
-    (prompt.toLowerCase().includes("you never sign") || prompt.toLowerCase().includes("never sign"));
-  const ledgerOk = prompt.toLowerCase().includes("evidence ledger") &&
-    (prompt.toLowerCase().includes("log") || prompt.toLowerCase().includes("sha-256") || prompt.toLowerCase().includes("hash"));
+  const handleReset = () => {
+    if (!config) return;
+    setDraftPrompt(config.systemPrompt);
+    setDraftModelTier(config.modelTier);
+    setDraftActive(config.isActive);
+    setChangelog("");
+    setSaveResult(null);
+    setSaveError(null);
+  };
+
+  const agentMeta = AGENT_CATALOG.find((a) => a.name === selectedAgent);
+  const agentColor = AGENT_COLORS[selectedAgent] ?? "text-muted-foreground";
 
   return (
     <div className="flex flex-col h-full">
       <Header
         title="Agent Prompt Editor"
-        subtitle="Sovereign Lock enforced — every save logged to Evidence Ledger"
+        subtitle="Sovereign Lock enforced — all changes logged to Evidence Ledger with SHA-256"
       />
       <div className="flex-1 flex overflow-hidden">
 
-        {/* Agent selector sidebar */}
-        <div className="w-56 border-r border-border overflow-y-auto p-3 space-y-1 shrink-0">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 px-1">Agents</p>
-          {AGENT_CATALOG.map((a) => (
-            <button
-              key={a.name}
-              onClick={() => loadAgent(a.name)}
-              className={`w-full text-left px-3 py-2 rounded text-xs transition-colors ${
-                selectedAgent === a.name
-                  ? "bg-[#0EA5E9]/10 text-[#0EA5E9] border border-[#0EA5E9]/30"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <div className="font-medium truncate">{a.label}</div>
-              <div className="text-[10px] opacity-60">{a.domain}</div>
-            </button>
-          ))}
+        {/* Left sidebar — agent selector + validation + history */}
+        <div className="w-60 border-r border-border overflow-y-auto p-3 space-y-4 shrink-0">
+
+          {/* Agent selector */}
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 px-1">Select Agent</p>
+            <div className="space-y-0.5">
+              {AGENT_CATALOG.map((a) => (
+                <button
+                  key={a.name}
+                  onClick={() => setSelectedAgent(a.name)}
+                  className={`w-full text-left px-3 py-2 rounded text-xs transition-colors ${
+                    selectedAgent === a.name
+                      ? "bg-secondary border border-border"
+                      : "hover:bg-secondary/50 border border-transparent"
+                  }`}
+                >
+                  <div className={`font-medium ${selectedAgent === a.name ? (AGENT_COLORS[a.name] ?? "text-[#0EA5E9]") : "text-foreground"}`}>
+                    {a.label}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">{a.domain}</div>
+                  {config && selectedAgent === a.name && (
+                    <div className="text-[10px] text-muted-foreground font-mono mt-0.5">
+                      v{config.version} · {config.isActive ? "active" : "inactive"}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Live validation */}
+          <div className="rounded border border-border bg-secondary/30 p-3 space-y-2">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Prompt Validation</p>
+            <ValidationRow label="Sovereign Lock clause" passing={validation.sovereign_lock} />
+            <ValidationRow label="Evidence Ledger mandate" passing={validation.ledger_mandate} />
+            <p className={`text-[10px] font-mono mt-2 ${validationPasses ? "text-green-400" : "text-red-400"}`}>
+              {validationPasses ? "Passes required constraints" : "Fix errors before saving"}
+            </p>
+          </div>
+
+          {/* Version history */}
+          {history.length > 0 && (
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 px-1">Prompt History</p>
+              <div className="space-y-2">
+                {history.map((h) => (
+                  <div key={h.id} className="border-l-2 border-border pl-2 space-y-0.5">
+                    <p className="text-[10px] text-foreground font-medium leading-snug">{h.subject}</p>
+                    <p className="text-[10px] text-muted-foreground font-mono">
+                      {new Date(h.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    {typeof h.payload?.changelog === "string" && (
+                      <p className="text-[10px] text-muted-foreground italic">&quot;{h.payload.changelog}&quot;</p>
+                    )}
+                    <p className="text-[10px] text-muted-foreground/50 font-mono truncate">{h.sha256Hash.slice(0, 16)}…</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Editor area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {!selectedAgent && (
-            <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-              Select an agent to edit its system prompt.
-            </div>
-          )}
 
-          {loading && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 size={14} className="animate-spin" /> Loading config…
-            </div>
-          )}
-
-          {selectedAgent && !loading && config && (
-            <>
-              {/* Header row */}
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <Bot size={16} className="text-[#0EA5E9]" />
-                  <span className="text-sm font-semibold">
-                    {AGENT_CATALOG.find((a) => a.name === selectedAgent)?.label}
-                  </span>
-                  <Badge variant="outline" className="text-[10px] font-mono">v{config.version}</Badge>
-                  {config.isActive ? (
-                    <Badge variant="passed" className="text-[10px]">Active</Badge>
-                  ) : (
-                    <Badge variant="locked" className="text-[10px]">Inactive</Badge>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                  <span className="font-mono">{config.agentEmail}</span>
-                </div>
-              </div>
-
-              {/* Governance compliance badges */}
-              <div className="flex gap-2 flex-wrap">
-                <div className={`flex items-center gap-1.5 text-[10px] px-2 py-1 rounded border ${
-                  sovereignOk ? "border-green-500/30 bg-green-500/5 text-green-400" : "border-amber-500/30 bg-amber-500/5 text-amber-400"
-                }`}>
-                  <Shield size={10} />
-                  Sovereign Lock {sovereignOk ? "✓" : "missing"}
-                </div>
-                <div className={`flex items-center gap-1.5 text-[10px] px-2 py-1 rounded border ${
-                  ledgerOk ? "border-green-500/30 bg-green-500/5 text-green-400" : "border-amber-500/30 bg-amber-500/5 text-amber-400"
-                }`}>
-                  <BookOpen size={10} />
-                  Evidence Ledger mandate {ledgerOk ? "✓" : "missing"}
-                </div>
-              </div>
-
-              {/* Model picker */}
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-muted-foreground w-20 shrink-0">Model tier</label>
-                <select
-                  value={modelTier}
-                  onChange={(e) => setModelTier(e.target.value)}
-                  className="text-xs bg-secondary border border-border rounded px-2 py-1 text-foreground"
-                >
-                  {MODEL_OPTIONS.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Prompt editor */}
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1.5">System prompt</label>
-                <Textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  className="font-mono text-xs min-h-[320px] resize-y"
-                  placeholder="Enter system prompt…"
-                />
-              </div>
-
-              {/* Changelog */}
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1.5">
-                  Changelog note <span className="text-red-400">*</span>
-                </label>
-                <Input
-                  value={changelog}
-                  onChange={(e) => setChangelog(e.target.value)}
-                  placeholder="Describe what changed and why (min 10 chars)…"
-                  className="text-xs"
-                />
-              </div>
-
-              {/* Error / Success */}
-              {error && (
-                <div className="flex items-start gap-2 p-3 rounded border border-red-500/30 bg-red-500/5 text-red-400 text-xs">
-                  <AlertTriangle size={13} className="mt-0.5 shrink-0" />
-                  <div>
-                    <div className="font-medium">{error.clause ? `Validation: ${error.clause}` : "Error"}</div>
-                    <div className="mt-0.5 opacity-80">{error.message}</div>
-                  </div>
-                </div>
+          {/* Editor header */}
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <p className={`text-xs font-mono ${agentColor}`}>
+                {agentMeta?.label} — {agentMeta?.domain}
+              </p>
+              {config && (
+                <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                  Current version: v{config.version}
+                  {isDirty && <span className="text-amber-400 ml-2">· Unsaved changes</span>}
+                </p>
               )}
-              {success && (
-                <div className="flex items-center gap-2 p-3 rounded border border-green-500/30 bg-green-500/5 text-green-400 text-xs">
-                  <CheckCircle2 size={13} />
-                  {success}
-                </div>
-              )}
-
-              {/* Save button */}
-              <Button
-                onClick={savePrompt}
-                disabled={saving || changelog.trim().length < 10}
-                className="gap-2"
-                size="sm"
+            </div>
+            {isDirty && (
+              <button
+                onClick={handleReset}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-                {saving ? "Saving…" : "Save Prompt"}
-              </Button>
+                Reset to saved
+              </button>
+            )}
+          </div>
 
-              {/* Version history */}
-              {history.length > 0 && (
-                <Card className="border-border">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xs flex items-center gap-1.5 text-muted-foreground">
-                      <History size={12} /> Version history (last {history.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {history.map((entry) => (
-                      <div key={entry.id} className="text-[10px] p-2 rounded border border-border">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="font-medium text-foreground">{entry.subject}</span>
-                          <span className="text-muted-foreground">
-                            {new Date(entry.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="font-mono text-muted-foreground mt-0.5 truncate">{entry.sha256Hash}</div>
-                        {typeof entry.payload?.changelog === "string" && (
-                          <div className="text-muted-foreground mt-0.5 italic">
-                            &quot;{entry.payload.changelog}&quot;
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          )}
+          {/* Model + active toggles */}
+          <div className="flex items-center gap-6 flex-wrap">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted-foreground">Model tier</label>
+              <select
+                value={draftModelTier}
+                onChange={(e) => setDraftModelTier(e.target.value)}
+                className="text-xs bg-secondary border border-border rounded px-2 py-1 text-foreground focus:outline-none"
+              >
+                {MODEL_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Agent active</span>
+              <button
+                onClick={() => setDraftActive((a) => !a)}
+                className={`relative w-9 h-5 rounded-full transition-colors ${draftActive ? "bg-green-600" : "bg-secondary"}`}
+              >
+                <span
+                  className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${draftActive ? "left-4" : "left-0.5"}`}
+                />
+              </button>
+            </div>
+          </div>
 
-          {selectedAgent && !loading && !config && !error && (
-            <div className="text-sm text-muted-foreground">No config found for this agent yet.</div>
-          )}
-          {selectedAgent && !loading && error && !config && (
-            <div className="flex items-start gap-2 p-3 rounded border border-red-500/30 bg-red-500/5 text-red-400 text-xs">
-              <AlertTriangle size={13} className="mt-0.5 shrink-0" />
-              {error.message}
+          {/* Prompt textarea */}
+          <div className="rounded border border-border bg-secondary/20 overflow-hidden">
+            {loadingConfig ? (
+              <div className="h-80 flex items-center justify-center text-sm text-muted-foreground">
+                Loading prompt…
+              </div>
+            ) : (
+              <textarea
+                value={draftPrompt}
+                onChange={(e) => setDraftPrompt(e.target.value)}
+                className="w-full h-80 px-4 py-3 bg-transparent text-sm font-mono text-foreground resize-none focus:outline-none leading-relaxed"
+                placeholder="System prompt…"
+                spellCheck={false}
+              />
+            )}
+          </div>
+
+          {/* Char / line count */}
+          <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+            <span>{draftPrompt.length.toLocaleString()} characters</span>
+            <span>{draftPrompt.split("\n").length} lines</span>
+          </div>
+
+          {/* Changelog */}
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1.5">
+              Changelog note <span className="text-red-400">*</span> (min 10 chars)
+            </label>
+            <input
+              type="text"
+              value={changelog}
+              onChange={(e) => setChangelog(e.target.value)}
+              placeholder="Describe what changed and why…"
+              className="w-full rounded border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#0EA5E9]/50"
+            />
+            {changelog.length > 0 && changelog.length < 10 && (
+              <p className="text-[11px] text-amber-400 font-mono mt-1">
+                {10 - changelog.length} more characters required
+              </p>
+            )}
+          </div>
+
+          {/* Error */}
+          {saveError && (
+            <div className="rounded border border-red-500/30 bg-red-500/5 px-4 py-3 text-sm text-red-400 font-mono leading-relaxed">
+              {saveError.clause && <div className="font-semibold mb-0.5">Validation: {saveError.clause}</div>}
+              {saveError.message}
             </div>
           )}
+
+          {/* Success */}
+          {saveResult && (
+            <div className="rounded border border-green-500/30 bg-green-500/5 px-4 py-3 space-y-1">
+              <p className="text-sm text-green-400 font-semibold">Saved at v{saveResult.version}</p>
+              <p className="text-xs text-muted-foreground font-mono">
+                Logged to Evidence Ledger ·{" "}
+                {new Date(saveResult.timestamp).toLocaleString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+              <p className="text-[11px] text-muted-foreground/60 font-mono break-all">
+                SHA-256: {saveResult.sha256}
+              </p>
+            </div>
+          )}
+
+          {/* Save button */}
+          <button
+            onClick={handleSave}
+            disabled={saving || !isDirty || !validationPasses || changelog.trim().length < 10}
+            className={`w-full rounded py-2.5 text-sm font-semibold transition-colors ${
+              saving
+                ? "bg-secondary text-muted-foreground cursor-not-allowed"
+                : !isDirty || !validationPasses || changelog.trim().length < 10
+                ? "bg-secondary text-muted-foreground cursor-not-allowed"
+                : "bg-[#0EA5E9] hover:bg-[#0EA5E9]/90 text-white"
+            }`}
+          >
+            {saving
+              ? "Saving…"
+              : !isDirty
+              ? "No changes to save"
+              : !validationPasses
+              ? "Fix validation errors to save"
+              : changelog.trim().length < 10
+              ? "Add changelog note to save"
+              : `Save Prompt — ${selectedAgent.charAt(0).toUpperCase() + selectedAgent.slice(1)} Agent`}
+          </button>
+
+          {/* Constraint reminder */}
+          <div className="rounded border border-border bg-secondary/20 px-4 py-3 text-xs text-muted-foreground space-y-1">
+            <p className="text-foreground font-medium">Required in every prompt version:</p>
+            <p>1. <span className="text-foreground">Sovereign Lock</span> — agent must state it never signs, pays, transfers, files, or closes without explicit human authorization.</p>
+            <p>2. <span className="text-foreground">Evidence Ledger</span> — agent must log all findings with SHA-256 hash and timestamp.</p>
+            <p className="text-muted-foreground/60 pt-1">The API enforces both constraints and rejects prompts that omit them.</p>
+          </div>
         </div>
       </div>
     </div>

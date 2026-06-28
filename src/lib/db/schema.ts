@@ -595,6 +595,83 @@ export const crmDeals = pgTable(
   ]
 );
 
+// ─── AP Invoices ──────────────────────────────────────────────────────────────
+
+export const apInvoiceStatusEnum = pgEnum("ap_invoice_status", [
+  "pending", "approved", "paid", "rejected", "on_hold",
+]);
+
+export const capitalPoolEnum = pgEnum("capital_pool", [
+  "operating", "mission", "research", "legacy",
+]);
+
+export const apInvoices = pgTable(
+  "ap_invoices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    vendorName: text("vendor_name").notNull(),
+    invoiceNumber: text("invoice_number"),
+    amount: real("amount").notNull(),
+    capitalPool: capitalPoolEnum("capital_pool").notNull().default("operating"),
+    entity: text("entity").notNull().default("sentrais_inc"),
+    engagementId: uuid("engagement_id").references(() => engagements.id),
+    status: apInvoiceStatusEnum("status").notNull().default("pending"),
+    dueDate: timestamp("due_date"),
+    paidAt: timestamp("paid_at"),
+    projectCode: text("project_code"),
+    billcomId: text("billcom_id"),
+    notes: text("notes"),
+    approvedBy: uuid("approved_by").references(() => profiles.id),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("ap_invoices_status_idx").on(t.status),
+    index("ap_invoices_entity_idx").on(t.entity),
+    index("ap_invoices_due_idx").on(t.dueDate),
+  ]
+);
+
+// ─── Workforce Classifications ────────────────────────────────────────────────
+
+export const workforceClassificationEnum = pgEnum("workforce_classification", [
+  "W2", "1099", "intern", "fellow", "vacant",
+]);
+
+export const workforceTierEnum = pgEnum("workforce_tier", [
+  "0", "1", "2", "3", "4",
+]);
+
+export const workforceClassifications = pgTable(
+  "workforce_classifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    fullName: text("full_name").notNull(),
+    entity: text("entity").notNull(),
+    classification: workforceClassificationEnum("classification").notNull(),
+    tier: integer("tier").notNull().default(3),
+    title: text("title").notNull(),
+    benefitsTier: text("benefits_tier"),
+    annualComp: real("annual_comp"),
+    startDate: timestamp("start_date"),
+    endDate: timestamp("end_date"),
+    isActive: boolean("is_active").notNull().default(true),
+    complianceFreeze: boolean("compliance_freeze").notNull().default(false),
+    notes: text("notes"),
+    justworksId: text("justworks_id"),
+    gustoId: text("gusto_id"),
+    adpId: text("adp_id"),
+    profileId: uuid("profile_id").references(() => profiles.id),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("workforce_tier_idx").on(t.tier),
+    index("workforce_entity_idx").on(t.entity),
+    index("workforce_active_idx").on(t.isActive),
+  ]
+);
+
 // ─── Agent Configs (Prompt Editor) ───────────────────────────────────────────
 
 export const agentConfigs = pgTable(
