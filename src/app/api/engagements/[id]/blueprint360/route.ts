@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { engagements, gateRecords, evidenceEntries } from "@/lib/db/schema";
+import { engagements, gateRecords } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { writeToLedger } from "@/lib/ledger/evidence";
 import { z } from "zod";

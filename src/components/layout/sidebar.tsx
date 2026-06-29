@@ -71,7 +71,7 @@ const ROLE_PERSONAS: Record<UserRole, string[]> = {
   analyst: ["/command-center"],
 };
 
-export function Sidebar({ role, userName, userImageUrl }: { role: UserRole; userName?: string; userImageUrl?: string }) {
+export function Sidebar({ role, userName }: { role: UserRole; userName?: string; userImageUrl?: string }) {
   const path = usePathname();
   const isActive = (href: string) => path === href || (href !== "/" && path.startsWith(href));
   const sections = ROLE_SECTIONS[role] ?? [];

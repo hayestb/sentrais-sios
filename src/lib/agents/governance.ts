@@ -1,7 +1,7 @@
 import { ForgeAgent } from "./base";
 import type { AgentResult } from "@/lib/workflow/types";
 import { db } from "@/lib/db/client";
-import { raciAssignments, sprintCycles } from "@/lib/db/schema";
+import { raciAssignments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 const SYSTEM_PROMPT = `You are the Governance Agent of the Sentrais Innovation Operating System (SIOS).
