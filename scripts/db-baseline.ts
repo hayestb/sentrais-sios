@@ -23,7 +23,11 @@ if (!rawUrl) {
 // postgres-js does not support the channel_binding parameter — strip it
 const DATABASE_URL = rawUrl.replace(/[&?]channel_binding=[^&]*/g, "");
 
-const sql = postgres(DATABASE_URL);
+// Neon requires TLS; postgres-js only enables it when told to (matches src/lib/db/client.ts)
+const sql = postgres(DATABASE_URL, {
+  max: 1,
+  ssl: DATABASE_URL.includes("neon.tech") ? "require" : undefined,
+});
 
 function computeHash(migrationsDir: string, tag: string): string {
   const sqlContent = readFileSync(resolve(migrationsDir, `${tag}.sql`), "utf-8");
@@ -95,6 +99,10 @@ async function baseline() {
 }
 
 baseline().catch((e) => {
-  process.stderr.write(`Baseline failed: ${e instanceof Error ? e.message : String(e)}\n`);
+  // Surface the full error — message alone is sometimes empty for driver/TLS failures
+  const detail =
+    e instanceof Error ? e.stack || e.message || e.name : String(e);
+  const code = e && typeof e === "object" && "code" in e ? ` (code: ${(e as { code?: unknown }).code})` : "";
+  process.stderr.write(`Baseline failed${code}: ${detail}\n`);
   process.exit(1);
 });

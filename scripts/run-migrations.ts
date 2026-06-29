@@ -36,7 +36,11 @@ if (!existsSync(migrationsFolder)) {
   process.exit(1);
 }
 
-const sql = postgres(DATABASE_URL, { max: 1 });
+// Neon requires TLS; postgres-js only enables it when told to (matches src/lib/db/client.ts)
+const sql = postgres(DATABASE_URL, {
+  max: 1,
+  ssl: DATABASE_URL.includes("neon.tech") ? "require" : undefined,
+});
 const db = drizzle(sql);
 
 migrate(db, { migrationsFolder })
@@ -45,7 +49,9 @@ migrate(db, { migrationsFolder })
     return sql.end();
   })
   .catch(async (e) => {
-    process.stderr.write(`Migration failed: ${e instanceof Error ? e.message : String(e)}\n`);
+    const detail = e instanceof Error ? e.stack || e.message || e.name : String(e);
+    const code = e && typeof e === "object" && "code" in e ? ` (code: ${(e as { code?: unknown }).code})` : "";
+    process.stderr.write(`Migration failed${code}: ${detail}\n`);
     await sql.end();
     process.exit(1);
   });
