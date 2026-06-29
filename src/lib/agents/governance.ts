@@ -46,7 +46,11 @@ Context: ${JSON.stringify(input, null, 2)}
 
 Execute the appropriate governance action and return your decision in JSON format.`;
 
-    const { text, tokensUsed } = await this.invoke(message, { engagementId });
+    const context = await this.withKnowledge(
+      `${input.taskType ?? "governance"} ${input.topic ?? ""}`,
+      { engagementId }
+    );
+    const { text, tokensUsed } = await this.invoke(message, context);
 
     let parsed: Record<string, unknown>;
     try {

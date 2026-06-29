@@ -21,11 +21,14 @@ try {
   }
 } catch {}
 
-const DATABASE_URL = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
-if (!DATABASE_URL) {
+// Prefer the direct (unpooled) connection for migrations — PgBouncer blocks DDL
+const rawUrl = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
+if (!rawUrl) {
   process.stderr.write("DATABASE_URL not set\n");
   process.exit(1);
 }
+// postgres-js does not support the channel_binding parameter — strip it
+const DATABASE_URL = rawUrl.replace(/[&?]channel_binding=[^&]*/g, "");
 
 const migrationsFolder = resolve(process.cwd(), "drizzle");
 if (!existsSync(migrationsFolder)) {
@@ -33,7 +36,11 @@ if (!existsSync(migrationsFolder)) {
   process.exit(1);
 }
 
-const sql = postgres(DATABASE_URL, { max: 1 });
+// Neon requires TLS; postgres-js only enables it when told to (matches src/lib/db/client.ts)
+const sql = postgres(DATABASE_URL, {
+  max: 1,
+  ssl: DATABASE_URL.includes("neon.tech") ? "require" : undefined,
+});
 const db = drizzle(sql);
 
 migrate(db, { migrationsFolder })
@@ -42,7 +49,9 @@ migrate(db, { migrationsFolder })
     return sql.end();
   })
   .catch(async (e) => {
-    process.stderr.write(`Migration failed: ${e instanceof Error ? e.message : String(e)}\n`);
+    const detail = e instanceof Error ? e.stack || e.message || e.name : String(e);
+    const code = e && typeof e === "object" && "code" in e ? ` (code: ${(e as { code?: unknown }).code})` : "";
+    process.stderr.write(`Migration failed${code}: ${detail}\n`);
     await sql.end();
     process.exit(1);
   });

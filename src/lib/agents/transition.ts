@@ -36,9 +36,13 @@ export class TransitionAgent extends ForgeAgent {
 
   async execute(input: Record<string, unknown>, engagementId?: string): Promise<AgentResult> {
     const startTime = Date.now();
+    const context = await this.withKnowledge(
+      `transition protocol ${(input.phase as string) ?? ""} ${(input.vertical as string) ?? ""}`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Execute transition protocol:\n${JSON.stringify(input, null, 2)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

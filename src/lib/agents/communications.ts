@@ -16,7 +16,7 @@ TONE & STANDARDS:
 - C-suite executive level — precise, data-driven, no fluff
 - Include quantified outcomes (resilience scores, sprint velocity, harness scores)
 - Reference Evidence Ledger hashes for auditability
-- From: communications@sentrais.com
+- From: communications@novatesolutions.ai
 - All output recorded in the Evidence Ledger
 
 Return structured JSON: document_type, recipient, subject, body, key_metrics, evidence_references.`;
@@ -36,9 +36,13 @@ export class CommunicationsAgent extends ForgeAgent {
   ): Promise<AgentResult> {
     const startTime = Date.now();
 
+    const context = await this.withKnowledge(
+      `communications ${(input.communicationType as string) ?? ""} ${(input.audience as string) ?? ""}`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Generate communication: ${JSON.stringify(input, null, 2)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

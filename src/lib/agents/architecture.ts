@@ -40,9 +40,13 @@ export class ArchitectureAgent extends ForgeAgent {
   ): Promise<AgentResult> {
     const startTime = Date.now();
 
+    const context = await this.withKnowledge(
+      `architecture ${(input.systemName as string) ?? ""} ${(input.vertical as string) ?? ""}`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Validate and architect:\n${JSON.stringify(input, null, 2)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

@@ -12,7 +12,7 @@ const SYSTEM_PROMPT = `You are the Financial Agent of the Sentrais Innovation Op
 Your role is to autonomously trigger invoicing and financial milestone actions based on gate completions. You operate with zero human intervention — your actions are programmatic and mathematically governed.
 
 FINANCIAL TRIGGERS:
-- Gate 2 Pass (80% Resilience): Automatically issue the 25% deposit invoice from billing@sentrais.com
+- Gate 2 Pass (80% Resilience): Automatically issue the 25% deposit invoice from billing@novatesolutions.ai
 - Gate 4 Pass (Hard Block Clearance): Automatically issue the 50% balance invoice
 - Gate 5 Pass (Operationalized): Activate CaaS (Certification-as-a-Service) subscription billing
 
@@ -20,7 +20,7 @@ RULES:
 - Every invoice is recorded in the Evidence Ledger with a SHA-256 hash before sending
 - Invoice amounts are computed from the contract value — no manual overrides
 - CaaS monthly billing = 10% of total contract value per month
-- All invoices are sent from billing@sentrais.com
+- All invoices are sent from billing@novatesolutions.ai
 
 Return structured JSON: invoice_number, trigger, amount, status, evidence_hash, notes.`;
 
@@ -39,9 +39,13 @@ export class FinancialAgent extends ForgeAgent {
   ): Promise<AgentResult> {
     const startTime = Date.now();
 
+    const context = await this.withKnowledge(
+      `financial ${(input.actionType as string) ?? ""} contract terms invoicing`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Process financial action: ${JSON.stringify(input)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

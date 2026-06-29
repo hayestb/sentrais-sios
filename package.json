@@ -13,6 +13,8 @@
     "db:studio": "drizzle-kit studio",
     "db:baseline": "npx tsx scripts/db-baseline.ts",
     "db:setup": "npm run db:baseline && npm run db:migrate",
+    "db:ensure-sipe": "npx tsx scripts/ensure-sipe-table.ts",
+    "db:seed-sipe": "npx tsx scripts/seed-sipe-documents.ts",
     "setup:integrations": "npx tsx scripts/setup-integrations.ts",
     "push:env": "npx tsx scripts/push-env.ts",
     "setup:gcp": "./scripts/setup-gcp.sh"
@@ -39,6 +41,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.487.0",
+    "mammoth": "^1.8.0",
     "next": "^15.3.1",
     "postgres": "^3.4.5",
     "react": "^19.1.0",

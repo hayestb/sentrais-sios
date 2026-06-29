@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { db } from "@/lib/db/client";
-import { profiles, engagements, auditLog, agentConversations } from "@/lib/db/schema";
-import { eq, count, desc, gte, sql } from "drizzle-orm";
+import { profiles, engagements, auditLog, agentConversations, sipeEntries } from "@/lib/db/schema";
+import { eq, count, desc, sql } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Briefcase, Shield, Bot, Activity } from "lucide-react";
+import { Users, Briefcase, Shield, Bot, Activity, Upload } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export default async function AdminOverviewPage() {
     activeEngCount,
     recentAudit,
     tokenStats,
+    sipeCount,
   ] = await Promise.all([
     db.select({ count: count() }).from(profiles).where(eq(profiles.active, true)),
     db.select({ count: count() }).from(engagements).where(eq(engagements.status, "active")),
@@ -21,13 +23,15 @@ export default async function AdminOverviewPage() {
       agentName: agentConversations.agentName,
       total: sql<number>`sum(${agentConversations.tokensTotal})`.as("total"),
     }).from(agentConversations).groupBy(agentConversations.agentName).orderBy(sql`sum(${agentConversations.tokensTotal}) desc`).limit(5),
+    db.select({ count: count() }).from(sipeEntries),
   ]);
 
   const stats = [
-    { label: "Active Users", value: userCount[0]?.count ?? 0, icon: Users, color: "text-primary" },
-    { label: "Active Engagements", value: activeEngCount[0]?.count ?? 0, icon: Briefcase, color: "text-[#00D4AA]" },
-    { label: "Audit Events (all time)", value: recentAudit.length >= 10 ? "10+" : recentAudit.length, icon: Shield, color: "text-amber-400" },
-    { label: "Top AI Agent", value: tokenStats[0]?.agentName ?? "—", icon: Bot, color: "text-purple-400" },
+    { label: "Active Users", value: userCount[0]?.count ?? 0, icon: Users, color: "text-primary", href: undefined as string | undefined },
+    { label: "Active Engagements", value: activeEngCount[0]?.count ?? 0, icon: Briefcase, color: "text-[#00D4AA]", href: undefined },
+    { label: "Audit Events (all time)", value: recentAudit.length >= 10 ? "10+" : recentAudit.length, icon: Shield, color: "text-amber-400", href: undefined },
+    { label: "Top AI Agent", value: tokenStats[0]?.agentName ?? "—", icon: Bot, color: "text-purple-400", href: undefined },
+    { label: "SIPE Documents", value: sipeCount[0]?.count ?? 0, icon: Upload, color: "text-blue-400", href: "/admin/sipe" },
   ];
 
   return (
@@ -37,18 +41,27 @@ export default async function AdminOverviewPage() {
         <p className="text-sm text-muted-foreground mt-1">Sysadmin dashboard — platform health at a glance</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
-        {stats.map(({ label, value, icon: Icon, color }) => (
-          <Card key={label} className="border-border">
-            <CardContent className="p-4 flex items-center gap-3">
-              <Icon size={18} className={color} />
-              <div>
-                <div className="text-lg font-bold text-foreground">{value}</div>
-                <div className="text-[10px] text-muted-foreground">{label}</div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid grid-cols-5 gap-4">
+        {stats.map(({ label, value, icon: Icon, color, href }) => {
+          const card = (
+            <Card className={`border-border ${href ? "transition-colors hover:border-primary/50" : ""}`}>
+              <CardContent className="p-4 flex items-center gap-3">
+                <Icon size={18} className={color} />
+                <div>
+                  <div className="text-lg font-bold text-foreground">{value}</div>
+                  <div className="text-[10px] text-muted-foreground">{label}</div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+          return href ? (
+            <Link key={label} href={href}>
+              {card}
+            </Link>
+          ) : (
+            <div key={label}>{card}</div>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-2 gap-6">

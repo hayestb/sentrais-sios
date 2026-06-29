@@ -39,9 +39,13 @@ export class AssessmentAgent extends ForgeAgent {
   ): Promise<AgentResult> {
     const startTime = Date.now();
 
+    const context = await this.withKnowledge(
+      `assessment ${(input.vertical as string) ?? ""} ${(input.clientName as string) ?? ""}`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Run Blueprint360 Assessment:\n${JSON.stringify(input, null, 2)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

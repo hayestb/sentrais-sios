@@ -34,9 +34,13 @@ export class IntakeAgent extends ForgeAgent {
 
   async execute(input: Record<string, unknown>, engagementId?: string): Promise<AgentResult> {
     const startTime = Date.now();
+    const context = await this.withKnowledge(
+      `intake engagement ${(input.vertical as string) ?? ""} ${(input.clientName as string) ?? ""}`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Process client intake for new engagement:\n${JSON.stringify(input, null, 2)}\n\nGenerate the full intake assessment.`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

@@ -9,6 +9,7 @@ import {
   Shield, BarChart3, Brain, ChevronRight, Users, Home, DollarSign,
   Sparkles, UserCheck, AlertCircle, Package, Wallet, Activity,
   TrendingUp, FlaskConical, PieChart, MessageSquare, Bell, Settings,
+  Layers, CandlestickChart,
 } from "lucide-react";
 
 interface NavItem { href: string; label: string; icon: React.ElementType; color?: string; }
@@ -39,6 +40,8 @@ const INTELLIGENCE_NAV: NavItem[] = [
 
 const COMMERCIAL_NAV: NavItem[] = [
   { href: "/crm", label: "CRM Pipeline", icon: PieChart },
+  { href: "/financial-os", label: "Financial OS", icon: Layers },
+  { href: "/cashflow", label: "Cash Flow Runway", icon: CandlestickChart },
   { href: "/invoices", label: "Invoices", icon: DollarSign },
   { href: "/budget", label: "Budget", icon: Wallet },
   { href: "/vendors", label: "Vendors", icon: Package },

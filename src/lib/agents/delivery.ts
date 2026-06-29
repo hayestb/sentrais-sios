@@ -39,9 +39,13 @@ export class DeliveryAgent extends ForgeAgent {
   ): Promise<AgentResult> {
     const startTime = Date.now();
 
+    const context = await this.withKnowledge(
+      `delivery sprint ${(input.phase as string) ?? ""} ${(input.vertical as string) ?? ""}`,
+      { engagementId }
+    );
     const { text, tokensUsed } = await this.invoke(
       `Sprint management action:\n${JSON.stringify(input, null, 2)}`,
-      { engagementId }
+      context
     );
 
     let parsed: Record<string, unknown>;

@@ -30,3 +30,4 @@ yarn-error.log*
 
 # drizzle - meta folder must be committed for production migrations
 # drizzle/meta/
+.env*.local
