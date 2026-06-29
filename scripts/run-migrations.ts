@@ -24,8 +24,6 @@ try {
 // Prefer the direct (unpooled) connection for migrations — PgBouncer blocks DDL
 const rawUrl = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
 if (!rawUrl) {
-const DATABASE_URL = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
-if (!DATABASE_URL) {
   process.stderr.write("DATABASE_URL not set\n");
   process.exit(1);
 }
