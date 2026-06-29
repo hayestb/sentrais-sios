@@ -196,7 +196,11 @@ const ENTRIES: SeedEntry[] = [
 ];
 
 async function seed() {
-  const sql = postgres(DATABASE_URL, { max: 1 });
+  // Neon requires TLS; postgres-js only enables it when told to (matches src/lib/db/client.ts)
+  const sql = postgres(DATABASE_URL, {
+    max: 1,
+    ssl: DATABASE_URL.includes("neon.tech") ? "require" : undefined,
+  });
   const db = drizzle(sql, { schema: { sipeEntries } });
 
   try {
