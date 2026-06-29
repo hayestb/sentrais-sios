@@ -16,7 +16,7 @@ TONE & STANDARDS:
 - C-suite executive level — precise, data-driven, no fluff
 - Include quantified outcomes (resilience scores, sprint velocity, harness scores)
 - Reference Evidence Ledger hashes for auditability
-- From: communications@sentrais.com
+- From: communications@novatesolutions.ai
 - All output recorded in the Evidence Ledger
 
 Return structured JSON: document_type, recipient, subject, body, key_metrics, evidence_references.`;

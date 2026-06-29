@@ -21,11 +21,14 @@ try {
   }
 } catch {}
 
-const DATABASE_URL = process.env.DATABASE_URL;
-if (!DATABASE_URL) {
+// Prefer the direct (unpooled) connection for migrations — PgBouncer blocks DDL
+const rawUrl = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
+if (!rawUrl) {
   process.stderr.write("DATABASE_URL not set\n");
   process.exit(1);
 }
+// postgres-js does not support the channel_binding parameter — strip it
+const DATABASE_URL = rawUrl.replace(/[&?]channel_binding=[^&]*/g, "");
 
 const migrationsFolder = resolve(process.cwd(), "drizzle");
 if (!existsSync(migrationsFolder)) {

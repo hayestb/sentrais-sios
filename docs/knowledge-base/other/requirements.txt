@@ -1,0 +1,26 @@
+# NFLIT iOS 360 - MCP Server Dependencies
+# Version: 1.0.0
+
+# MCP SDK
+mcp>=1.0.0
+
+# Pydantic for validation
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# HTTP Client
+httpx>=0.26.0
+
+# AWS SDK
+boto3>=1.34.0
+botocore>=1.34.0
+
+# Async Support
+anyio>=4.0.0
+uvicorn[standard]>=0.27.0
+
+# Utilities
+python-dotenv>=1.0.0
+
+# Logging
+structlog>=24.1.0
