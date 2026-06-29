@@ -13,6 +13,7 @@
     "db:studio": "drizzle-kit studio",
     "db:baseline": "npx tsx scripts/db-baseline.ts",
     "db:setup": "npm run db:baseline && npm run db:migrate",
+    "db:ensure-sipe": "npx tsx scripts/ensure-sipe-table.ts",
     "db:seed-sipe": "npx tsx scripts/seed-sipe-documents.ts",
     "setup:integrations": "npx tsx scripts/setup-integrations.ts",
     "push:env": "npx tsx scripts/push-env.ts",
