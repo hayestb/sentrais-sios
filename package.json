@@ -16,7 +16,8 @@
     "setup:integrations": "npx tsx scripts/setup-integrations.ts",
     "push:env": "npx tsx scripts/push-env.ts",
     "setup:gcp": "./scripts/setup-gcp.sh",
-    "ingest": "npx tsx src/scripts/seed-ingest.ts"
+    "ingest": "npx tsx src/scripts/seed-ingest.ts",
+    "ingest2": "npx tsx src/scripts/seed-ingest-2.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.74",
