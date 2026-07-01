@@ -4,6 +4,9 @@
   "installCommand": "npm ci",
   "outputDirectory": ".next",
   "regions": ["iad1"],
+  "crons": [
+    { "path": "/api/coordination/health-check", "schedule": "*/15 * * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

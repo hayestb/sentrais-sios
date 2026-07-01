@@ -19,9 +19,14 @@ interface Spoke {
   stack: string | null;
   oidcClientId: string | null;
   status: string;
+  healthStatus: string | null;
   lastEventAt: string | null;
+  lastHealthAt: string | null;
   createdAt: string;
 }
+const HEALTH_COLOR: Record<string, string> = {
+  healthy: "text-[#00D4AA]", degraded: "text-amber-400", down: "text-red-400", unknown: "text-muted-foreground",
+};
 interface LedgerEvent {
   id: string;
   subject: string;
@@ -123,6 +128,9 @@ export default function SpokeDetailPage() {
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs font-mono text-muted-foreground">{spoke.slug}</span>
           <Badge variant="outline" className={`text-[9px] h-4 px-1.5 ${spoke.oidcClientId ? "text-emerald-400" : "text-muted-foreground"}`}>{spoke.oidcClientId ? "SSO linked" : "SSO not linked"}</Badge>
+          <span className={`text-[10px] flex items-center gap-1 ${HEALTH_COLOR[spoke.healthStatus ?? "unknown"]}`}>
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-current" />{spoke.healthStatus ?? "unknown"}
+          </span>
           <span className="text-[10px] text-muted-foreground flex items-center gap-1">{spoke.lastEventAt && <Radio size={10} className="text-primary" />}last event {relTime(spoke.lastEventAt)}</span>
         </div>
       </div>

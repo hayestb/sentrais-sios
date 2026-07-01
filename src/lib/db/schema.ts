@@ -433,6 +433,7 @@ export const spokeRegistry = pgTable(
     oidcClientId: text("oidc_client_id"),
     apiKeyHash: text("api_key_hash"), // sha256 of the spoke's service API key
     status: text("status").notNull().default("active"), // active | paused | inactive
+    healthStatus: text("health_status"), // healthy | degraded | down | unknown
     lastEventAt: timestamp("last_event_at"),
     lastHealthAt: timestamp("last_health_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),

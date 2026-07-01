@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Network, Plus, Loader2, Copy, Check, AlertCircle, Radio } from "lucide-react";
+import { Network, Plus, Loader2, Copy, Check, AlertCircle, Radio, HeartPulse } from "lucide-react";
 
 interface Spoke {
   id: string;
@@ -18,9 +18,18 @@ interface Spoke {
   stack: string | null;
   oidcClientId: string | null;
   status: string;
+  healthStatus: string | null;
   lastEventAt: string | null;
+  lastHealthAt: string | null;
   createdAt: string;
 }
+
+const HEALTH_COLOR: Record<string, string> = {
+  healthy: "text-[#00D4AA]",
+  degraded: "text-amber-400",
+  down: "text-red-400",
+  unknown: "text-muted-foreground",
+};
 
 const STACK_COLOR: Record<string, string> = {
   supabase: "text-emerald-400",
@@ -48,6 +57,7 @@ export default function SpokesPage() {
   const [error, setError] = useState<string | null>(null);
   const [newKey, setNewKey] = useState<{ slug: string; key: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [checking, setChecking] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -65,6 +75,20 @@ export default function SpokesPage() {
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  const runHealthCheck = useCallback(async () => {
+    setChecking(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/coordination/health-check");
+      if (!res.ok) setError("Health check failed");
+      await load();
+    } catch {
+      setError("Health check failed");
+    } finally {
+      setChecking(false);
+    }
   }, [load]);
 
   const register = useCallback(async () => {
@@ -104,9 +128,14 @@ export default function SpokesPage() {
             Sentrais 360 OS — apps federated to this hub. They authenticate with a service key and publish events to the Evidence Ledger.
           </p>
         </div>
-        <Button size="sm" onClick={() => { setShowForm((s) => !s); setError(null); }}>
-          <Plus size={14} className="mr-1" /> Register Spoke
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={runHealthCheck} disabled={checking}>
+            {checking ? <Loader2 size={14} className="mr-1 animate-spin" /> : <HeartPulse size={14} className="mr-1" />} Check health
+          </Button>
+          <Button size="sm" onClick={() => { setShowForm((s) => !s); setError(null); }}>
+            <Plus size={14} className="mr-1" /> Register Spoke
+          </Button>
+        </div>
       </div>
 
       {/* one-time API key banner */}
@@ -177,6 +206,7 @@ export default function SpokesPage() {
                   <th className="p-3 font-medium">Stack</th>
                   <th className="p-3 font-medium">Vertical</th>
                   <th className="p-3 font-medium">SSO</th>
+                  <th className="p-3 font-medium">Health</th>
                   <th className="p-3 font-medium">Status</th>
                   <th className="p-3 font-medium">Last event</th>
                 </tr>
@@ -194,6 +224,12 @@ export default function SpokesPage() {
                       <Badge variant="outline" className={`text-[9px] h-4 px-1.5 ${s.oidcClientId ? "text-emerald-400" : "text-muted-foreground"}`}>
                         {s.oidcClientId ? "linked" : "not linked"}
                       </Badge>
+                    </td>
+                    <td className="p-3">
+                      <span className={`flex items-center gap-1 ${HEALTH_COLOR[s.healthStatus ?? "unknown"]}`}>
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-current" />
+                        {s.healthStatus ?? "unknown"}
+                      </span>
                     </td>
                     <td className="p-3">
                       <Badge variant="outline" className={`text-[9px] h-4 px-1.5 ${s.status === "active" ? "text-[#00D4AA]" : "text-amber-400"}`}>{s.status}</Badge>
