@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -182,14 +183,10 @@ export default function SpokesPage() {
               </thead>
               <tbody>
                 {spokes.map((s) => (
-                  <tr key={s.id} className="border-b border-border/50 last:border-0">
+                  <tr key={s.id} className="border-b border-border/50 last:border-0 hover:bg-muted/20">
                     <td className="p-3">
-                      <div className="text-foreground font-medium">{s.name}</div>
-                      {s.baseUrl ? (
-                        <a href={s.baseUrl} target="_blank" rel="noreferrer" className="text-[10px] text-primary/80 hover:underline font-mono">{s.slug}</a>
-                      ) : (
-                        <span className="text-[10px] text-muted-foreground font-mono">{s.slug}</span>
-                      )}
+                      <Link href={`/admin/spokes/${s.slug}`} className="text-foreground font-medium hover:text-primary">{s.name}</Link>
+                      <div className="text-[10px] text-muted-foreground font-mono">{s.slug}</div>
                     </td>
                     <td className={`p-3 font-mono ${s.stack ? STACK_COLOR[s.stack] ?? "text-muted-foreground" : "text-muted-foreground"}`}>{s.stack ?? "—"}</td>
                     <td className="p-3 text-muted-foreground capitalize">{s.vertical ?? "—"}</td>
