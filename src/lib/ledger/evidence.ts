@@ -19,7 +19,8 @@ export type EvidenceEntryType =
   | "hard_block"
   | "sipe_update"
   | "risk_assessment"
-  | "caas_activation";
+  | "caas_activation"
+  | "spoke_event";
 
 export interface LedgerEntryInput {
   engagementId?: string;
