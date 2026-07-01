@@ -416,6 +416,33 @@ export const sipeEntries = pgTable(
   ]
 );
 
+// ─── Spoke Registry ───────────────────────────────────────────────────────────
+// Sentrais 360 OS hub-and-spoke: registry of connected apps (evergame, atl-360,
+// nfl-ims, sentrais-forge, …) that federate identity and publish events to the hub.
+
+export const spokeRegistry = pgTable(
+  "spoke_registry",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull().unique(),
+    baseUrl: text("base_url"),
+    healthUrl: text("health_url"),
+    vertical: text("vertical"),
+    stack: text("stack"), // e.g. "supabase", "firebase", "neon"
+    oidcClientId: text("oidc_client_id"),
+    apiKeyHash: text("api_key_hash"), // sha256 of the spoke's service API key
+    status: text("status").notNull().default("active"), // active | paused | inactive
+    lastEventAt: timestamp("last_event_at"),
+    lastHealthAt: timestamp("last_health_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("spoke_slug_idx").on(t.slug),
+    index("spoke_status_idx").on(t.status),
+  ]
+);
+
 // ─── KPI Snapshots ────────────────────────────────────────────────────────────
 
 export const kpiSnapshots = pgTable(
@@ -698,6 +725,8 @@ export type NewSprintCycle = typeof sprintCycles.$inferInsert;
 export type RaciAssignment = typeof raciAssignments.$inferSelect;
 export type Invoice = typeof invoices.$inferSelect;
 export type SipeEntry = typeof sipeEntries.$inferSelect;
+export type SpokeRegistryEntry = typeof spokeRegistry.$inferSelect;
+export type NewSpokeRegistryEntry = typeof spokeRegistry.$inferInsert;
 export type KpiSnapshot = typeof kpiSnapshots.$inferSelect;
 export type BudgetMilestone = typeof budgetMilestones.$inferSelect;
 export type EngagementComment = typeof engagementComments.$inferSelect;
