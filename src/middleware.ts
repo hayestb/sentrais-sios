@@ -9,6 +9,8 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks/(.*)",
   // Spoke → hub event ingest: authenticated by a per-spoke service key, not Clerk.
   "/api/coordination/events(.*)",
+  // Health-check cron: authenticated by CRON_SECRET (Vercel cron), not Clerk.
+  "/api/coordination/health-check(.*)",
   "/client/(.*)",
 ]);
 

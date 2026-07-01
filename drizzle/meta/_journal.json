@@ -22,6 +22,13 @@
       "when": 1782871790676,
       "tag": "0002_faulty_jasper_sitwell",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782874681976,
+      "tag": "0003_reflective_shatterstar",
+      "breakpoints": true
     }
   ]
 }

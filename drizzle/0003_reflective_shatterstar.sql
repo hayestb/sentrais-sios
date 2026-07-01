@@ -1,0 +1,1 @@
+ALTER TABLE "spoke_registry" ADD COLUMN "health_status" text;
