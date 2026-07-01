@@ -7,6 +7,8 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/webhooks/(.*)",
+  // Spoke → hub event ingest: authenticated by a per-spoke service key, not Clerk.
+  "/api/coordination/events(.*)",
   "/client/(.*)",
 ]);
 
