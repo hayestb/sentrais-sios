@@ -34,9 +34,11 @@ export function GatePipeline({ gates, clientName, contractValue }: GatePipelineP
   const passedCount = gates.filter((g) => g.status === "passed").length;
   const progress = Math.round((passedCount / 6) * 100);
 
+  void clientName;
+  void contractValue;
+
   return (
     <div className="space-y-4">
-      {/* Progress bar */}
       <div className="flex items-center gap-3">
         <Progress value={progress} className="flex-1 h-1.5" />
         <span className="text-xs text-muted-foreground w-10 text-right">
@@ -44,7 +46,6 @@ export function GatePipeline({ gates, clientName, contractValue }: GatePipelineP
         </span>
       </div>
 
-      {/* Gate rows */}
       <div className="space-y-2">
         {gates.map((gate) => {
           const def = GATE_DEFINITIONS[gate.gateNumber as GateNumber];

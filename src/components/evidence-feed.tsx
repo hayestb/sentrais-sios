@@ -34,11 +34,6 @@ const TYPE_LABELS: Record<string, string> = {
   ap_invoice_status: "AP Status",
   agent_run: "Agent Run",
   prompt_change: "Prompt",
-  raci_update: "RACI",
-  risk_assessment: "Risk",
-  caas_activation: "CaaS",
-  blueprint: "Blueprint",
-  blueprint360_assessment: "B360",
 };
 
 export function EvidenceFeed({ entries }: EvidenceFeedProps) {
