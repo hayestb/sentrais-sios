@@ -7,7 +7,7 @@ import {
   Clock, TrendingUp,
 } from "lucide-react";
 
-// ── Data ──────────────────────────────────────────────────────────────────────
+// ── Data ────────────────────────────────────────────────────────────────────────────────
 
 const INVOICES = [
   { id: "SNT-NFL-2026-Q1", client: "NFL GDA", amount: 475000, type: "License + Platform", issued: "Jun 30, 2026", due: "Jul 30, 2026", status: "PENDING", entity: "Sentrais Corp", notes: "Q1 license + infra passthrough. Triggers on go-live confirmation." },
@@ -19,34 +19,34 @@ const INVOICES = [
 const COST_CENTERS = [
   { code: "CC-100", name: "Engineering & Product", type: "Operating", budget: 180000, ytd: 42000, entity: "Sentrais Corp", notes: "Platform dev, QA, infrastructure" },
   { code: "CC-200", name: "Go-to-Market", type: "Operating", budget: 90000, ytd: 18000, entity: "Sentrais Corp", notes: "Sales, partnerships, BD" },
-  { code: "CC-300", name: "Program Delivery", type: "Operating", budget: 120000, ytd: 31000, entity: "NOVATELabs Inc", notes: "ARI 7-pillar programs, community" },
+  { code: "CC-300", name: "Program Delivery", type: "Operating", budget: 120000, ytd: 31000, entity: "NOVATELabs Inc", notes: "CONVERGE program, community engagement" },
   { code: "CC-400", name: "Governance & Legal", type: "Operating", budget: 60000, ytd: 22000, entity: "Sentrais Corp", notes: "Counsel, compliance, entity admin" },
   { code: "CC-500", name: "People & Org", type: "Operating", budget: 75000, ytd: 14000, entity: "Sentrais Corp", notes: "HR, hiring, benefits" },
   { code: "CC-600", name: "BGI Mission Capital", type: "Mission", budget: 50000, ytd: 0, entity: "BGI", notes: "Blocked — EIN required before disbursement" },
-  { code: "CC-700", name: "Research Capital", type: "Research", budget: 30000, ytd: 8000, entity: "NOVATELabs Inc", notes: "NCICC, academic partnerships" },
+  { code: "CC-700", name: "Research Capital", type: "Research", budget: 30000, ytd: 8000, entity: "NOVATELabs Inc", notes: "NCICC, academic partnerships. Note: CONVERGE program has separate $10.3M grant pipeline tracked outside this cost center." },
 ];
 
 const ENTITIES = [
   {
     name: "Sentrais Corp",
-    ein: "EIN pending 83(b)",
+    ein: "39-4645168",
     type: "Commercial · Delaware C-Corp",
     status: "ACTIVE",
     statusVariant: "success" as const,
     revenue: "NFL MSA ($475K/qtr) · MetaData · Platform subscriptions",
     expenses: "Engineering (CC-100), GTM (CC-200), Governance (CC-400)",
-    notes: "Primary commercial entity. IRC §482 royalty to RRH (10–25%). All client contracts routed here.",
+    notes: "Primary commercial entity. IRC §482 royalty to RRH (10–25%). All client contracts routed here. Option A CONFIRMED (Jun 29): Sentrais Corp assumes direct Employer of Record function. ADP registration transfers from NOVATELabs EIN 39-4510998 to this EIN — Tyler coordinating ADP transfer this week to complete before Jul 1 payroll.",
     accentClass: "border-l-[#0EA5E9]",
   },
   {
     name: "NOVATELabs Inc",
     ein: "39-4510998",
-    type: "Program · Former NOVATEUS Foundation",
+    type: "Georgia §501(c)(3) Nonprofit · Sponsored Research Institution · fka N-OvateUS Foundation Inc",
     status: "ACTIVE",
     statusVariant: "success" as const,
-    revenue: "Sponsorship revenue · Research grants · Program fees",
+    revenue: "Sponsored research fees (Sentrais) · Federal grants (40%) · Foundation grants (30%) · Corporate/event partners (15%) · Program revenue/NIN certification (10%) · Individual giving (5%) · Year 1 target: $2.1M · Year 5 target: $4.5M",
     expenses: "Program delivery (CC-300), Research (CC-700)",
-    notes: "Name change complete Jun 8. IRS affirmation letter outstanding.",
+    notes: "Georgia §501(c)(3) nonprofit. Incorporated Feb 6, 2024 as N-OvateUS Foundation Inc (GA Control No. 24030590); name amended to NOVATELabs Inc per Certificate of Amendment. Registered Agent: Valorie Salahuddin. Initial directors: Tye Hayes, René Chatfield, Valorie Salahuddin. Repositioning in progress (SNT-LEGAL-NLREPOS-2026-v1.0, Jun 21): transitioning from cost-plus services vendor → independent sponsored research institution. MISA-SI-NL-001 §2 amendment required: replace Cost-Plus Basis with Sponsored Research Fee (IRC §482 CUT standard). Option A CONFIRMED (Jun 29): EOR/payroll transfers to Sentrais Corp — ADP transfer in progress, targeting completion before Jul 1. §501(c)(3) status CONFIRMED — IRS Letter 947 (Definitive Ruling of Public Charity Status) issued Feb 2024 under N-OvateUS Foundation Inc name. IRS name-change notification pending: IRS record must be updated to reflect NOVATELabs Inc — file via Form 990 or written notification to IRS EO. Status is active; this is a records update, not a new determination. Flagship program: CONVERGE — signature applied resilience Living Lab embedded in SEAR 1 and SEAR 2 environments; four pillars: Community Resilience, Smart Cities/Critical Infrastructure, Responsible AI Governance, Education/Workforce Development. Converge operates within the Sentrais ecosystem via restricted-use licensing agreements — Sentrais Corp provides Intelligence Operating System, simulation runtime, evidence ledger, and real-time orchestration; NOVATELabs maintains research independence and nonprofit status. Research pipeline: “Orchestrating Resilience” 5-year $10.3M ($1.87M/yr) bi-coastal program (Atlanta + California hubs; FIFA 2026, Super Bowl LX/LXI, LA 2028 Olympics, Super Bowl 2029). Grant pipeline: NSF ExpandAI $2–4M · NSF Civic Innovation $1–2M · DHS/FEMA FIFA World Cup Grant $2–5M · DOT/FTA $1–2M · DOE $500K–2M · Ford Foundation $500K–1M · MacArthur $500K–1M · NFL Foundation $500K–1M · LA28 Legacy Fund $1–2M · Blank Family Foundation $250K–$500K. NFL Hackathon: Sentrais/NOVATE named execution partner (Ops, Field Ops, Ecosystem) — Gate 1 launched Nov 2025, Gate 5 Draft Showcase Apr 2026 Pittsburgh.",
     accentClass: "border-l-[#00D4AA]",
   },
   {
@@ -63,7 +63,7 @@ const ENTITIES = [
 ];
 
 const PAYROLL = [
-  { role: "Tyler Capson — Fractional CFO", rate: "10 hrs/wk · Net-30", entity: "NOVATELabs Inc", status: "PENDING_SOW", notes: "SOW under NOVATELabs Inc (Sentrais_SOW_Tyler_Capson_CFO.docx, produced Jun 14). Sign this morning. W-9 required before system access. Day 1: ADP payroll cutover + NetSuite reconciliation readiness before Jun 30. Day 2: AP/Outflows schema." },
+  { role: "Tyler Capson — Fractional CFO", rate: "$18,666/mo · bi-weekly invoice · Net-15", entity: "NOVATELabs Inc → Sentrais Corp (Option A)", status: "ACTIVE", notes: "SOW fully executed Jun 26, 2026 (both parties, Adobe Acrobat Sign). Contracting entity: NOVATELabs Inc. — SOW amendment or parallel Sentrais Corp engagement needed as Option A ADP transfer completes (flag for Chanise). Tyler authorized to begin all transition activities immediately. W-9 required before first 1099 payment. Day 1 (Jul 1): ADP payroll cutover + BofA account controls + NetSuite reconciliation. Day 7 (Jul 7): SimpliMeta payment + SAM.gov/UEI update. Day 15 (Jul 15): Finance Ops Transition Report." },
   { role: "Grant Funding Lead", rate: "20 hrs/wk · Net-30", entity: "NOVATELabs Inc", status: "PENDING_SOW", notes: "SOW + W-9 required. Next-cycle BRIC prep (FY2026-27) + 2 CFR Part 200 readiness. July 23 is not a hard hire deadline — hire for next cycle preparation." },
   { role: "Kevin McCann — Growth Strategy Lead", rate: "15 hrs/wk", entity: "Sentrais Corp", status: "ACTIVE", notes: "SOW executed. Positioning updated Jun 17: platform is delivery assurance + evidence infrastructure — not a BRIC standalone ask. NFL Go-Live (Jun 30) is commercial anchor for all new buyer conversations." },
   { role: "Comms Lead", rate: "15 hrs/wk", entity: "NOVATELabs Inc", status: "ACTIVE", notes: "SOW executed. GTM content + partner communications." },
@@ -71,6 +71,33 @@ const PAYROLL = [
 ];
 
 const COMPLIANCE = [
+  {
+    title: "OVERDUE AP — Gartner Invoice #1GI00083955",
+    accent: "border-red-500/40 bg-red-500/5",
+    titleColor: "text-red-400",
+    items: [
+      "Invoice #1GI00083955 is 56 days past due as of Jun 22 — NACM reporting risk",
+      "NACM report would damage Sentrais/NOVATELabs credit and trigger outside counsel escalation",
+      "ACTION: Pay immediately; provide payment confirmation to Gartner account rep",
+      "Owner: Accounting / Tye — do not allow further aging",
+    ],
+  },
+  {
+    title: "MISA-SI-NL-001 Repositioning (Jun 21, 2026)",
+    accent: "border-amber-500/40 bg-amber-500/5",
+    titleColor: "text-amber-400",
+    items: [
+      "§501(c)(3) status CONFIRMED — IRS Letter 947 (Definitive Ruling) issued Feb 2024 under N-OvateUS Foundation Inc. IRS name-change notification pending to update record to NOVATELabs Inc — this is a records update, not a new determination.",
+      "NOVATELabs transitioning from cost-plus services vendor → Sponsored Research Institution (SNT-LEGAL-NLREPOS-2026-v1.0)",
+      "MISA §2 amendment: replace Cost-Plus Basis with Sponsored Research Fee — IRC §482 CUT analysis required before execution",
+      "Option A CONFIRMED (Jun 29): Sentrais Corp assumes Employer of Record; ADP registration transfers from EIN 39-4510998 → 39-4645168",
+      "Tyler Capson coordinating ADP transfer this week — targeting completion before Jul 1 payroll run",
+      "NetSuite Rule 2 reconfiguration: ‘R&D service fee routing’ → ‘Sponsored Research Fund routing’ upon MISA amendment execution",
+      "GATE — Chanise: confirm MISA v1.0 execution status + Erin signing authority before drafting any NOVATELabs-side documents",
+      "SOW sequencing (risk-minimizing path): (1) Execute new Sentrais Corp SOW with Tyler, effective date = ADP transfer completion date. (2) NOVATELabs SOW remains in force until Sentrais Corp SOW is live — no gap in coverage. (3) Formally terminate NOVATELabs SOW only after Sentrais Corp SOW is confirmed active. Do not terminate NOVATELabs SOW first.",
+      "SOW entity note: executed SOW (Jun 26) names NOVATELabs Inc. — scope language (‘commercial revenue operations’) misaligns with repositioning; new Sentrais Corp SOW corrects this cleanly without amending the repositioning narrative",
+    ],
+  },
   {
     title: "IRC §482 Transfer Pricing",
     accent: "border-[#0EA5E9]/40 bg-[#0EA5E9]/5",
@@ -100,6 +127,7 @@ const COMPLIANCE = [
     items: [
       "WIOA grants subject to federal indirect cost rules (BGI)",
       "Grant Funding Lead owns compliance infrastructure — next-cycle prep",
+      "CONVERGE program federal grant targets: DHS/FEMA FIFA World Cup Grant $2–5M (highest near-term priority), NSF ExpandAI $2–4M (HBCU/HSI focus), NSF Civic Innovation $1–2M, DOT/FTA SMART Grants $1–2M",
       "Tracking system: Monday.com (pending SOW execution)",
       "Quarterly grant compliance reports to Finance",
     ],
@@ -123,7 +151,7 @@ const COMPLIANCE = [
     items: [
       "83(b) election — certified mail DEADLINE Jun 28",
       "No extensions exist — permanent loss if missed",
-      "Founders' stock split: 200K Series A + 600K Series B",
+      "Founders’ stock split: 200K Series A + 600K Series B",
       "Must coordinate with amended DE certificate this week",
     ],
   },

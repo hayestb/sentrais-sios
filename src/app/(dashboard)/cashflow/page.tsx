@@ -12,20 +12,36 @@ import { AlertTriangle, TrendingUp, Lock, Clock } from "lucide-react";
 //   - SEG Q1 disbursement ($332,500) held in Account 1040 — releases when NFL payment clears
 //   - SEG/Knox Phillips and SimpliMeta are two separate transactions
 //   - BGI $50K frozen — not operating capital
+// Updates applied Jun 29, 2026:
+//   - Tyler Capson SOW: EXECUTED Jun 26 — both parties signed via Adobe Acrobat Sign
+//   - BGI BRIC scrub added: Foundation Counsel must remove federal grant language before Form 1023 filing
+//   - AWS LOI added: must be countersigned before Jul 3 GenAIIC sprint start (Carly Castiner / AWS)
+//   - Kevin McCann GTM Playbook update added (remove BRIC as standalone revenue; add NFL proof point)
+//   - NFL Go-Live TOMORROW (Jun 30) — $475K Q1 invoice trigger
+//   - Gartner Invoice #1GI00083955: 56 days overdue — NACM reporting risk + outside counsel escalation risk
 
 // ── 30-day cash calendar ──────────────────────────────────────────────────────
 
 const CASH_CALENDAR = [
-  { date: "Jun 17", event: "Tyler Capson SOW signed under NOVATELabs Inc.", owner: "Tye", impact: "Unblocks financial infrastructure", impactType: "neutral" },
   { date: "Jun 17", event: "Zoie: audit all outstanding vendor invoices", owner: "Zoie", impact: "AP visibility — no cash event", impactType: "neutral" },
+  { date: "OVERDUE", event: "Gartner Invoice #1GI00083955 — 56 days past due", owner: "Accounting / Tye", impact: "NACM reporting risk: credit damage + outside counsel escalation. Pay immediately to prevent escalation.", impactType: "danger" },
+  { date: "Jun 26", event: "Tyler Capson SOW — EXECUTED (both parties signed Jun 26, 2026)", owner: "Tye / Tyler", impact: "SOW fully executed via Adobe Acrobat Sign. Tyler authorized to begin transition activities. W-9 still required before first 1099 payment.", impactType: "positive" },
   { date: "Jun 28", event: "NFL invoice template + submission process confirmed", owner: "Tyler + Tye", impact: "Readiness check — no cash event", impactType: "neutral" },
   { date: "Jun 28", event: "83(b) election — certified mail DEADLINE", owner: "Tye + Counsel", impact: "PERMANENT QSBS loss if missed", impactType: "danger" },
-  { date: "Jun 30", event: "NFL Go-Live confirmed + Q1 Invoice issued", owner: "Tye + Tyler", impact: "+$475,000 AR created · Net-30 clock starts", impactType: "positive" },
-  { date: "Jun 30", event: "ADP payroll cutover complete", owner: "Tyler", impact: "Payroll operational — ongoing obligation", impactType: "neutral" },
-  { date: "Jul 1",  event: "NetSuite reconciliation confirmed as system of record", owner: "Tyler", impact: "Clean before system changeover", impactType: "neutral" },
-  { date: "Jul 6-7", event: "SimpliMeta settlement wire", owner: "Tye + Counsel", impact: "–$11,850 · Execute per clean draft ACH/wire", impactType: "outflow" },
-  { date: "Jul 7",  event: "SEG/Knox Phillips settlement", owner: "Tye + Counsel", impact: "Amount TBD per counsel-approved terms · Separate from SimpliMeta", impactType: "outflow" },
-  { date: "~Jul 30", event: "NFL Q1 payment clears bank", owner: "Tyler", impact: "+$475,000 cash received · SEG Q1 disbursement ($332,500) released from Account 1040", impactType: "positive" },
+  { date: "Jun 29", event: "Option A CONFIRMED — Sentrais Corp becomes direct employer (EIN 39-4510998 → 39-4645168)", owner: "Tyler Capson", impact: "ADP registration transfers from NOVATELabs EIN 39-4510998 to Sentrais Corp EIN 39-4645168. Tyler to coordinate ADP transfer with ADP this week to complete before Jul 1 payroll.", impactType: "positive" },
+  { date: "Jun 29", event: "BGI BRIC scrub — Foundation Counsel removes all federal grant language", owner: "Foundation Counsel", impact: "Blocks IRS Form 1023 filing if not done — 3-6 month review at risk", impactType: "danger" },
+  { date: "Jun 29", event: "AWS LOI — call with Carly Castiner; countersign before Jul 3", owner: "Tye", impact: "Blocks GenAIIC 4-week Bedrock sprint if LOI not in place by Jul 3", impactType: "danger" },
+  { date: "Jun 29", event: "Kevin McCann GTM Playbook update (remove BRIC revenue, add NFL proof point)", owner: "Kevin McCann", impact: "No cash event — commercial narrative correction", impactType: "neutral" },
+  { date: "Jun 30", event: "NFL GDA Go-Live confirmed + Q1 Invoice issued (SNT-NFL-2026-Q1)", owner: "Tye + Erin + SEG", impact: "+$475,000 AR created · Net-30 clock starts · cash expected ~Jul 30", impactType: "positive" },
+  { date: "Jul 1", event: "ADP payroll cutover + BofA account controls configured", owner: "Tyler Capson", impact: "SOW executed Jun 26 — Tyler authorized. ADP EIN transfer (39-4510998 → 39-4645168) in progress under Option A.", impactType: "neutral" },
+  { date: "Jul 1",  event: "NetSuite reconciliation confirmed as system of record", owner: "Tyler Capson", impact: "Must be clean before Jul 1 system changeover", impactType: "neutral" },
+  { date: "Jul 3",  event: "AWS GenAIIC 4-week Bedrock hardening sprint begins", owner: "Tye / Carly Castiner", impact: "LOI must be countersigned — sprint cannot start without it", impactType: "neutral" },
+  { date: "Jul 6-7", event: "SimpliMeta settlement wire", owner: "Tye + Counsel", impact: "–$11,850 · Execute per clean draft ACH/wire · Do NOT pay early", impactType: "outflow" },
+  { date: "Jul 7",  event: "SEG/Knox settlement", owner: "Tye + Counsel", impact: "Amount TBD per counsel-approved terms · Separate from SimpliMeta · Separate counsel sign-off required", impactType: "outflow" },
+  { date: "Jul 7",  event: "SAM.gov / UEI update — submit legal name update + revalidate UEI record", owner: "Tyler Capson", impact: "Federal registration must be active for any federal-adjacent contracts or grants. Tyler to confirm submission and provide status documentation.", impactType: "neutral" },
+  { date: "Jul 15", event: "Finance Operations Transition Report (SOW deliverable)", owner: "Tyler Capson", impact: "Written onboarding summary: AP, AR, payroll, banking governance responsibilities assumed · open risks · pending dependencies · next steps. Required per executed SOW.", impactType: "neutral" },
+  { date: "Jul 15", event: "SOW step-down: execute Sentrais Corp SOW with Tyler — then terminate NOVATELabs SOW", owner: "Tye + Chanise", impact: "Sentrais Corp SOW effective date = ADP transfer completion. NOVATELabs SOW must remain active until Sentrais Corp SOW is confirmed live. Do not terminate NOVATELabs SOW first.", impactType: "neutral" },
+  { date: "~Jul 30", event: "NFL Q1 payment clears bank", owner: "Tyler Capson", impact: "+$475,000 cash received · SEG Q1 disbursement ($332,500) released from Account 1040", impactType: "positive" },
 ];
 
 // ── Scenario data ─────────────────────────────────────────────────────────────
@@ -53,7 +69,7 @@ const SCENARIOS = {
           { label: "SEG Q1 disbursement — HELD in Acct 1040", amount: 0, flag: "watch" },
           { label: "Qubika build team invoice", amount: null },
           { label: "Core team payroll (Jul 1)", amount: null },
-          { label: "Tyler Capson retainer (NOVATELabs Inc)", amount: null },
+          { label: "Tyler Capson retainer (Sentrais Corp — Option A)", amount: null },
           { label: "Other fractional retainers", amount: null },
           { label: "AWS / infrastructure", amount: null },
         ],
@@ -276,14 +292,14 @@ export default function CashflowPage() {
     <div className="flex flex-col h-full">
       <Header
         title="90-Day Cash Flow Runway"
-        subtitle="Jun 15 – Sep 15, 2026 · NFL milestone inflows · SEG 30/70 split · v2.0 — updated Jun 17"
+        subtitle="Jun 15 – Sep 15, 2026 · NFL milestone inflows · SEG 30/70 split · v2.1 — updated Jun 29"
       />
 
       <div className="flex-1 p-6 space-y-5 overflow-y-auto">
 
         {/* 14-day directive banner */}
         <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 text-xs text-amber-400">
-          <span className="font-semibold">14-Day Cash Directive (SNT-CASH-DIRECTIVE-2026-v1.0):</span> NFL cash receipt is ~Jul 30 (Net-30). Hold operating liquidity: SimpliMeta $11,850 on Jul 6-7, SEG/Knox Phillips on Jul 7 (separate transactions, separate counsel confirmations). Do NOT spend ahead of NFL receipt. SEG Q1 disbursement held in Account 1040 until NFL payment clears.
+          <span className="font-semibold">14-Day Cash Directive (SNT-CASH-DIRECTIVE-2026-v1.0 · Jun 29 update):</span> NFL Go-Live TOMORROW Jun 30 — $475K Q1 invoice trigger. Cash receipt ~Jul 30 (Net-30). Hold operating liquidity: SimpliMeta $11,850 on Jul 6-7, SEG/Knox on Jul 7 (separate transactions, separate counsel confirmations). Do NOT spend ahead of NFL receipt. SEG Q1 disbursement held in Account 1040 until NFL payment clears. <span className="font-semibold text-red-400">OPEN BLOCKERS: Tyler Capson SOW unsigned · BGI BRIC scrub not done · AWS LOI must countersign before Jul 3 GenAIIC sprint.</span>
         </div>
 
         {/* Scenario selector */}
@@ -456,7 +472,7 @@ export default function CashflowPage() {
             <span className="font-semibold text-foreground">BRIC posture (v2.0 — Jun 17, 2026):</span> BRIC is not a 90-day revenue event. July 23, 2026 is not a target this cycle — state pre-application gates closed in spring. The correct posture is Awareness → Pilot → Position for FY2026-27. BRIC does not appear as a cash inflow in any scenario. Any future BRIC-adjacent revenue attaches inside awarded jurisdiction infrastructure projects through management costs and infrastructure-tied capability-building — never as a standalone Sentrais line item.
           </p>
           <p>
-            <span className="font-semibold text-foreground">Vendor routing:</span> Route outstanding engineering and software vendor invoices through GreenPages catalog where possible. Do not draw from core NOVATELabs operating cash for vendor invoices until NFL payment clears ~Jul 30. Tyler Capson (Fractional CFO, NOVATELabs Inc) builds the AP/Outflows schema as Day 1 task once SOW is executed.
+            <span className="font-semibold text-foreground">Vendor routing:</span> Route outstanding engineering and software vendor invoices through GreenPages catalog where possible. Do not draw from core operating cash for vendor invoices until NFL payment clears ~Jul 30. Tyler Capson (Fractional CFO) builds AP/Outflows schema as Day 1 task once SOW is executed. Option A CONFIRMED (Jun 29): Tyler&apos;s retainer routes through Sentrais Corp (EIN 39-4645168). ADP registration transfer from NOVATELabs EIN 39-4510998 in progress — Tyler coordinating with ADP this week.
           </p>
         </div>
 
