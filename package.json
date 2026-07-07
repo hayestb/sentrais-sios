@@ -18,7 +18,8 @@
     "setup:gcp": "./scripts/setup-gcp.sh",
     "ingest": "npx tsx src/scripts/seed-ingest.ts",
     "ingest2": "npx tsx src/scripts/seed-ingest-2.ts",
-    "ingest3": "npx tsx src/scripts/seed-ingest-3.ts"
+    "ingest3": "npx tsx src/scripts/seed-ingest-3.ts",
+    "ingest4": "npx tsx src/scripts/seed-ingest-4.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.74",
