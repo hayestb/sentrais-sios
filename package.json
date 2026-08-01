@@ -18,7 +18,12 @@
     "db:seed-sipe": "npx tsx scripts/seed-sipe-documents.ts",
     "setup:integrations": "npx tsx scripts/setup-integrations.ts",
     "push:env": "npx tsx scripts/push-env.ts",
-    "setup:gcp": "./scripts/setup-gcp.sh"
+    "setup:gcp": "./scripts/setup-gcp.sh",
+    "ingest": "npx tsx src/scripts/seed-ingest.ts",
+    "ingest2": "npx tsx src/scripts/seed-ingest-2.ts",
+    "ingest3": "npx tsx src/scripts/seed-ingest-3.ts",
+    "ingest4": "npx tsx src/scripts/seed-ingest-4.ts",
+    "ingest5": "npx tsx src/scripts/seed-ingest-5.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.74",
@@ -40,6 +45,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.487.0",
     "mammoth": "^1.8.0",

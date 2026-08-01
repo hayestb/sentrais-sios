@@ -67,11 +67,19 @@ const PERSONAS = [
 export default async function LandingPage() {
   await checkAuth();
 
-  const [[engCount], [gateCount], [taskCount]] = await Promise.all([
-    db.select({ count: count() }).from(engagements),
-    db.select({ count: count() }).from(gateRecords),
-    db.select({ count: count() }).from(agentTasks),
-  ]);
+  let engCount = { count: 0 }, gateCount = { count: 0 }, taskCount = { count: 0 };
+  try {
+    const [[eng], [gate], [task]] = await Promise.all([
+      db.select({ count: count() }).from(engagements),
+      db.select({ count: count() }).from(gateRecords),
+      db.select({ count: count() }).from(agentTasks),
+    ]);
+    engCount = eng ?? engCount;
+    gateCount = gate ?? gateCount;
+    taskCount = task ?? taskCount;
+  } catch {
+    // DB unavailable — render with zero counts
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
